@@ -100,6 +100,7 @@ const Visitors = () => {
     visitorType: true,
     attendBy: true,
     remarks: true,
+    ussCoding: true,
     bhaiyakanirdesh: true,
     addedBy: true,
     organization: isSuperAdmin(),
@@ -239,6 +240,7 @@ const Visitors = () => {
         "Visitor Type": v.visitorType || "-",
         "Attend By": v.attendBy || "-",
         Remarks: v.remarks || "-",
+        "USS Coding": v.ussCoding || "-",
         "Bhaiya Ka Nirdesh": v.bhaiyakanirdesh || "-",
         "Added By": v.addedBy || "-",
         Organization: (v.tenantId && typeof v.tenantId === "object") ? v.tenantId.name : "Platform"
@@ -735,6 +737,11 @@ const Visitors = () => {
                         REMARK (क्या कारवाही की गई)
                       </TableHead>
                     )}
+                    {visibleColumns.ussCoding && (
+                      <TableHead className="font-semibold text-white dark:text-white uppercase tracking-wider text-xs">
+                        USS Coding
+                      </TableHead>
+                    )}
                     {visibleColumns.bhaiyakanirdesh && (
                       <TableHead className="font-semibold text-white dark:text-white uppercase tracking-wider text-xs">
                         भईया के निर्देश
@@ -866,6 +873,14 @@ const Visitors = () => {
                             title={row.remarks}
                           >
                             {row.remarks || "-"}
+                          </TableCell>
+                        )}
+                        {visibleColumns.ussCoding && (
+                          <TableCell
+                            className="max-w-xs truncate"
+                            title={row.ussCoding}
+                          >
+                            {row.ussCoding || "-"}
                           </TableCell>
                         )}
                         {visibleColumns.bhaiyakanirdesh && (

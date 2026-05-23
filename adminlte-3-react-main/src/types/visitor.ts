@@ -17,6 +17,7 @@ export interface IVisitorFormValues {
   attendBy: string;
   remarks: string;
   bhaiyakanirdesh: string;
+  ussCoding: string;
   addedBy: string;
   tenantId?: string;
 }
@@ -39,6 +40,7 @@ export interface IVisitor {
   attendBy: string;
   remarks: string;
   bhaiyakanirdesh: string;
+  ussCoding: string;
   addedBy: string;
   tenantId?: string | ITenantShort;
 }

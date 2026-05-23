@@ -79,6 +79,10 @@ const visitorSchema = new mongoose.Schema(
       required: [true, "Remarks are required"],
       trim: true,
     },
+    ussCoding: {
+      type: String,
+      trim: true,
+    },
     bhaiyakanirdesh: {
       type: String,
       required: [true, "Bhaiya Ka Nirdesh is required"],

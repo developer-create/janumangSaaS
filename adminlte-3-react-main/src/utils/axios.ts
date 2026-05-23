@@ -1,5 +1,17 @@
 import axios from "axios";
 import { API_BASE_URL } from "./api";
+import NProgress from "nprogress";
+
+let activeRequests = 0;
+const startLoader = () => {
+  if (activeRequests === 0) NProgress.start();
+  activeRequests++;
+};
+const stopLoader = () => {
+  activeRequests = Math.max(0, activeRequests - 1);
+  if (activeRequests === 0) NProgress.done();
+};
+
 
 const axiosInstance = axios.create({
   baseURL: API_BASE_URL,
@@ -26,7 +38,10 @@ axiosInstance.interceptors.request.use(
     }
     return config;
   },
-  (error) => Promise.reject(error),
+  (error) => {
+    if (typeof window !== "undefined") stopLoader();
+    return Promise.reject(error);
+  },
 );
 
 // ─── Response Interceptor: Silent Token Refresh ───────────────────────────────
@@ -63,7 +78,10 @@ const forceLogout = () => {
 };
 
 axiosInstance.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    if (typeof window !== "undefined") stopLoader();
+    return response;
+  },
   async (error) => {
     const originalRequest = error.config;
     const status = error.response?.status;

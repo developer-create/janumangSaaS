@@ -19,6 +19,7 @@ export const visitorSchema = Yup.object({
   attendBy: Yup.string().required("Attend By is required"),
   remarks: Yup.string().required("Remarks is required"),
   bhaiyakanirdesh: Yup.string().required("Field is required"),
+  ussCoding: Yup.string(),
   addedBy: Yup.string().required("Added By is required"),
 });
 
@@ -42,5 +43,6 @@ export const visitorInitialValues: IVisitorFormValues = {
   attendBy: "",
   remarks: "",
   bhaiyakanirdesh: "",
+  ussCoding: "",
   addedBy: "",
 };
