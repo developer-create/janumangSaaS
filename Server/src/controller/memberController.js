@@ -85,6 +85,7 @@ exports.getMembers = asyncHandler(async (req, res) => {
       data: formattedMembers,
       total,
       count,
+      filteredCount: count,
       pagination: {
         page: pageNum,
         pages: limitNum === -1 ? 1 : Math.ceil(count / limitNum),

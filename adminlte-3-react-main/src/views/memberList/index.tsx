@@ -122,6 +122,24 @@ const MemberListContent = ({ memberType = "vidhan-sabha" }: { memberType?: "vidh
         endDate: false,
         image: false,
         district: true,
+      vidhansabha: true,
+      lokSabha: false,
+      month: true,
+      date: true,
+      panchayat: true,
+      janpadPanchayat: true,
+      mandalam: true,
+      position: false,
+      year: false,
+        vidhansabha: true,
+        lokSabha: true,
+        month: true,
+        date: true,
+        panchayat: true,
+        janpadPanchayat: false,
+        mandalam: false,
+        position: true,
+        year: true,
         reference: false,
         remark: true,
         createdAt: true,
@@ -375,6 +393,15 @@ const MemberListContent = ({ memberType = "vidhan-sabha" }: { memberType?: "vidh
               : "-";
         }
         if (visibleColumns.district) row["District"] = member.district || "-";
+        if (visibleColumns.vidhansabha) row["Vidhansabha"] = typeof member.vidhansabha === "object" ? (member.vidhansabha as any)?.name : (member.vidhansabha || "-");
+        if (visibleColumns.lokSabha) row["Lok Sabha"] = typeof member.lokSabha === "object" ? (member.lokSabha as any)?.name : (member.lokSabha || "-");
+        if (visibleColumns.month) row["Month"] = member.month || "-";
+        if (visibleColumns.date) row["Date"] = member.date || "-";
+        if (visibleColumns.panchayat) row["Panchayat"] = typeof member.panchayat === "object" ? (member.panchayat as any)?.name : (member.panchayat || "-");
+        if (visibleColumns.janpadPanchayat) row["Janpad Panchayat"] = typeof member.janpadPanchayat === "object" ? (member.janpadPanchayat as any)?.name : (member.janpadPanchayat || "-");
+        if (visibleColumns.mandalam) row["Mandalam"] = typeof member.mandalam === "object" ? (member.mandalam as any)?.name : (member.mandalam || "-");
+        if (visibleColumns.position) row["Position"] = member.position || "-";
+        if (visibleColumns.year) row["Year"] = member.year || "-";
         if (visibleColumns.reference)
           row["Reference"] = member.reference || "-";
         if (visibleColumns.remark) row["Remark"] = member.remark || "-";
@@ -685,6 +712,8 @@ const MemberListContent = ({ memberType = "vidhan-sabha" }: { memberType?: "vidh
                         .replace("Post Year", "पद वर्ष")
                         .replace("Nari Samman Yojna", "Nari Samman Yojna")
                         .replace("Farmer Loan Waiver", "Farmer Loan Waiver")
+                        .replace("Janpad Panchayat", "Janpad Panchayat")
+                        .replace("Lok Sabha", "Lok Sabha")
                         .replace("Start Lat", "Start Lat")
                         .replace("Start Long", "Start Long")
                         .replace("End Lat", "End Lat")
@@ -893,6 +922,51 @@ const MemberListContent = ({ memberType = "vidhan-sabha" }: { memberType?: "vidh
                     {visibleColumns.district && (
                       <TableHead className="font-semibold text-white uppercase tracking-wider text-xs whitespace-nowrap">
                         District
+                      </TableHead>
+                    )}
+                    {visibleColumns.vidhansabha && (
+                      <TableHead className="font-semibold text-white uppercase tracking-wider text-xs whitespace-nowrap">
+                        Vidhansabha
+                      </TableHead>
+                    )}
+                    {visibleColumns.lokSabha && (
+                      <TableHead className="font-semibold text-white uppercase tracking-wider text-xs whitespace-nowrap">
+                        Lok Sabha
+                      </TableHead>
+                    )}
+                    {visibleColumns.month && (
+                      <TableHead className="font-semibold text-white uppercase tracking-wider text-xs whitespace-nowrap">
+                        Month
+                      </TableHead>
+                    )}
+                    {visibleColumns.date && (
+                      <TableHead className="font-semibold text-white uppercase tracking-wider text-xs whitespace-nowrap">
+                        Date
+                      </TableHead>
+                    )}
+                    {visibleColumns.panchayat && (
+                      <TableHead className="font-semibold text-white uppercase tracking-wider text-xs whitespace-nowrap">
+                        Panchayat
+                      </TableHead>
+                    )}
+                    {visibleColumns.janpadPanchayat && (
+                      <TableHead className="font-semibold text-white uppercase tracking-wider text-xs whitespace-nowrap">
+                        Janpad Panchayat
+                      </TableHead>
+                    )}
+                    {visibleColumns.mandalam && (
+                      <TableHead className="font-semibold text-white uppercase tracking-wider text-xs whitespace-nowrap">
+                        Mandalam
+                      </TableHead>
+                    )}
+                    {visibleColumns.position && (
+                      <TableHead className="font-semibold text-white uppercase tracking-wider text-xs whitespace-nowrap">
+                        Position
+                      </TableHead>
+                    )}
+                    {visibleColumns.year && (
+                      <TableHead className="font-semibold text-white uppercase tracking-wider text-xs whitespace-nowrap">
+                        Year
                       </TableHead>
                     )}
                     {visibleColumns.reference && (
@@ -1191,6 +1265,51 @@ const MemberListContent = ({ memberType = "vidhan-sabha" }: { memberType?: "vidh
                         {visibleColumns.district && (
                           <TableCell className="text-sm">
                             {member.district || "-"}
+                          </TableCell>
+                        )}
+                        {visibleColumns.vidhansabha && (
+                          <TableCell className="text-sm">
+                            {typeof member.vidhansabha === "object" ? (member.vidhansabha as any)?.name : (member.vidhansabha || "-")}
+                          </TableCell>
+                        )}
+                        {visibleColumns.lokSabha && (
+                          <TableCell className="text-sm">
+                            {typeof member.lokSabha === "object" ? (member.lokSabha as any)?.name : (member.lokSabha || "-")}
+                          </TableCell>
+                        )}
+                        {visibleColumns.month && (
+                          <TableCell className="text-sm">
+                            {member.month || "-"}
+                          </TableCell>
+                        )}
+                        {visibleColumns.date && (
+                          <TableCell className="text-sm">
+                            {member.date || "-"}
+                          </TableCell>
+                        )}
+                        {visibleColumns.panchayat && (
+                          <TableCell className="text-sm">
+                            {typeof member.panchayat === "object" ? (member.panchayat as any)?.name : (member.panchayat || "-")}
+                          </TableCell>
+                        )}
+                        {visibleColumns.janpadPanchayat && (
+                          <TableCell className="text-sm">
+                            {typeof member.janpadPanchayat === "object" ? (member.janpadPanchayat as any)?.name : (member.janpadPanchayat || "-")}
+                          </TableCell>
+                        )}
+                        {visibleColumns.mandalam && (
+                          <TableCell className="text-sm">
+                            {typeof member.mandalam === "object" ? (member.mandalam as any)?.name : (member.mandalam || "-")}
+                          </TableCell>
+                        )}
+                        {visibleColumns.position && (
+                          <TableCell className="text-sm">
+                            {member.position || "-"}
+                          </TableCell>
+                        )}
+                        {visibleColumns.year && (
+                          <TableCell className="text-sm">
+                            {member.year || "-"}
                           </TableCell>
                         )}
                         {visibleColumns.reference && (

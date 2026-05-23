@@ -60,6 +60,16 @@ const memberSchema = mongoose.Schema(
       trim: true,
       default: "",
     },
+    janpadPanchayat: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+    mandalam: {
+      type: String,
+      trim: true,
+      default: "",
+    },
     name: {
       type: String,
       required: [true, "Name is required"],
@@ -91,6 +101,29 @@ const memberSchema = mongoose.Schema(
       default: "",
     },
     mobile: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+    date: {
+      type: Date,
+    },
+    month: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+    year: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+    lokSabha: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+    position: {
       type: String,
       trim: true,
       default: "",

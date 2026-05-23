@@ -44,6 +44,8 @@ export interface IMemberFormValues {
   vidhansabha?: string;
   memberType?: string;
   panchayat?: string;
+  janpadPanchayat?: string;
+  mandalam?: string;
   position?: string;
   lokSabha?: string;
   year?: string;
@@ -97,6 +99,8 @@ export interface IMember {
   endDate: string;
   image: string;
   panchayat?: string;
+  janpadPanchayat?: string;
+  mandalam?: string;
   position?: string;
   lokSabha?: string;
   year?: string;

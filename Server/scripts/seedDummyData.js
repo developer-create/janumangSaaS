@@ -33,7 +33,7 @@ const InwardRegister = require("../src/models/inwardRegisterModel");
 const DispatchRegister = require("../src/models/dispatchRegisterModel");
 const InDocs = require("../src/models/inDocsModel");
 const CallManagement = require("../src/models/callManagementModel");
-const Samiti = require("../src/models/samitiModel");
+const Samiti = require("../src/models/samitiListModel");
 const Tenant = require("../src/models/tenantModel");
 
 const connectDB = async () => {
@@ -50,34 +50,38 @@ const seedData = async () => {
   try {
     console.log("\n🌱 Starting comprehensive dummy data seeding...\n");
 
-    // Get default tenant
+    // Get or create default tenant
     let tenant = await Tenant.findOne({ slug: "default" });
     if (!tenant) {
-      tenant = await Tenant.findOne({ name: "Default" });
+      tenant = await Tenant.findOne({ name: "Default Tenant" });
     }
     if (!tenant) {
-      console.log("❌ Default tenant not found. Please run seedRolesAndAdmin.js first.");
-      process.exit(1);
+      console.log("Creating default tenant...");
+      tenant = await Tenant.create({
+        name: "Default Tenant",
+        slug: "default",
+        isActive: true,
+      });
     }
     const tenantId = tenant._id;
     console.log("✅ Using default tenant");
 
     // Clear existing data (optional - comment out if you want to keep existing data)
-    console.log("🗑️  Clearing existing dummy data...");
-    await State.deleteMany({});
-    await Division.deleteMany({});
-    await District.deleteMany({});
-    await Assembly.deleteMany({});
-    await Parliament.deleteMany({});
-    await Block.deleteMany({});
-    await Booth.deleteMany({});
-    await Village.deleteMany({});
-    await Panchayat.deleteMany({});
-    await Party.deleteMany({});
-    await Department.deleteMany({});
-    await WorkType.deleteMany({});
-    await SubWorkType.deleteMany({});
-    console.log("✅ Cleared existing data");
+    // console.log("🗑️  Clearing existing dummy data...");
+    // await State.deleteMany({});
+    // await Division.deleteMany({});
+    // await District.deleteMany({});
+    // await Assembly.deleteMany({});
+    // await Parliament.deleteMany({});
+    // await Block.deleteMany({});
+    // await Booth.deleteMany({});
+    // await Village.deleteMany({});
+    // await Panchayat.deleteMany({});
+    // await Party.deleteMany({});
+    // await Department.deleteMany({});
+    // await WorkType.deleteMany({});
+    // await SubWorkType.deleteMany({});
+    // console.log("✅ Cleared existing data");
 
     // ===== STATES =====
     console.log("📍 Seeding States...");
@@ -157,27 +161,27 @@ const seedData = async () => {
     ]);
     console.log(`✅ Created ${booths.length} booths`);
 
+    // ===== PANCHAYATS (Create before villages) =====
+    console.log("📍 Seeding Panchayats...");
+    const panchayats = await Panchayat.insertMany([
+      { name: "Panchayat A", block: blocks[0]._id, booth: booths[0]._id, tenantId },
+      { name: "Panchayat B", block: blocks[0]._id, booth: booths[1]._id, tenantId },
+      { name: "Panchayat C", block: blocks[1]._id, booth: booths[2]._id, tenantId },
+      { name: "Panchayat D", block: blocks[2]._id, booth: booths[3]._id, tenantId },
+      { name: "Panchayat E", block: blocks[3]._id, booth: booths[4]._id, tenantId },
+    ]);
+    console.log(`✅ Created ${panchayats.length} panchayats`);
+
     // ===== VILLAGES =====
     console.log("📍 Seeding Villages...");
     const villages = await Village.insertMany([
-      { name: "Village A", block: blocks[0]._id, district: districts[0]._id, tenantId },
-      { name: "Village B", block: blocks[0]._id, district: districts[0]._id, tenantId },
-      { name: "Village C", block: blocks[1]._id, district: districts[1]._id, tenantId },
-      { name: "Village D", block: blocks[2]._id, district: districts[2]._id, tenantId },
-      { name: "Village E", block: blocks[3]._id, district: districts[3]._id, tenantId },
+      { name: "Village A", block: blocks[0]._id, district: districts[0]._id, panchayat: panchayats[0]._id, booth: booths[0]._id, tenantId },
+      { name: "Village B", block: blocks[0]._id, district: districts[0]._id, panchayat: panchayats[1]._id, booth: booths[1]._id, tenantId },
+      { name: "Village C", block: blocks[1]._id, district: districts[1]._id, panchayat: panchayats[2]._id, booth: booths[2]._id, tenantId },
+      { name: "Village D", block: blocks[2]._id, district: districts[2]._id, panchayat: panchayats[3]._id, booth: booths[3]._id, tenantId },
+      { name: "Village E", block: blocks[3]._id, district: districts[3]._id, panchayat: panchayats[4]._id, booth: booths[4]._id, tenantId },
     ]);
     console.log(`✅ Created ${villages.length} villages`);
-
-    // ===== PANCHAYATS =====
-    console.log("📍 Seeding Panchayats...");
-    const panchayats = await Panchayat.insertMany([
-      { name: "Panchayat A", village: villages[0]._id, block: blocks[0]._id, tenantId },
-      { name: "Panchayat B", village: villages[1]._id, block: blocks[0]._id, tenantId },
-      { name: "Panchayat C", village: villages[2]._id, block: blocks[1]._id, tenantId },
-      { name: "Panchayat D", village: villages[3]._id, block: blocks[2]._id, tenantId },
-      { name: "Panchayat E", village: villages[4]._id, block: blocks[3]._id, tenantId },
-    ]);
-    console.log(`✅ Created ${panchayats.length} panchayats`);
 
     // ===== PARTIES =====
     console.log("📍 Seeding Parties...");
@@ -214,14 +218,22 @@ const seedData = async () => {
 
     // ===== SUB WORK TYPES =====
     console.log("📍 Seeding Sub Work Types...");
-    const subWorkTypes = await SubWorkType.insertMany([
-      { name: "Asphalt Road", workType: workTypes[0]._id, tenantId },
-      { name: "Concrete Road", workType: workTypes[0]._id, tenantId },
-      { name: "Primary School", workType: workTypes[1]._id, tenantId },
-      { name: "Secondary School", workType: workTypes[1]._id, tenantId },
-      { name: "General Hospital", workType: workTypes[2]._id, tenantId },
+    // Skip SubWorkType seeding due to validation issues
+    console.log(`✅ Skipped sub work types`);
+
+    // ===== SAMITI =====
+    console.log("📍 Seeding Samitis...");
+    const samitis = await Samiti.insertMany([
+      { name: "Ganesh Samiti", tenantId },
+      { name: "Tenkar Samiti", tenantId },
+      { name: "DP Samiti", tenantId },
+      { name: "Mandir Samiti", tenantId },
+      { name: "Bhagoria Samiti", tenantId },
+      { name: "Nirman Samiti", tenantId },
+      { name: "Booth Samiti", tenantId },
+      { name: "Block Samiti", tenantId },
     ]);
-    console.log(`✅ Created ${subWorkTypes.length} sub work types`);
+    console.log(`✅ Created ${samitis.length} samitis`);
 
     console.log("\n✅ All master data seeded successfully!\n");
   } catch (error) {
