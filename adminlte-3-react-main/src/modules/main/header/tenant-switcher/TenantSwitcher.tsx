@@ -24,7 +24,7 @@ const TenantSwitcher = () => {
     (currentUser?.level === "system_admin" ||
       currentUser?.level === "superadmin");
 
-  const { data: tenants = [] } = useQuery({
+  const { data: tenants = [], isFetched } = useQuery({
     queryKey: ["tenants-list"],
     queryFn: async () => {
       const res = await axios.get("/tenants?limit=-1");
@@ -34,6 +34,8 @@ const TenantSwitcher = () => {
   });
 
   useEffect(() => {
+    if (!isFetched) return; // Prevent clearing localStorage before tenants load
+
     const saved = localStorage.getItem("overrideTenantId");
     if (saved) {
       // Validate that the saved tenant actually exists
@@ -46,7 +48,7 @@ const TenantSwitcher = () => {
         setSelectedTenant("default");
       }
     }
-  }, [tenants]);
+  }, [tenants, isFetched]);
 
   const handleSwitch = (value: string) => {
     setSelectedTenant(value);

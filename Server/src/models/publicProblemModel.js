@@ -16,6 +16,8 @@ const publicProblemSchema = mongoose.Schema(
     district: { type: String, default: "" },
     assembly: { type: String, default: "" },
     block: { type: String, default: "" },
+    approvedFund: { type: String, default: "" },
+    workAgency: { type: String, default: "" },
     recommendedLetterNo: { type: String, default: "" },
 
     boothNo: { type: String, default: "" },
@@ -57,8 +59,8 @@ const publicProblemSchema = mongoose.Schema(
     tenantId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Tenant",
-      required: true,
       index: true,
+      default: null,
     },
   },
   {

@@ -12,19 +12,19 @@ const { scopeQuery } = require("../middleware/scopeMiddleware");
 
 const router = express.Router();
 
-// Booth — tenant-isolated via scopeQuery({}, false)
+// Booth — tenant-isolated via scopeQuery({}, false, true)
 router
   .route("/")
   .get(
     protect,
     checkPermission("view_booths"),
-    scopeQuery({}, false),
+    scopeQuery({}, false, true),
     getBooths,
   )
   .post(
     protect,
     checkPermission("create_booths"),
-    scopeQuery({}, false),
+    scopeQuery({}, false, true),
     createBooth,
   );
 
@@ -33,19 +33,19 @@ router
   .get(
     protect,
     checkPermission("view_booths"),
-    scopeQuery({}, false),
+    scopeQuery({}, false, true),
     getBoothById,
   )
   .put(
     protect,
     checkPermission("edit_booths"),
-    scopeQuery({}, false),
+    scopeQuery({}, false, true),
     updateBooth,
   )
   .delete(
     protect,
     checkPermission("delete_booths"),
-    scopeQuery({}, false),
+    scopeQuery({}, false, true),
     deleteBooth,
   );
 

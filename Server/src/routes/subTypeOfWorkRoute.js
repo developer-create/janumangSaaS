@@ -17,7 +17,7 @@ router
   .get(
     protect,
     checkPermission("view_sub_work_types"),
-    scopeQuery({}, false),
+    scopeQuery({}, false, true),
     getSubTypeOfWorks,
   )
   .post(protect, checkPermission("create_sub_work_types"), createSubTypeOfWork);
@@ -27,7 +27,7 @@ router
   .get(
     protect,
     checkPermission("view_sub_work_types"),
-    scopeQuery({}, false),
+    scopeQuery({}, false, true),
     getSubTypeOfWorkById,
   )
   .put(protect, checkPermission("edit_sub_work_types"), updateSubTypeOfWork)

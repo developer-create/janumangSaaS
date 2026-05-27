@@ -5,13 +5,17 @@ const { isGlobalAdmin } = require("../utils/authHelpers");
  * Middleware to restrict database queries based on user's geographic assignment (level and scope).
  * This ensures a 'District Admin' can't see data from other districts, even if they hit the same API.
  */
-const scopeQuery = (levelFieldMap = {}, geographic = true) => {
+const scopeQuery = (levelFieldMap = {}, geographic = true, includeGlobal = false) => {
   return (req, res, next) => {
     // Global Admins can see everything
     if (isGlobalAdmin(req.user)) {
       // If a global admin has selected a specific tenant, show only that tenant's data
       if (req.tenantId) {
-        req.scopeFilter = { tenantId: req.tenantId };
+        if (includeGlobal) {
+          req.scopeFilter = { $or: [{ tenantId: req.tenantId }, { tenantId: null }, { tenantId: { $exists: false } }] };
+        } else {
+          req.scopeFilter = { tenantId: req.tenantId };
+        }
       } else {
         // No specific tenant selected → show ALL data (no filter restriction)
         req.scopeFilter = {};
@@ -34,7 +38,11 @@ const scopeQuery = (levelFieldMap = {}, geographic = true) => {
     }
 
     // Restrict all queries to the user's tenant
-    req.scopeFilter = { tenantId };
+    if (includeGlobal) {
+      req.scopeFilter = { $or: [{ tenantId }, { tenantId: null }, { tenantId: { $exists: false } }] };
+    } else {
+      req.scopeFilter = { tenantId };
+    }
 
     // If geographic filtering is disabled, or it's a tenant admin, we stop here
     if (!geographic || level === "tenant_admin") {
@@ -58,7 +66,17 @@ const scopeQuery = (levelFieldMap = {}, geographic = true) => {
 
     // If the user's level has a corresponding geographic field, add it to the filter
     if (targetField && req.user[level]) {
-      req.scopeFilter[targetField] = req.user[level];
+      // If $or was used, we need to apply geographic scoping using $and to maintain logic correctness
+      if (includeGlobal) {
+        req.scopeFilter = {
+          $and: [
+            req.scopeFilter,
+            { [targetField]: req.user[level] }
+          ]
+        };
+      } else {
+        req.scopeFilter[targetField] = req.user[level];
+      }
     }
 
     next();

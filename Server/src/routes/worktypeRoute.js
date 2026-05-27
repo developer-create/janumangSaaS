@@ -17,7 +17,7 @@ router
   .get(
     protect,
     checkPermission("view_work_types"),
-    scopeQuery({}, false),
+    scopeQuery({}, false, true),
     getWorktypes,
   )
   .post(protect, checkPermission("create_work_types"), createWorktype);
@@ -27,7 +27,7 @@ router
   .get(
     protect,
     checkPermission("view_work_types"),
-    scopeQuery({}, false),
+    scopeQuery({}, false, true),
     getWorktypeById,
   )
   .put(protect, checkPermission("edit_work_types"), updateWorktype)

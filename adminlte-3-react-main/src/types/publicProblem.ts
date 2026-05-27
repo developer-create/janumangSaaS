@@ -8,6 +8,8 @@ export interface IPublicProblemFormValues {
   district: string;
   assembly: string;
   block: string;
+  approvedFund: string;
+  workAgency: string;
   recommendedLetterNo: string;
   boothNo: string;
   boothName: string;

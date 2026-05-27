@@ -19,7 +19,7 @@ router
     protect,
     checkModuleAccess("departments"),
     checkPermission("view_departments"),
-    scopeQuery({}, false),
+    scopeQuery({}, false, true),
     getDepartments,
   )
   .post(
@@ -35,7 +35,7 @@ router
     protect,
     checkModuleAccess("departments"),
     checkPermission("view_departments"),
-    scopeQuery({}, false),
+    scopeQuery({}, false, true),
     getDepartmentById,
   )
   .put(

@@ -104,13 +104,16 @@ exports.createPublicProblem = asyncHandler(async (req, res) => {
     res.status(201).json({ success: true, data: problem });
   } catch (error) {
     if (error.name === "MongoServerError" && error.code === 11000) {
-      res.status(400);
-      throw new Error(
-        "A problem with this registration number already exists.",
-      );
+      return res.status(400).json({
+        success: false,
+        message: "A problem with this registration number already exists."
+      });
     }
-    res.status(400);
-    throw new Error(error.message);
+    return res.status(400).json({
+      success: false,
+      message: error.message || error.toString(),
+      stack: error.stack
+    });
   }
 });
 

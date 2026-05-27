@@ -297,21 +297,21 @@ const CreateEntryContent = () => {
   }
 
   const FORM_FIELDS: FormFieldConfig[] = [
+    { name: "dateString", label: "Date", type: "date", required: true },
     {
       name: "year",
-      label: "Year *",
-      type: "number",
-      placeholder: "Year",
+      label: "Financial Year",
+      type: "select",
+      optionsSource: "financialYears",
       required: true,
     },
     {
       name: "month",
-      label: "Month *",
+      label: "Month",
       type: "select",
       optionsSource: "months",
       required: true,
     },
-    { name: "dateString", label: "Date *", type: "date", required: true },
 
     // Location Hierarchy (Starting from District)
     {
@@ -329,19 +329,18 @@ const CreateEntryContent = () => {
     },
     { name: "block", label: "Block", type: "select", optionsSource: "blocks" },
     {
-      name: "panchayatName",
-      label: "Panchayat Name",
+      name: "approvedFund",
+      label: "Approved Fund *",
       type: "select",
-      optionsSource: "panchayats",
+      optionsSource: "approvedFunds",
+      required: true,
     },
     {
-      name: "village",
-      label: "Village",
-      type: "select",
-      optionsSource: "villages",
+      name: "workAgency",
+      label: "Work Agency *",
+      type: "text",
+      required: true,
     },
-
-    // Details
     {
       name: "recommendedLetterNo",
       label: "Recommended Letter No",
@@ -355,6 +354,18 @@ const CreateEntryContent = () => {
     },
     { name: "boothNo", label: "Booth No.", type: "text" },
 
+    {
+      name: "panchayatName",
+      label: "Panchayat Name",
+      type: "select",
+      optionsSource: "panchayats",
+    },
+    {
+      name: "village",
+      label: "Village",
+      type: "select",
+      optionsSource: "villages",
+    },
     { name: "majraFaliya", label: "Majra/Faliya", type: "text" },
 
     { name: "workProblem", label: "Work/Problem", type: "text" },
@@ -366,12 +377,6 @@ const CreateEntryContent = () => {
       label: "Department",
       type: "select",
       optionsSource: "departments",
-    },
-    {
-      name: "status",
-      label: "Status",
-      type: "select",
-      optionsSource: "statuses",
     },
     { name: "priority", label: "Priority", type: "text" },
     { name: "typeOfWork", label: "Type of Work", type: "text" },
@@ -389,8 +394,18 @@ const CreateEntryContent = () => {
       type: "mobile",
     },
 
+    // Note: The original image had duplicated 'Work Agency' and 'Approved Fund' fields here.
+    // I am omitting them to prevent data duplication.
+
+    { name: "avedan", label: "Avedan", type: "file" },
+    {
+      name: "status",
+      label: "Status",
+      type: "select",
+      optionsSource: "statuses",
+    },
+
     // Full Width
-    { name: "avedan", label: "Avedan", type: "file", fullWidth: true },
     {
       name: "remarkGoshana",
       label: "Remark/Goshana (भईया द्वारा दिए गए निर्देश)",
@@ -407,6 +422,21 @@ const CreateEntryContent = () => {
 
   const getOptions = (source?: string) => {
     switch (source) {
+      case "financialYears":
+        return [
+          "2022-2023",
+          "2023-2024",
+          "2024-2025",
+          "2025-2026",
+          "2026-2027",
+          "2027-2028",
+        ].map((y) => ({ label: y, value: y, id: y }));
+      case "approvedFunds":
+        return ["MP Fund", "MLA Fund", "Other"].map((f) => ({
+          label: f,
+          value: f,
+          id: f,
+        }));
       case "months":
         return [
           "January",

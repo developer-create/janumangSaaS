@@ -100,6 +100,8 @@ const MpPublicProblem = () => {
     district: true,
     assembly: true,
     block: true,
+    approvedFund: true,
+    workAgency: true,
     recLetterNo: true,
     boothNo: true,
     boothName: true,
@@ -231,6 +233,8 @@ const MpPublicProblem = () => {
         if (visibleColumns.district) row["District"] = item.district || "-";
         if (visibleColumns.assembly) row["Assembly"] = item.assembly || "-";
         if (visibleColumns.block) row["Block"] = item.block || "-";
+        if (visibleColumns.approvedFund) row["Approved Fund"] = item.approvedFund || "-";
+        if (visibleColumns.workAgency) row["Work Agency"] = item.workAgency || "-";
         if (visibleColumns.recLetterNo)
           row["Recommended Letter No"] = item.recommendedLetterNo || "-";
         if (visibleColumns.boothNo) row["Booth No"] = item.boothNo || "-";
@@ -787,6 +791,16 @@ const MpPublicProblem = () => {
                         Block
                       </TableHead>
                     )}
+                    {visibleColumns.approvedFund && (
+                      <TableHead className="whitespace-nowrap font-semibold dark:text-gray-200">
+                        Approved Fund
+                      </TableHead>
+                    )}
+                    {visibleColumns.workAgency && (
+                      <TableHead className="whitespace-nowrap font-semibold dark:text-gray-200">
+                        Work Agency
+                      </TableHead>
+                    )}
                     {visibleColumns.recLetterNo && (
                       <TableHead className="whitespace-nowrap font-semibold dark:text-gray-200">
                         Rec. Letter No
@@ -971,6 +985,12 @@ const MpPublicProblem = () => {
                         )}
                         {visibleColumns.block && (
                           <TableCell>{row.block}</TableCell>
+                        )}
+                        {visibleColumns.approvedFund && (
+                          <TableCell>{row.approvedFund}</TableCell>
+                        )}
+                        {visibleColumns.workAgency && (
+                          <TableCell>{row.workAgency}</TableCell>
                         )}
                         {visibleColumns.recLetterNo && (
                           <TableCell>{row.recommendedLetterNo}</TableCell>

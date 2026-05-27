@@ -12,19 +12,19 @@ const { scopeQuery } = require("../middleware/scopeMiddleware");
 
 const router = express.Router();
 
-// Panchayat — tenant-isolated via scopeQuery({}, false)
+// Panchayat — tenant-isolated via scopeQuery({}, false, true)
 router
   .route("/")
   .get(
     protect,
     checkPermission("view_panchayats"),
-    scopeQuery({}, false),
+    scopeQuery({}, false, true),
     getPanchayats,
   )
   .post(
     protect,
     checkPermission("create_panchayats"),
-    scopeQuery({}, false),
+    scopeQuery({}, false, true),
     createPanchayat,
   );
 
@@ -33,19 +33,19 @@ router
   .get(
     protect,
     checkPermission("view_panchayats"),
-    scopeQuery({}, false),
+    scopeQuery({}, false, true),
     getPanchayatById,
   )
   .put(
     protect,
     checkPermission("edit_panchayats"),
-    scopeQuery({}, false),
+    scopeQuery({}, false, true),
     updatePanchayat,
   )
   .delete(
     protect,
     checkPermission("delete_panchayats"),
-    scopeQuery({}, false),
+    scopeQuery({}, false, true),
     deletePanchayat,
   );
 

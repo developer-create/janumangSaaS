@@ -332,26 +332,58 @@ const EditEntryContent = () => {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="space-y-2">
                   <Label className="text-gray-700 dark:text-gray-300 font-medium">
-                    Year *
+                    Date *
                   </Label>
                   <Input
-                    name="year"
-                    inputMode="numeric"
-                    value={formik.values.year}
-                    onChange={(e) => {
-                      const value = e.target.value.replace(/\D/g, "");
-                      if (value.length <= 4) {
-                        formik.setFieldValue("year", value);
-                      }
-                    }}
+                    type="date"
+                    name="dateString"
+                    value={formik.values.dateString}
+                    onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
                     className={`bg-gray-50 dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 dark:text-gray-200 ${
-                      formik.touched.year && formik.errors.year
+                      formik.touched.dateString && formik.errors.dateString
                         ? "border-red-500 ring-red-500"
                         : ""
                     }`}
-                    placeholder="Year"
                   />
+                  {formik.touched.dateString && formik.errors.dateString && (
+                    <p className="text-red-500 text-xs mt-1 font-medium italic">
+                      {formik.errors.dateString}
+                    </p>
+                  )}
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-gray-700 dark:text-gray-300 font-medium">
+                    Financial Year *
+                  </Label>
+                  <Select
+                    value={formik.values.year}
+                    onValueChange={(v) => formik.setFieldValue("year", v)}
+                  >
+                    <SelectTrigger
+                      className={`bg-gray-50 dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 dark:text-gray-200 ${
+                        formik.touched.year && formik.errors.year
+                          ? "border-red-500 ring-red-500"
+                          : ""
+                      }`}
+                    >
+                      <SelectValue placeholder="Select Financial Year" />
+                    </SelectTrigger>
+                    <SelectContent className="dark:bg-slate-900 dark:border-gray-800">
+                      {[
+                        "2022-2023",
+                        "2023-2024",
+                        "2024-2025",
+                        "2025-2026",
+                        "2026-2027",
+                        "2027-2028",
+                      ].map((y) => (
+                        <SelectItem key={y} value={y}>
+                          {y}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   {formik.touched.year && formik.errors.year && (
                     <p className="text-red-500 text-xs mt-1 font-medium italic">
                       {formik.errors.year}
@@ -399,28 +431,6 @@ const EditEntryContent = () => {
                   {formik.touched.month && formik.errors.month && (
                     <p className="text-red-500 text-xs mt-1 font-medium italic">
                       {formik.errors.month}
-                    </p>
-                  )}
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-gray-700 dark:text-gray-300 font-medium">
-                    Date *
-                  </Label>
-                  <Input
-                    type="date"
-                    name="dateString"
-                    value={formik.values.dateString}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    className={`bg-gray-50 dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 dark:text-gray-200 ${
-                      formik.touched.dateString && formik.errors.dateString
-                        ? "border-red-500 ring-red-500"
-                        : ""
-                    }`}
-                  />
-                  {formik.touched.dateString && formik.errors.dateString && (
-                    <p className="text-red-500 text-xs mt-1 font-medium italic">
-                      {formik.errors.dateString}
                     </p>
                   )}
                 </div>
@@ -552,6 +562,60 @@ const EditEntryContent = () => {
                   {formik.touched.block && formik.errors.block && (
                     <p className="text-red-500 text-xs mt-1 font-medium italic">
                       {formik.errors.block}
+                    </p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-gray-700 dark:text-gray-300 font-medium">
+                    Approved Fund *
+                  </Label>
+                  <Select
+                    value={formik.values.approvedFund}
+                    onValueChange={(v) => formik.setFieldValue("approvedFund", v)}
+                  >
+                    <SelectTrigger
+                      className={`bg-gray-50 dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 dark:text-gray-200 ${
+                        formik.touched.approvedFund && formik.errors.approvedFund
+                          ? "border-red-500 ring-red-500"
+                          : ""
+                      }`}
+                    >
+                      <SelectValue placeholder="Select Approved Fund" />
+                    </SelectTrigger>
+                    <SelectContent className="dark:bg-slate-900 dark:border-gray-800">
+                      {["MP Fund", "MLA Fund", "Other"].map((f) => (
+                        <SelectItem key={f} value={f}>
+                          {f}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {formik.touched.approvedFund && formik.errors.approvedFund && (
+                    <p className="text-red-500 text-xs mt-1 font-medium italic">
+                      {formik.errors.approvedFund}
+                    </p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-gray-700 dark:text-gray-300 font-medium">
+                    Work Agency *
+                  </Label>
+                  <Input
+                    name="workAgency"
+                    value={formik.values.workAgency}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    className={`bg-gray-50 dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 dark:text-gray-200 ${
+                      formik.touched.workAgency && formik.errors.workAgency
+                        ? "border-red-500 ring-red-500"
+                        : ""
+                    }`}
+                  />
+                  {formik.touched.workAgency && formik.errors.workAgency && (
+                    <p className="text-red-500 text-xs mt-1 font-medium italic">
+                      {formik.errors.workAgency}
                     </p>
                   )}
                 </div>

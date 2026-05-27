@@ -294,7 +294,7 @@ const ViewMPPublicProblem = () => {
                   <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div>
                       <Label className="text-gray-500 dark:text-gray-400 font-medium">
-                        Year
+                        Financial Year
                       </Label>
                       <p className="font-semibold text-gray-800 dark:text-gray-200">
                         {entry.year as any}
@@ -430,6 +430,22 @@ const ViewMPPublicProblem = () => {
                       </p>
                       <p className="font-semibold text-gray-800 dark:text-gray-200">
                         {entry.workProblem || "N/A"}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        Approved Fund
+                      </p>
+                      <p className="font-semibold text-gray-800 dark:text-gray-200">
+                        {entry.approvedFund || "N/A"}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        Work Agency
+                      </p>
+                      <p className="font-semibold text-gray-800 dark:text-gray-200">
+                        {entry.workAgency || "N/A"}
                       </p>
                     </div>
                     <div>

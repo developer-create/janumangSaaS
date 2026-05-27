@@ -12,19 +12,19 @@ const { scopeQuery } = require("../middleware/scopeMiddleware");
 
 const router = express.Router();
 
-// Village — tenant-isolated via scopeQuery({}, false)
+// Village — tenant-isolated via scopeQuery({}, false, true)
 router
   .route("/")
   .get(
     protect,
     checkPermission("view_villages"),
-    scopeQuery({}, false),
+    scopeQuery({}, false, true),
     getVillages,
   )
   .post(
     protect,
     checkPermission("create_villages"),
-    scopeQuery({}, false),
+    scopeQuery({}, false, true),
     createVillage,
   );
 
@@ -33,19 +33,19 @@ router
   .get(
     protect,
     checkPermission("view_villages"),
-    scopeQuery({}, false),
+    scopeQuery({}, false, true),
     getVillageById,
   )
   .put(
     protect,
     checkPermission("edit_villages"),
-    scopeQuery({}, false),
+    scopeQuery({}, false, true),
     updateVillage,
   )
   .delete(
     protect,
     checkPermission("delete_villages"),
-    scopeQuery({}, false),
+    scopeQuery({}, false, true),
     deleteVillage,
   );
 
