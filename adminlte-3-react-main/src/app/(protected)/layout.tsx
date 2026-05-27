@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@app/hooks/useCustomRouter";
+
 import { useAppSelector, useAppDispatch } from "@app/store/store";
 import { setCurrentUser, setSidebarAccess } from "@store/reducers/auth";
 import Main from "@modules/main/Main";

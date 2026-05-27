@@ -25,7 +25,8 @@ import {
   addDays,
   subDays,
 } from "date-fns";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@app/hooks/useCustomRouter";
+
 import {
   DropdownMenu,
   DropdownMenuContent,

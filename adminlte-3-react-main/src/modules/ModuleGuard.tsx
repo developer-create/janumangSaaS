@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@app/hooks/useCustomRouter";
+
 import { useModuleAccess } from "@app/hooks/useModuleAccess";
 import { Loading } from "@app/components/Loading";
 

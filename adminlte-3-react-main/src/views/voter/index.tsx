@@ -4,7 +4,8 @@ import axios from "@app/utils/axios";
 import { useDebounce } from "@app/hooks/useDebounce";
 import { toast } from "react-toastify";
 import { handleError } from "@app/utils/errorHandler";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@app/hooks/useCustomRouter";
+
 import { IBlock } from "@app/types/block";
 import { IPanchayat } from "@app/types/panchayat";
 import {

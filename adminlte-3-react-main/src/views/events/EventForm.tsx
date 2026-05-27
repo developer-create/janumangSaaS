@@ -1,7 +1,8 @@
 "use client";
 
 import { useFormik } from "formik";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@app/hooks/useCustomRouter";
+
 import { Button } from "@app/components/ui/button";
 import { Input } from "@app/components/ui/input";
 import { Label } from "@app/components/ui/label";

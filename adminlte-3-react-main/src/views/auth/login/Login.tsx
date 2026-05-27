@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@app/hooks/useCustomRouter";
+
 import axios from "@app/utils/axios";
 import { toast } from "react-toastify";
 import { setWindowClass } from "@app/utils/helpers";

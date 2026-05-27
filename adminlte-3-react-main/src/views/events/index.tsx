@@ -1,6 +1,7 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter } from "@app/hooks/useCustomRouter";
+
 import { useState, useRef } from "react";
 import axios from "@app/utils/axios";
 import { toast } from "react-toastify";

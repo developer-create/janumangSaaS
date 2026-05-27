@@ -1,7 +1,8 @@
 "use client";
 
 import React from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@app/hooks/useCustomRouter";
+
 import { ContentHeader } from "@app/components";
 import { Button } from "@app/components/ui/button";
 import {

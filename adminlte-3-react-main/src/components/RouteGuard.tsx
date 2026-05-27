@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect } from "react";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter } from "@app/hooks/useCustomRouter";
+import { usePathname } from "next/navigation";
 import { usePermissions } from "@app/hooks/usePermissions";
 
 import { Permission } from "@app/config/permissions";

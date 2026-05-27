@@ -1,7 +1,8 @@
 "use client";
 
 import React from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@app/hooks/useCustomRouter";
+
 import { useQueryClient } from "@tanstack/react-query";
 import axios from "@app/utils/axios";
 import { ContentHeader } from "@app/components";

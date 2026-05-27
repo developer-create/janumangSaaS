@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import axios from "@app/utils/axios";
-import { useRouter, useParams } from "next/navigation";
+import { useRouter } from "@app/hooks/useCustomRouter";
+import { useParams } from "next/navigation";
 import { toast } from "react-toastify";
 import { handleError } from "@app/utils/errorHandler";
 import { ContentHeader } from "@app/components";

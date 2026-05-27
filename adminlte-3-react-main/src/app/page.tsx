@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@app/hooks/useCustomRouter";
+
 import { usePermissions } from "@app/hooks/usePermissions";
 import { PERMISSIONS } from "@app/config/permissions";
 import { MENU } from "@app/utils/menu";

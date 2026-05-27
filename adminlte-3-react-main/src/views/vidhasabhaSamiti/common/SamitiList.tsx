@@ -1,6 +1,7 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter } from "@app/hooks/useCustomRouter";
+
 import NextImage from "next/image";
 import { useState, useRef } from "react";
 import axios from "@app/utils/axios";

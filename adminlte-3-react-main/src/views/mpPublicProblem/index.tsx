@@ -3,7 +3,8 @@ import { useState, useRef, useEffect } from "react";
 import axios from "@app/utils/axios";
 import { useDebounce } from "@app/hooks/useDebounce";
 import { toast } from "react-toastify";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@app/hooks/useCustomRouter";
+
 import { handleError } from "@app/utils/errorHandler";
 import {
   Table,

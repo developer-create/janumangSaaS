@@ -2,7 +2,8 @@
 
 import { useState, useRef, useEffect } from "react";
 import axios from "@app/utils/axios";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@app/hooks/useCustomRouter";
+
 import { toast } from "react-toastify";
 import { useAppDispatch, useAppSelector } from "@app/store/store";
 import { setCurrentUser } from "@app/store/reducers/auth";

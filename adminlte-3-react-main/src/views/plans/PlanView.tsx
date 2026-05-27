@@ -1,6 +1,7 @@
 "use client";
 import { useQuery } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@app/hooks/useCustomRouter";
+
 import axios from "@app/utils/axios";
 import { ContentHeader } from "@app/components";
 import { Button } from "@app/components/ui/button";

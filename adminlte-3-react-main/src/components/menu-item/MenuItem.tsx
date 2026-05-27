@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "@app/hooks/useCustomRouter";
+import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { useTranslation } from "react-i18next";
 import { IMenuItem } from "@app/utils/menu";

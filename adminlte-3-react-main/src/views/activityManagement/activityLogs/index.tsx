@@ -3,7 +3,8 @@
 import { useMemo, useState } from "react";
 import axios from "@app/utils/axios";
 import { toast } from "react-toastify";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@app/hooks/useCustomRouter";
+
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import {
   Table,

@@ -1,7 +1,8 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
-import { useRouter, useParams } from "next/navigation";
+import { useRouter } from "@app/hooks/useCustomRouter";
+import { useParams } from "next/navigation";
 import axios from "@app/utils/axios";
 import { Button } from "@app/components/ui/button";
 import { Input } from "@app/components/ui/input";

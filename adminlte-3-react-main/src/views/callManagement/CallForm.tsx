@@ -12,7 +12,8 @@ import {
   SelectValue,
 } from "@app/components/ui/select";
 import { ArrowLeft, Save } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@app/hooks/useCustomRouter";
+
 import { callSchema, callInitialValues, ICallFormValues } from "./call.schema";
 
 interface CallFormProps {

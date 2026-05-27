@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "@app/hooks/useCustomRouter";
+import { useParams } from "next/navigation";
 import axios from "@app/utils/axios";
 import { ContentHeader } from "@app/components";
 import { Skeleton } from "@app/components/ui/skeleton";
