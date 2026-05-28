@@ -78,11 +78,17 @@ const Visitors = () => {
   const [tempDistrict, setTempDistrict] = useState("all");
   const [tempVidhansabha, setTempVidhansabha] = useState("all");
   const [tempBlock, setTempBlock] = useState("all");
+  const [tempYear, setTempYear] = useState("all");
+  const [tempMonth, setTempMonth] = useState("all");
+  const [tempDate, setTempDate] = useState("");
 
   // State for applied filters
   const [appliedDistrict, setAppliedDistrict] = useState("all");
   const [appliedVidhansabha, setAppliedVidhansabha] = useState("all");
   const [appliedBlock, setAppliedBlock] = useState("all");
+  const [appliedYear, setAppliedYear] = useState("all");
+  const [appliedMonth, setAppliedMonth] = useState("all");
+  const [appliedDate, setAppliedDate] = useState("");
 
   const [visibleColumns, setVisibleColumns] = useState({
     srNo: true,
@@ -151,6 +157,9 @@ const Visitors = () => {
       appliedDistrict,
       appliedVidhansabha,
       appliedBlock,
+      appliedYear,
+      appliedMonth,
+      appliedDate,
     ],
     queryFn: async () => {
       const selectedDistrictObj = districts.find(
@@ -187,6 +196,9 @@ const Visitors = () => {
         block: appliedBlock === "all" ? undefined : appliedBlock,
         blockName: appliedBlock === "all" ? undefined : appliedBlock,
         blockId: appliedBlock === "all" ? undefined : selectedBlockObj?._id,
+        year: appliedYear === "all" ? undefined : appliedYear,
+        month: appliedMonth === "all" ? undefined : appliedMonth,
+        date: appliedDate || undefined,
         blockname: appliedBlock === "all" ? undefined : appliedBlock,
         districtname: appliedDistrict === "all" ? undefined : appliedDistrict,
         vidhansabhaname:
@@ -561,11 +573,58 @@ const Visitors = () => {
                   </SelectContent>
                 </Select>
 
+                                <Select
+                  value={tempYear}
+                  onValueChange={(val) => setTempYear(val)}
+                >
+                  <SelectTrigger className="w-32 h-9 bg-white dark:bg-[#202123] text-sm dark:border-gray-700 dark:text-gray-300">
+                    <SelectValue placeholder="Year" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Years</SelectItem>
+                    {Array.from({ length: 6 }, (_, i) => new Date().getFullYear() - i).map((yr) => (
+                      <SelectItem key={yr} value={yr.toString()}>{yr}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                <Select
+                  value={tempMonth}
+                  onValueChange={(val) => setTempMonth(val)}
+                >
+                  <SelectTrigger className="w-32 h-9 bg-white dark:bg-[#202123] text-sm dark:border-gray-700 dark:text-gray-300">
+                    <SelectValue placeholder="Month" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Months</SelectItem>
+                    {[
+                      { val: "01", label: "January" }, { val: "02", label: "February" },
+                      { val: "03", label: "March" }, { val: "04", label: "April" },
+                      { val: "05", label: "May" }, { val: "06", label: "June" },
+                      { val: "07", label: "July" }, { val: "08", label: "August" },
+                      { val: "09", label: "September" }, { val: "10", label: "October" },
+                      { val: "11", label: "November" }, { val: "12", label: "December" }
+                    ].map(m => (
+                      <SelectItem key={m.val} value={m.val}>{m.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                <Input
+                  type="date"
+                  value={tempDate}
+                  onChange={(e) => setTempDate(e.target.value)}
+                  className="w-40 h-9 bg-white dark:bg-[#202123] text-sm dark:border-gray-700 dark:text-gray-300"
+                />
+
                 <Button
                   onClick={() => {
                     setAppliedDistrict(tempDistrict);
                     setAppliedVidhansabha(tempVidhansabha);
                     setAppliedBlock(tempBlock);
+                    setAppliedYear(tempYear);
+                    setAppliedMonth(tempMonth);
+                    setAppliedDate(tempDate);
                     setPagination((prev) => ({ ...prev, page: 1 }));
                   }}
                   className="h-9 bg-[#368F8B] hover:bg-[#2d7a76] text-white px-4"
@@ -579,9 +638,15 @@ const Visitors = () => {
                     setTempDistrict("all");
                     setTempVidhansabha("all");
                     setTempBlock("all");
+                    setTempYear("all");
+                    setTempMonth("all");
+                    setTempDate("");
                     setAppliedDistrict("all");
                     setAppliedVidhansabha("all");
                     setAppliedBlock("all");
+                    setAppliedYear("all");
+                    setAppliedMonth("all");
+                    setAppliedDate("");
                     setPagination((prev) => ({ ...prev, page: 1 }));
                   }}
                   className="h-9 border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400"

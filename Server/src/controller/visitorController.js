@@ -59,6 +59,25 @@ exports.getVisitors = asyncHandler(async (req, res) => {
     query.block = { $regex: blockFilter, $options: "i" };
   }
 
+  // Date, Year, Month filters
+  const dateFilter = req.query.date;
+  const yearFilter = req.query.year;
+  const monthFilter = req.query.month;
+
+  if (dateFilter) {
+    query.date = dateFilter;
+  } else if (yearFilter || monthFilter) {
+    let dateRegex = "";
+    if (yearFilter && monthFilter) {
+      dateRegex = `^${yearFilter}-${monthFilter.padStart(2, '0')}`;
+    } else if (yearFilter) {
+      dateRegex = `^${yearFilter}`;
+    } else if (monthFilter) {
+      dateRegex = `-${monthFilter.padStart(2, '0')}-`;
+    }
+    query.date = { $regex: dateRegex, $options: "i" };
+  }
+
   const pageNum = Number(page);
   const limitNum = Number(limit);
 

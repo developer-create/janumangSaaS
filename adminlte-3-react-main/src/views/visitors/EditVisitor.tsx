@@ -54,7 +54,8 @@ const EditVisitor = () => {
     if (id) {
       fetchVisitor();
     }
-  }, [id, router]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
 
   const handleSubmit = async (values: IVisitorFormValues) => {
     try {
