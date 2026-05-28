@@ -1,0 +1,165 @@
+/* Samiti Filters Styling */
+
+.filter-section {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.filter-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    align-items: flex-end;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    min-width: 160px;
+    flex: 0 1 auto;
+}
+
+.filter-group label {
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: #333;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.filter-group select {
+    padding: 10px 12px;
+    border: 1px solid #bbb;
+    border-radius: 4px;
+    font-size: 13px;
+    background-color: white;
+    color: #333;
+    transition: all 0.3s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.filter-group select:hover {
+    border-color: #0066cc;
+    box-shadow: 0 2px 5px rgba(0, 102, 204, 0.2);
+}
+
+.filter-group select:focus {
+    outline: none;
+    border-color: #0066cc;
+    box-shadow: 0 0 8px rgba(0, 102, 204, 0.4);
+    background-color: #f9f9f9;
+}
+
+.filter-buttons {
+    display: flex;
+    gap: 10px;
+    align-items: flex-end;
+    flex-wrap: wrap;
+}
+
+.filter-buttons .btn {
+    padding: 10px 18px;
+    font-size: 13px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+}
+
+.filter-buttons .btn-primary {
+    background-color: #0066cc;
+    color: white;
+}
+
+.filter-buttons .btn-primary:hover {
+    background-color: #0052a3;
+    box-shadow: 0 2px 8px rgba(0, 102, 204, 0.3);
+    transform: translateY(-1px);
+}
+
+.filter-buttons .btn-primary:active {
+    transform: translateY(0);
+}
+
+.filter-buttons .btn-default {
+    background-color: #6c757d;
+    color: white;
+}
+
+.filter-buttons .btn-default:hover {
+    background-color: #5a6268;
+    box-shadow: 0 2px 8px rgba(108, 117, 125, 0.3);
+    transform: translateY(-1px);
+}
+
+.filter-buttons .btn-default:active {
+    transform: translateY(0);
+}
+
+.filter-buttons .btn i {
+    font-size: 12px;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .filter-row {
+        gap: 15px;
+    }
+    
+    .filter-group {
+        min-width: 140px;
+    }
+}
+
+@media (max-width: 768px) {
+    .filter-section {
+        padding: 15px;
+    }
+    
+    .filter-row {
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .filter-group {
+        min-width: 100%;
+        width: 100%;
+    }
+    
+    .filter-buttons {
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    .filter-buttons .btn {
+        flex: 1;
+        justify-content: center;
+    }
+}
+
+/* Active Filter Indicator */
+.filter-section.has-active-filters {
+    background: linear-gradient(135deg, #fff5e6 0%, #ffe6cc 100%);
+    border-color: #ff9800;
+}
+
+.filter-section.has-active-filters::before {
+    content: "⚡ Active Filters Applied";
+    display: block;
+    font-size: 12px;
+    color: #ff6f00;
+    font-weight: 600;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #ffb74d;
+}

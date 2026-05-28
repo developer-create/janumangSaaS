@@ -1,0 +1,120 @@
+﻿<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <h1>
+            <i class="fa fa-tasks" aria-hidden="true"></i> Project Summary Management
+            <small>Add, Edit, Delete</small>
+        </h1>
+    </section>
+    <section class="content">
+        <div class="row">
+            <div class="col-md-12">
+                <?php
+                    $this->load->helper('form');
+                    $error = $this->session->flashdata('error');
+                    if($error)
+                    {
+                ?>
+                <div class="alert alert-danger alert-dismissable">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">Ã—</button>
+                    <?php echo $this->session->flashdata('error'); ?>
+                </div>
+                <?php } ?>
+                <?php  
+                    $success = $this->session->flashdata('success');
+                    if($success)
+                    {
+                ?>
+                <div class="alert alert-success alert-dismissable">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">Ã—</button>
+                    <?php echo $this->session->flashdata('success'); ?>
+                </div>
+                <?php } ?>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <?php echo validation_errors('<div class="alert alert-danger alert-dismissable">', ' <button type="button" class="close" data-dismiss="alert" aria-hidden="true">Ã—</button></div>'); ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box">
+                    <div class="box-header">
+                        <h3 class="box-title">Project Summary List</h3>
+                        <div style="float: right;">
+        ],
+        "paging": true,
+        "searching": true,
+        "ordering": true,
+        "info": true,
+        "pageLength": 20, // Default page length
+        "lengthMenu": [
+            [10, 20, 50, 100, 500, -1],
+            [10, 20, 50, 100, 500, "All"]
+        ]
+    });
+});
+</script>
+
+<script>
+jQuery(document).ready(function() {
+    jQuery(document).on("click", ".deleteProject", function() {
+        var projectId = $(this).data("projectid"),
+            hitURL = baseURL + "projectSummary/delete",
+            currentRow = $(this);
+
+        var confirmation = confirm("Are you sure to delete this project ?");
+
+        if (confirmation) {
+            jQuery.ajax({
+                type: "POST",
+                dataType: "json",
+                url: hitURL,
+                data: {
+                    projectId: projectId
+                }
+            }).done(function(data) {
+                console.log(data);
+                currentRow.parents('tr').remove();
+                if (data.status = true) {
+                    alert("Project successfully deleted");
+                } else if (data.status = false) {
+                    alert("Project deletion failed");
+                } else {
+                    alert("Access denied..!");
+                }
+            });
+        }
+    });
+
+    // Handle comment button click
+    jQuery(document).on("click", ".btnComments", function() {
+        var projectId = $(this).data("projectid");
+        var projectName = $(this).data("projectname");
+        
+        // Set project ID and name in modal
+        $('#commentProjectId').val(projectId);
+        $('#projectNameHeader').text(projectName);
+        
+        // Load comments
+        loadComments(projectId);
+        
+        // Show modal
+        $('#commentModal').modal('show');
+    });
+
+    // Load comments for a project
+    function loadComments(projectId) {
+        $('#commentsList').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-2x"></i><p>Loading comments...</p></div>');
+        
+        $.ajax({
+            url: baseURL + 'projectSummary/getComments/' + projectId,
+            type: 'GET',
+            dataType: 'json',
+            success: function(response) {
+                if(response.status && response.comments.length > 0) {
+                    var html = '';
+                    $.each(response.comments, function(index, comment) {
+                        var commentDate = new Date(comment.created_at);

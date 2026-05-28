@@ -1,0 +1,6 @@
+.htaccess
+.index.php
+/application/logs/
+/uploads/
+/application/sessions/
+/vendor/

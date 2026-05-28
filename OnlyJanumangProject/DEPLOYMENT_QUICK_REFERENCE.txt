@@ -1,0 +1,118 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    LIVE SERVER DEPLOYMENT - QUICK REFERENCE                  ║
+║                         Events Unique ID Feature                             ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ STEP 1: BACKUP DATABASE (MANDATORY!)                                         │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+Via phpMyAdmin:
+  1. Login to phpMyAdmin
+  2. Select database → Export → Quick → Go
+  3. Save as: backup_events_2025-11-24.sql
+
+Via SSH:
+  mysqldump -u username -p database_name > backup_events_$(date +%Y%m%d).sql
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ STEP 2: UPLOAD FILES TO LIVE SERVER                                          │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+Files to upload:
+  ✓ application/controllers/Events.php
+  ✓ application/views/events/index.php
+  ✓ application/views/events/create.php
+  ✓ application/views/events/edit.php
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ STEP 3: RUN SQL SCRIPT                                                       │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+File: add_unique_id_to_events_PRODUCTION.sql
+
+Via phpMyAdmin:
+  1. Open phpMyAdmin
+  2. Select your database
+  3. Click SQL tab
+  4. Copy & paste the entire SQL script
+  5. Click Go
+  6. Wait for completion
+
+Via SSH:
+  mysql -u username -p database_name < add_unique_id_to_events_PRODUCTION.sql
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ STEP 4: VERIFY DEPLOYMENT                                                    │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+Quick Check SQL:
+  SELECT COUNT(*) as total, COUNT(unique_id) as with_id FROM events;
+  -- Both numbers should match!
+
+  SELECT id, unique_id, name FROM events ORDER BY id LIMIT 5;
+  -- Should show ET/1, ET/2, ET/3, etc.
+
+Test in Browser:
+  ✓ Visit /events - Check "Unique ID" column appears
+  ✓ Create new event - Should get next sequential ID
+  ✓ Edit event - Unique ID should be read-only
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ ROLLBACK (If needed)                                                         │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+Restore Database:
+  mysql -u username -p database_name < backup_events_2025-11-24.sql
+
+Remove Column Only:
+  ALTER TABLE events DROP INDEX idx_unique_id;
+  ALTER TABLE events DROP COLUMN unique_id;
+
+Restore Files:
+  Replace uploaded files with your backup copies
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ TROUBLESHOOTING                                                               │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+"Column already exists"
+  → Skip ALTER TABLE, run UPDATE statement only
+
+"Table doesn't exist"
+  → Check database name and table name (case-sensitive)
+
+No unique IDs showing
+  → Clear cache, verify SQL ran successfully
+
+New events not getting IDs
+  → Check Events.php uploaded correctly, check error logs
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ IMPORTANT REMINDERS                                                           │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+  ⚠️  ALWAYS backup before making changes
+  ⏰  Deploy during low-traffic hours
+  🧪  Test on staging first if available
+  📝  Keep backup file safe until verified
+  ✅  Test all CRUD operations after deployment
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ SUCCESS CHECKLIST                                                             │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+  □ Database backup created and saved
+  □ All 4 files uploaded successfully
+  □ SQL script executed without errors
+  □ Verification queries show correct results
+  □ Events list shows Unique ID column
+  □ Existing events have IDs (ET/1, ET/2, etc.)
+  □ New event creation works and assigns next ID
+  □ Edit form shows unique ID as read-only
+  □ No errors in application logs
+  □ No errors in PHP/MySQL logs
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║  Estimated Time: 30 minutes  │  Difficulty: Medium  │  Risk: Low (with backup)║
+╚══════════════════════════════════════════════════════════════════════════════╝
