@@ -62,15 +62,15 @@ import { ISamiti } from "@app/types/samiti";
 import { PERMISSIONS } from "@app/config/permissions";
 import { AxiosError } from "axios";
 
-const MemberList = ({ memberType = "vidhan-sabha" }: { memberType?: "vidhan-sabha" | "mp-vidhan-sabha" }) => {
+const MemberList = () => {
   return (
     <RouteGuard requiredPermissions={[PERMISSIONS.VIEW_MEMBERS]}>
-      <MemberListContent memberType={memberType} />
+      <MemberListContent />
     </RouteGuard>
   );
 };
 
-const MemberListContent = ({ memberType = "vidhan-sabha" }: { memberType?: "vidhan-sabha" | "mp-vidhan-sabha" }) => {
+const MemberListContent = () => {
   const router = useRouter();
   const { hasPermission, isSuperAdmin } = usePermissions();
   const queryClient = useQueryClient();
@@ -84,8 +84,7 @@ const MemberListContent = ({ memberType = "vidhan-sabha" }: { memberType?: "vidh
 
   // Set default visible columns based on member type
   const getDefaultVisibleColumns = () => {
-    if (memberType === "mp-vidhan-sabha") {
-      return {
+    return {
         addedBy: false,
         name: true,
         voterId: false,
@@ -190,54 +189,6 @@ const MemberListContent = ({ memberType = "vidhan-sabha" }: { memberType?: "vidh
         organization: isSuperAdmin(),
         action: true,
       };
-    }
-    // Default for Vidhansabha Member
-    return {
-      addedBy: true,
-      name: true,
-      voterId: true,
-      mobile: true,
-      fatherName: true,
-      dob: true,
-      dom: true,
-      block: true,
-      boothName: true,
-      boothNumber: true,
-      grampanchayat: true,
-      village: true,
-      samiti: true,
-      toll: true,
-      jaati: true,
-      age: true,
-      education: true,
-      address: true,
-      gender: true,
-      vehicle: true,
-      group: true,
-      govtEmployee: true,
-      party: true,
-      postYear: true,
-      code: true,
-      nariSammanYojna: true,
-      farmerLoanWaiver: true,
-      facebook: true,
-      instagram: true,
-      twitter: true,
-      startLat: true,
-      startLong: true,
-      startDate: true,
-      endLat: true,
-      endLong: true,
-      endDate: true,
-      image: true,
-      district: true,
-      reference: true,
-      remark: true,
-      createdAt: true,
-      updatedAt: true,
-      organization: isSuperAdmin(),
-      action: true,
-    };
   };
 
   const [visibleColumns, setVisibleColumns] = useState(getDefaultVisibleColumns());
@@ -342,7 +293,7 @@ const MemberListContent = ({ memberType = "vidhan-sabha" }: { memberType?: "vidh
         code: filterCode === "all" ? undefined : filterCode,
         };
 
-      const { data } = await axios.get<IMemberResponse>("/members", {
+      const { data } = await axios.get<IMemberResponse>("/mp-vidhan-sabha-members", {
         params,
       });
       return data;
@@ -353,7 +304,7 @@ const MemberListContent = ({ memberType = "vidhan-sabha" }: { memberType?: "vidh
   // Delete Mutation
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      await axios.delete(`/members/${id}`);
+      await axios.delete(`/mp-vidhan-sabha-members/${id}`);
     },
     onSuccess: () => {
       toast.success("Member deleted successfully");
@@ -382,7 +333,7 @@ const MemberListContent = ({ memberType = "vidhan-sabha" }: { memberType?: "vidh
         code: filterCode === "all" ? undefined : filterCode,
       };
 
-      const { data } = await axios.get<IMemberResponse>("/members", {
+      const { data } = await axios.get<IMemberResponse>("/mp-vidhan-sabha-members", {
         params,
       });
 
@@ -576,7 +527,7 @@ const MemberListContent = ({ memberType = "vidhan-sabha" }: { memberType?: "vidh
   return (
     <>
       <ContentHeader 
-        title={memberType === "mp-vidhan-sabha" ? "MP Vidhan Sabha Member" : "Vidhan Sabha Member List"} 
+        title={"MP Vidhan Sabha Member List"} 
       />
       <section className="content">
         <div className="container-fluid px-4">
@@ -610,7 +561,7 @@ const MemberListContent = ({ memberType = "vidhan-sabha" }: { memberType?: "vidh
                         size="lg"
                         className="bg-white dark:bg-[#202123] rounded-lg text-[#368F8B] border-[#368F8B] hover:bg-gray-50 dark:hover:bg-gray-800 transition-all shadow-sm"
                         onClick={() => {
-                          router.push("/member-list/bulk-upload");
+                          router.push("/mp-vidhan-sabha-member/bulk-upload");
                         }}
                       >
                         <Upload className="w-5 h-5 mr-2" /> Bulk Upload
@@ -619,10 +570,7 @@ const MemberListContent = ({ memberType = "vidhan-sabha" }: { memberType?: "vidh
                         size="lg"
                         className="bg-[#368F8B] hover:bg-[#2d7a76] text-white rounded-lg shadow-lg shadow-[#368F8B]/20 border-0 transition-all"
                         onClick={() => {
-                          const createPath = memberType === "mp-vidhan-sabha" 
-                            ? "/mp-vidhan-sabha-member/create" 
-                            : "/member-list/create";
-                          router.push(createPath);
+                          router.push("/mp-vidhan-sabha-member/create");
                         }}
                       >
                         <Plus className="w-5 h-5 mr-2" /> Add New

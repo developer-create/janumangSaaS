@@ -1,12 +1,12 @@
 const asyncHandler = require("express-async-handler");
-const Member = require("../models/memberModel");
+const Member = require("../models/mpVidhanSabhaMemberModel");
 const { logActivity } = require("./activityLogController");
 const { getCreateTenantId } = require("../utils/authHelpers");
 const fs = require("fs");
 const csv = require("csv-parser");
 
 // @desc    Get members
-// @route   GET /api/members
+// @route   GET /api/mp-vidhan-sabha-members
 // @access  Private
 exports.getMembers = asyncHandler(async (req, res) => {
   try {
@@ -103,7 +103,7 @@ exports.getMembers = asyncHandler(async (req, res) => {
 });
 
 // @desc    Get member by ID
-// @route   GET /api/members/:id
+// @route   GET /api/mp-vidhan-sabha-members/:id
 // @access  Private
 exports.getMemberById = asyncHandler(async (req, res) => {
   const member = await Member.findOne({
@@ -120,7 +120,7 @@ exports.getMemberById = asyncHandler(async (req, res) => {
 });
 
 // @desc    Create a member
-// @route   POST /api/members
+// @route   POST /api/mp-vidhan-sabha-members
 // @access  Private
 exports.createMember = asyncHandler(async (req, res) => {
   const memberData = {
@@ -145,7 +145,7 @@ exports.createMember = asyncHandler(async (req, res) => {
 });
 
 // @desc    Update member
-// @route   PUT /api/members/:id
+// @route   PUT /api/mp-vidhan-sabha-members/:id
 // @access  Private
 exports.updateMember = asyncHandler(async (req, res) => {
   const member = await Member.findOne({
@@ -184,7 +184,7 @@ exports.updateMember = asyncHandler(async (req, res) => {
 });
 
 // @desc    Delete member
-// @route   DELETE /api/members/:id
+// @route   DELETE /api/mp-vidhan-sabha-members/:id
 // @access  Private
 exports.deleteMember = asyncHandler(async (req, res) => {
   const member = await Member.findOne({
@@ -208,7 +208,7 @@ exports.deleteMember = asyncHandler(async (req, res) => {
 });
 
 // @desc    Download CSV Template
-// @route   GET /api/members/template
+// @route   GET /api/mp-vidhan-sabha-members/template
 // @access  Private
 exports.downloadTemplate = asyncHandler(async (req, res) => {
   const headers = [
@@ -231,7 +231,7 @@ exports.downloadTemplate = asyncHandler(async (req, res) => {
 });
 
 // @desc    Bulk Upload Members
-// @route   POST /api/members/bulk-upload
+// @route   POST /api/mp-vidhan-sabha-members/bulk-upload
 // @access  Private
 exports.bulkUploadMembers = asyncHandler(async (req, res) => {
   if (!req.file) {

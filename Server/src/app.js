@@ -63,6 +63,7 @@ const dashboardRoutes = require("./routes/dashboardRoute");
 const assemblyIssueRoutes = require("./routes/assemblyIssueRoute");
 const eventRoutes = require("./routes/eventRoute");
 const memberRoutes = require("./routes/memberRoute");
+const mpVidhanSabhaMemberRoutes = require("./routes/mpVidhanSabhaMemberRoute");
 const parliamentRoutes = require("./routes/parliamentRoute");
 const projectRoutes = require("./routes/projectRoute");
 const publicProblemRoutes = require("./routes/publicProblemRoute");
@@ -168,6 +169,7 @@ app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/assembly-issues", assemblyIssueRoutes);
 app.use("/api/events", eventRoutes);
 app.use("/api/members", memberRoutes);
+app.use("/api/mp-vidhan-sabha-members", mpVidhanSabhaMemberRoutes);
 app.use("/api/parliaments", parliamentRoutes); // matches frontend /api/parliaments
 app.use("/api/parliament", parliamentRoutes); // alias for backwards compatibility
 app.use("/api/projects", projectRoutes);

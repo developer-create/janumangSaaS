@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const memberSchema = mongoose.Schema(
+const mpVidhanSabhaMemberSchema = mongoose.Schema(
   {
     addedBy: {
       type: String,
@@ -259,6 +259,6 @@ const memberSchema = mongoose.Schema(
   },
 );
 
-memberSchema.index({ createdAt: -1 });
+mpVidhanSabhaMemberSchema.index({ createdAt: -1 });
 
-module.exports = mongoose.model("Member", memberSchema);
+module.exports = mongoose.model("MpVidhanSabhaMember", mpVidhanSabhaMemberSchema);

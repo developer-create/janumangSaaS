@@ -2,11 +2,10 @@
 
 import dynamic from "next/dynamic";
 import { Skeleton } from "@app/components/ui/skeleton";
-
 import ModuleGuard from "@app/modules/ModuleGuard";
 import { MODULE_IDS } from "@app/config/modules";
 
-const MPVidhansabhaMemberList = dynamic(() => import("@app/views/mpVidhanSabhaMember"), {
+const BulkUpload = dynamic(() => import("@app/views/mpVidhanSabhaMember/BulkUpload"), {
   ssr: false,
   loading: () => (
     <div className="p-6 space-y-4">
@@ -16,10 +15,10 @@ const MPVidhansabhaMemberList = dynamic(() => import("@app/views/mpVidhanSabhaMe
   ),
 });
 
-export default function MPVidhansabhaMemberPage() {
+export default function MPVidhansabhaBulkUploadPage() {
   return (
     <ModuleGuard moduleId={MODULE_IDS.MEMBERS}>
-      <MPVidhansabhaMemberList  />
+      <BulkUpload  />
     </ModuleGuard>
   );
 }

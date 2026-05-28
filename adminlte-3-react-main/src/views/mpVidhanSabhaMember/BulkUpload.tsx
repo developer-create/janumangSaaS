@@ -35,7 +35,7 @@ const BulkUpload = () => {
 
   const handleDownloadTemplate = async () => {
     try {
-      const response = await axios.get("/members/template", {
+      const response = await axios.get("/mp-vidhan-sabha-members/template", {
         responseType: "blob",
       });
       const url = window.URL.createObjectURL(new Blob([response.data]));
@@ -62,7 +62,7 @@ const BulkUpload = () => {
     formData.append("bulk_file", file);
 
     try {
-      const response = await axios.post(`/members/bulk-upload`, formData, {
+      const response = await axios.post(`/mp-vidhan-sabha-members/bulk-upload`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -75,7 +75,7 @@ const BulkUpload = () => {
           console.warn("Upload Errors:", response.data.errors);
         }
         setTimeout(() => {
-          router.push("/member-list");
+          router.push("/mp-vidhan-sabha-member");
         }, 1500);
       }
     } catch (error: any) {
@@ -88,7 +88,7 @@ const BulkUpload = () => {
 
   return (
     <>
-      <ContentHeader title="Bulk Upload Members" />
+      <ContentHeader title="Bulk Upload MP Vidhan Sabha Members" />
       <section className="p-4 sm:p-6 lg:p-8">
         <div className="max-w-7xl mx-auto space-y-6">
           
@@ -110,7 +110,7 @@ const BulkUpload = () => {
               <div className="flex items-center gap-3">
                 <button 
                   onClick={() => {
-                    router.push("/member-list");
+                    router.push("/mp-vidhan-sabha-member");
                   }}
                   className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 dark:bg-[#202123] dark:text-gray-300 dark:border-gray-700 dark:hover:bg-gray-800 transition-colors shadow-sm"
                 >
