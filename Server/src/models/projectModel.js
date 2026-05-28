@@ -2,6 +2,11 @@ const mongoose = require("mongoose");
 
 const projectSchema = mongoose.Schema(
   {
+    uniqueId: {
+      type: String,
+      index: true,
+      default: null,
+    },
     district: {
       type: String, // Ideally ObjectId if possible, but adhering to existing pattern as String
       required: [true, "District is required"],
@@ -62,6 +67,41 @@ const projectSchema = mongoose.Schema(
       default: "",
       trim: true,
     },
+    technicalSession: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+    administrativeSession: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+    tenderStatus: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+    companyName: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+    contractorName: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+    phoneNo: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+    usdRemark: {
+      type: String,
+      default: "",
+      trim: true,
+    },
     remarks: {
       type: String,
       default: "",
@@ -83,5 +123,31 @@ const projectSchema = mongoose.Schema(
     timestamps: true,
   },
 );
+
+// Pre-save hook to generate uniqueId like "PS/001"
+projectSchema.pre('save', async function() {
+  if (this.isNew && !this.uniqueId) {
+    const ProjectModel = mongoose.model('Project');
+    const lastProject = await ProjectModel.findOne(
+      { uniqueId: { $ne: null } },
+      { uniqueId: 1 }
+    ).sort({ createdAt: -1 });
+
+    let nextNum = 1;
+    if (lastProject && lastProject.uniqueId) {
+      // Assuming format PS/001
+      const parts = lastProject.uniqueId.split('/');
+      if (parts.length === 2 && !isNaN(parseInt(parts[1], 10))) {
+        nextNum = parseInt(parts[1], 10) + 1;
+      } else {
+        // Fallback if parsing fails, just count
+        const count = await ProjectModel.countDocuments({ uniqueId: { $ne: null } });
+        nextNum = count + 1;
+      }
+    }
+
+    this.uniqueId = `PS/${String(nextNum).padStart(3, '0')}`;
+  }
+});
 
 module.exports = mongoose.model("Project", projectSchema);

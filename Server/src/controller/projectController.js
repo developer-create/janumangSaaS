@@ -1,19 +1,28 @@
 const asyncHandler = require("express-async-handler");
 const Project = require("../models/projectModel");
 const District = require("../models/districtModel");
+const ProjectComment = require("../models/projectCommentModel");
 const { logActivity } = require("./activityLogController");
 const { getCreateTenantId } = require("../utils/authHelpers");
 
 // @desc    Get all projects
 // @route   GET /api/projects
 exports.getProjects = asyncHandler(async (req, res) => {
-  const { block, department, status, search, page = 1, limit } = req.query;
+  const { block, department, status, tenderStatus, estimateRange, search, page = 1, limit } = req.query;
 
   const query = { ...req.scopeFilter };
 
   if (block) query.block = block;
   if (department) query.department = department;
   if (status) query.status = status;
+  if (tenderStatus) query.tenderStatus = tenderStatus;
+
+  if (estimateRange) {
+    if (estimateRange === "0-1") query.proposalEstimate = { $gte: 0, $lt: 10000000 };
+    else if (estimateRange === "1-5") query.proposalEstimate = { $gte: 10000000, $lt: 50000000 };
+    else if (estimateRange === "5-10") query.proposalEstimate = { $gte: 50000000, $lt: 100000000 };
+    else if (estimateRange === "10 Above") query.proposalEstimate = { $gte: 100000000 };
+  }
 
   if (search) {
     query.$or = [
@@ -51,9 +60,32 @@ exports.getProjects = asyncHandler(async (req, res) => {
     filteredCount = await Project.countDocuments(query);
   }
 
+  // Fetch comments to attach the latest comment
+  const projectIds = projects.map((p) => p._id);
+  const comments = await ProjectComment.find({ projectId: { $in: projectIds } })
+    .sort({ createdAt: -1 })
+    .populate("createdBy", "name");
+
+  const projectWithComments = projects.map((project) => {
+    const projectComments = comments.filter(
+      (c) => c.projectId.toString() === project._id.toString()
+    );
+    const pObj = project.toObject();
+    if (projectComments.length > 0) {
+      const last = projectComments[0];
+      const date = new Date(last.createdAt).toLocaleString("en-IN", {
+        day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit"
+      });
+      pObj.lastComment = `${last.comment} (${date})`;
+    } else {
+      pObj.lastComment = "No comments";
+    }
+    return pObj;
+  });
+
   res.json({
     success: true,
-    data: projects,
+    data: projectWithComments,
     count: totalCount,
     filteredCount: filteredCount,
   });
@@ -186,4 +218,43 @@ exports.seedProjects = asyncHandler(async (req, res) => {
 
   await Project.insertMany(projects);
   res.json({ success: true, message: "Seeded 50 projects" });
+});
+
+// @desc    Get comments for a project
+// @route   GET /api/projects/:id/comments
+exports.getProjectComments = asyncHandler(async (req, res) => {
+  const comments = await ProjectComment.find({ projectId: req.params.id })
+    .populate("createdBy", "name")
+    .sort({ createdAt: -1 });
+
+  res.json({ success: true, data: comments });
+});
+
+// @desc    Add a comment to a project
+// @route   POST /api/projects/:id/comments
+exports.addProjectComment = asyncHandler(async (req, res) => {
+  const { comment } = req.body;
+  if (!comment) {
+    res.status(400);
+    throw new Error("Comment text is required");
+  }
+
+  const newComment = await ProjectComment.create({
+    projectId: req.params.id,
+    comment,
+    createdBy: req.user._id,
+    tenantId: getCreateTenantId(req),
+  });
+
+  const populatedComment = await ProjectComment.findById(newComment._id).populate("createdBy", "name");
+
+  await logActivity(
+    req,
+    "CREATE",
+    "Project Comment",
+    `Added comment to project`,
+    { recordId: req.params.id, newData: newComment },
+  );
+
+  res.status(201).json({ success: true, data: populatedComment });
 });

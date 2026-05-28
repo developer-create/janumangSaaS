@@ -24,6 +24,7 @@ import {
   DropdownMenuCheckboxItem,
 } from "@app/components/ui/dropdown-menu";
 import { ConfirmDialog } from "@app/components/common/ConfirmDialog";
+import { ProjectCommentsModal } from "./ProjectCommentsModal";
 
 import {
   Select,
@@ -44,6 +45,7 @@ import {
   MoreVertical,
   Trash2,
   Loader2,
+  MessageSquare,
 } from "lucide-react";
 import { ContentHeader } from "@app/components";
 import { usePermissions } from "@app/hooks/usePermissions";
@@ -80,6 +82,9 @@ const ProjectSummary = () => {
   const [filterBlock, setFilterBlock] = useState("all");
   const [filterDepartment, setFilterDepartment] = useState("all");
   const [filterStatus, setFilterStatus] = useState("all");
+  const [filterTenderStatus, setFilterTenderStatus] = useState("all");
+  const [filterEstimateRange, setFilterEstimateRange] = useState("all");
+  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
 
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
@@ -93,11 +98,17 @@ const ProjectSummary = () => {
     projectCost: true,
     proposalEstimate: true,
     status: true,
+    tenderStatus: true,
     officerName: true,
     contactNumber: true,
+    companyName: false,
+    contractorName: false,
+    phoneNo: false,
+    usdRemark: false,
     view: true,
     action: true,
     remarks: true,
+    lastComment: true,
     currentProgress: true,
     createdAt: true,
   });
@@ -133,6 +144,8 @@ const ProjectSummary = () => {
       filterBlock,
       filterDepartment,
       filterStatus,
+      filterTenderStatus,
+      filterEstimateRange,
     ],
     queryFn: async () => {
       const params: any = {
@@ -141,6 +154,8 @@ const ProjectSummary = () => {
         block: filterBlock === "all" ? undefined : filterBlock,
         department: filterDepartment === "all" ? undefined : filterDepartment,
         status: filterStatus === "all" ? undefined : filterStatus,
+        tenderStatus: filterTenderStatus === "all" ? undefined : filterTenderStatus,
+        estimateRange: filterEstimateRange === "all" ? undefined : filterEstimateRange,
         search: debouncedSearchTerm || undefined,
       };
 
@@ -316,6 +331,44 @@ const ProjectSummary = () => {
                   </SelectContent>
                 </Select>
 
+                <Select
+                  value={filterTenderStatus}
+                  onValueChange={(val) => {
+                    setFilterTenderStatus(val);
+                    setCurrentPage(1);
+                  }}
+                >
+                  <SelectTrigger className="w-36 h-9 bg-white dark:bg-[#202123] text-sm dark:border-gray-700 dark:text-gray-300">
+                    <SelectValue placeholder="Tender Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Tenders</SelectItem>
+                    <SelectItem value="Pending">Pending</SelectItem>
+                    <SelectItem value="Awarded">Awarded</SelectItem>
+                    <SelectItem value="In Progress">In Progress</SelectItem>
+                    <SelectItem value="Completed">Completed</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                <Select
+                  value={filterEstimateRange}
+                  onValueChange={(val) => {
+                    setFilterEstimateRange(val);
+                    setCurrentPage(1);
+                  }}
+                >
+                  <SelectTrigger className="w-36 h-9 bg-white dark:bg-[#202123] text-sm dark:border-gray-700 dark:text-gray-300">
+                    <SelectValue placeholder="Estimate Range" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Estimates</SelectItem>
+                    <SelectItem value="0-1">0-1 Crore</SelectItem>
+                    <SelectItem value="1-5">1-5 Crore</SelectItem>
+                    <SelectItem value="5-10">5-10 Crore</SelectItem>
+                    <SelectItem value="10 Above">10+ Crore</SelectItem>
+                  </SelectContent>
+                </Select>
+
                 <div className="flex items-center gap-2">
                   <span className="text-sm text-gray-500 whitespace-nowrap dark:text-gray-400">
                     Show
@@ -432,6 +485,11 @@ const ProjectSummary = () => {
                         Status
                       </TableHead>
                     )}
+                    {visibleColumns.tenderStatus && (
+                      <TableHead className="font-semibold text-white dark:text-white uppercase tracking-wider text-xs">
+                        Tender Status
+                      </TableHead>
+                    )}
                     {visibleColumns.officerName && (
                       <TableHead className="font-semibold text-white dark:text-white uppercase tracking-wider text-xs">
                         Officer Name
@@ -442,9 +500,34 @@ const ProjectSummary = () => {
                         Contact Number
                       </TableHead>
                     )}
+                    {visibleColumns.companyName && (
+                      <TableHead className="font-semibold text-white dark:text-white uppercase tracking-wider text-xs">
+                        Company Name
+                      </TableHead>
+                    )}
+                    {visibleColumns.contractorName && (
+                      <TableHead className="font-semibold text-white dark:text-white uppercase tracking-wider text-xs">
+                        Contractor Name
+                      </TableHead>
+                    )}
+                    {visibleColumns.phoneNo && (
+                      <TableHead className="font-semibold text-white dark:text-white uppercase tracking-wider text-xs">
+                        Contractor Phone
+                      </TableHead>
+                    )}
+                    {visibleColumns.usdRemark && (
+                      <TableHead className="font-semibold text-white dark:text-white uppercase tracking-wider text-xs">
+                        USD Remark
+                      </TableHead>
+                    )}
                     {visibleColumns.remarks && (
                       <TableHead className="font-semibold text-white dark:text-white uppercase tracking-wider text-xs">
                         Remarks
+                      </TableHead>
+                    )}
+                    {visibleColumns.lastComment && (
+                      <TableHead className="font-semibold text-white dark:text-white uppercase tracking-wider text-xs">
+                        Last Comment
                       </TableHead>
                     )}
                     {visibleColumns.currentProgress && (
@@ -465,14 +548,14 @@ const ProjectSummary = () => {
                 <TableBody>
                   {isLoading ? (
                     <TableRow>
-                      <TableCell colSpan={16} className="text-center py-10">
+                      <TableCell colSpan={20} className="text-center py-10">
                         <Loader2 className="w-6 h-6 animate-spin mx-auto text-gray-400" />
                       </TableCell>
                     </TableRow>
                   ) : isError ? (
                     <TableRow>
                       <TableCell
-                        colSpan={16}
+                        colSpan={20}
                         className="text-center py-20 text-red-500"
                       >
                         Failed to fetch projects
@@ -481,7 +564,7 @@ const ProjectSummary = () => {
                   ) : data.length === 0 ? (
                     <TableRow>
                       <TableCell
-                        colSpan={16}
+                        colSpan={20}
                         className="text-center py-20 text-gray-500 dark:text-gray-400"
                       >
                         No projects found
@@ -538,6 +621,11 @@ const ProjectSummary = () => {
                             </Badge>
                           </TableCell>
                         )}
+                        {visibleColumns.tenderStatus && (
+                          <TableCell className="dark:text-gray-300">
+                            {project.tenderStatus || "-"}
+                          </TableCell>
+                        )}
                         {visibleColumns.officerName && (
                           <TableCell className="dark:text-gray-300">
                             {project.officerName || "-"}
@@ -546,6 +634,26 @@ const ProjectSummary = () => {
                         {visibleColumns.contactNumber && (
                           <TableCell className="dark:text-gray-300">
                             {project.contactNumber || "-"}
+                          </TableCell>
+                        )}
+                        {visibleColumns.companyName && (
+                          <TableCell className="dark:text-gray-300">
+                            {project.companyName || "-"}
+                          </TableCell>
+                        )}
+                        {visibleColumns.contractorName && (
+                          <TableCell className="dark:text-gray-300">
+                            {project.contractorName || "-"}
+                          </TableCell>
+                        )}
+                        {visibleColumns.phoneNo && (
+                          <TableCell className="dark:text-gray-300">
+                            {project.phoneNo || "-"}
+                          </TableCell>
+                        )}
+                        {visibleColumns.usdRemark && (
+                          <TableCell className="dark:text-gray-300">
+                            {project.usdRemark || "-"}
                           </TableCell>
                         )}
                         {visibleColumns.remarks && (
@@ -560,6 +668,15 @@ const ProjectSummary = () => {
                             title="Click to view full remarks"
                           >
                             {project.remarks || "-"}
+                          </TableCell>
+                        )}
+                        {visibleColumns.lastComment && (
+                          <TableCell
+                            className="max-w-[200px] truncate cursor-pointer hover:text-[#368F8B] transition-colors dark:text-gray-300"
+                            onClick={() => setSelectedProjectId(project._id)}
+                            title="Click to view comments"
+                          >
+                            {project.lastComment || "-"}
                           </TableCell>
                         )}
                         {visibleColumns.currentProgress && (
@@ -600,6 +717,11 @@ const ProjectSummary = () => {
                                 }
                               >
                                 <Eye className="mr-2 h-4 w-4" /> View Details
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() => setSelectedProjectId(project._id)}
+                              >
+                                <MessageSquare className="mr-2 h-4 w-4" /> Comments
                               </DropdownMenuItem>
                               {canEdit && (
                                 <DropdownMenuItem
@@ -702,6 +824,12 @@ const ProjectSummary = () => {
             </div>
           </div>
         )}
+
+        <ProjectCommentsModal
+          projectId={selectedProjectId || ""}
+          isOpen={!!selectedProjectId}
+          onClose={() => setSelectedProjectId(null)}
+        />
       </section>
     </>
   );

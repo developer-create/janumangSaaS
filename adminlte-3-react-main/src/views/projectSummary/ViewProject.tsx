@@ -156,7 +156,8 @@ const ViewProject = () => {
     };
 
     fetchProject();
-  }, [params.id, router]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [params.id]);
 
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {

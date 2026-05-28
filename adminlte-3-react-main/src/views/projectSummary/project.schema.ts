@@ -21,7 +21,16 @@ export const projectSchema = Yup.object().shape({
   officerName: Yup.string().nullable(),
   contactNumber: Yup.string()
     .nullable()
-    .matches(/^[0-9]{10}$/, "Contact number must be 10 digits"),
+    .matches(/^[0-9]{10}$/, { message: "Contact number must be 10 digits", excludeEmptyString: true }),
+  technicalSession: Yup.string().nullable(),
+  administrativeSession: Yup.string().nullable(),
+  tenderStatus: Yup.string().nullable(),
+  companyName: Yup.string().nullable(),
+  contractorName: Yup.string().nullable(),
+  phoneNo: Yup.string()
+    .nullable()
+    .matches(/^[0-9]{10}$/, { message: "Phone number must be 10 digits", excludeEmptyString: true }),
+  usdRemark: Yup.string().nullable(),
   remarks: Yup.string().nullable(),
   currentProgress: Yup.string().nullable(),
 });
@@ -38,6 +47,13 @@ export const projectInitialValues: IProjectFormValues = {
   status: "Pending",
   officerName: "",
   contactNumber: "",
+  technicalSession: "",
+  administrativeSession: "",
+  tenderStatus: "",
+  companyName: "",
+  contractorName: "",
+  phoneNo: "",
+  usdRemark: "",
   remarks: "",
   currentProgress: "",
 };

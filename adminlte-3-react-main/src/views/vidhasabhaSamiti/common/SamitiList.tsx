@@ -953,7 +953,7 @@ const SamitiListContent = ({
                       </TableCell>
                     </TableRow>
                   ) : (
-                    dataList.map((item, index) => {
+                    dataList.map((item: any, index: number) => {
                       // Find block name
                       let blockName = item.block;
                       if (item.block && typeof item.block === "object") {

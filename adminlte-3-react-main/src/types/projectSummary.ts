@@ -27,8 +27,16 @@ export interface IProject {
   status: string;
   officerName: string;
   contactNumber: string;
+  technicalSession: string;
+  administrativeSession: string;
+  tenderStatus: string;
+  companyName: string;
+  contractorName: string;
+  phoneNo: string;
+  usdRemark: string;
   remarks: string;
   currentProgress?: string;
+  lastComment?: string;
   createdAt: string;
   updatedAt?: string;
 }

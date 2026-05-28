@@ -113,6 +113,13 @@ const EditProjectContent = () => {
             status: data.status || "Pending",
             officerName: data.officerName || "",
             contactNumber: data.contactNumber || "",
+            technicalSession: data.technicalSession || "",
+            administrativeSession: data.administrativeSession || "",
+            tenderStatus: data.tenderStatus || "",
+            companyName: data.companyName || "",
+            contractorName: data.contractorName || "",
+            phoneNo: data.phoneNo || "",
+            usdRemark: data.usdRemark || "",
             remarks: data.remarks || "",
             currentProgress: data.currentProgress || "",
           });
@@ -531,6 +538,97 @@ const EditProjectContent = () => {
                         {formik.errors.contactNumber}
                       </p>
                     )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="technicalSession">Technical Session</Label>
+                  <Input
+                    id="technicalSession"
+                    name="technicalSession"
+                    value={formik.values.technicalSession}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    placeholder="Enter technical session"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="administrativeSession">Administrative Session</Label>
+                  <Input
+                    id="administrativeSession"
+                    name="administrativeSession"
+                    value={formik.values.administrativeSession}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    placeholder="Enter administrative session"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="tenderStatus">Tender Status</Label>
+                  <Select
+                    value={formik.values.tenderStatus}
+                    onValueChange={(v) => formik.setFieldValue("tenderStatus", v)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select tender status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Pending">Pending</SelectItem>
+                      <SelectItem value="Awarded">Awarded</SelectItem>
+                      <SelectItem value="In Progress">In Progress</SelectItem>
+                      <SelectItem value="Completed">Completed</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="companyName">Company Name</Label>
+                  <Input
+                    id="companyName"
+                    name="companyName"
+                    value={formik.values.companyName}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    placeholder="Enter company name"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="contractorName">Contractor Name</Label>
+                  <Input
+                    id="contractorName"
+                    name="contractorName"
+                    value={formik.values.contractorName}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    placeholder="Enter contractor name"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="phoneNo">Contractor Phone No</Label>
+                  <Input
+                    id="phoneNo"
+                    name="phoneNo"
+                    type="number"
+                    value={formik.values.phoneNo}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    placeholder="Enter phone number"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="usdRemark">USD Remark</Label>
+                  <Input
+                    id="usdRemark"
+                    name="usdRemark"
+                    value={formik.values.usdRemark}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    placeholder="Enter USD remark"
+                  />
                 </div>
 
                 <div className="md:col-span-3 space-y-2">

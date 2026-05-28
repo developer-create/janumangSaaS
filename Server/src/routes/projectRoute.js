@@ -6,6 +6,8 @@ const {
   updateProject,
   deleteProject,
   seedProjects,
+  getProjectComments,
+  addProjectComment,
 } = require("../controller/projectController");
 const protect = require("../middleware/authMiddleware");
 const { checkPermission } = require("../middleware/permissionMiddleware");
@@ -57,6 +59,21 @@ router
     checkModuleAccess("projects"),
     checkPermission("delete_projects"),
     deleteProject,
+  );
+
+router
+  .route("/:id/comments")
+  .get(
+    protect,
+    checkModuleAccess("projects"),
+    checkPermission("view_projects"),
+    getProjectComments,
+  )
+  .post(
+    protect,
+    checkModuleAccess("projects"),
+    checkPermission("create_projects"),
+    addProjectComment,
   );
 
 module.exports = router;
