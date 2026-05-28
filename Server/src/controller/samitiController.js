@@ -8,7 +8,7 @@ exports.getAll = asyncHandler(async (req, res) => {
   const samitiType = req.samitiType; // Passed from route middleware
   const SamitiModel = getSamitiModel(samitiType);
 
-  const { page = 1, limit = 10, search } = req.query;
+  const { page = 1, limit = 10, search, block, year, date } = req.query;
 
   // No need to filter by samitiType as we are in a specific collection
   const query = { ...req.scopeFilter };
@@ -20,10 +20,13 @@ exports.getAll = asyncHandler(async (req, res) => {
       { village: { $regex: search, $options: "i" } },
       { gramPanchayat: { $regex: search, $options: "i" } },
       { sector: { $regex: search, $options: "i" } },
-      // Add Bhagoria search if needed, but generic search usually covers common fields
       { inChargeName: { $regex: search, $options: "i" } },
     ];
   }
+
+  if (block) query.block = block;
+  if (year) query.year = year;
+  if (date) query.date = date; // date format should match DB
 
   // Handle "All" entries (limit = -1)
   let paginationLimit = parseInt(limit);
@@ -43,10 +46,40 @@ exports.getAll = asyncHandler(async (req, res) => {
   const total = await SamitiModel.countDocuments({ ...req.scopeFilter });
   const count = await SamitiModel.countDocuments(query); // Total count matching filter
 
+  // Calculate total members across all matching documents
+  let totalAggregateMembers = 0;
+  try {
+    const aggregateResult = await SamitiModel.aggregate([
+      { $match: query },
+      {
+        $addFields: {
+          numericMembers: {
+            $convert: {
+              input: "$totalMembers",
+              to: "int",
+              onError: 0,
+              onNull: 0
+            }
+          }
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          total: { $sum: "$numericMembers" }
+        }
+      }
+    ]);
+    totalAggregateMembers = aggregateResult[0]?.total || 0;
+  } catch (error) {
+    console.error("Aggregation error for totalMembers:", error);
+  }
+
   res.status(200).json({
     success: true,
     total,
     count,
+    totalAggregateMembers,
     data,
   });
 });

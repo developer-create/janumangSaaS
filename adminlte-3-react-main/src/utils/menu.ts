@@ -87,9 +87,28 @@ export const MENU: IMenuItem[] = [
   {
     name: "Assembly Issue",
     icon: "fas fa-university nav-icon",
-    path: "/assembly-issue",
     resource: "assembly_issues",
     allowedPermissions: [PERMISSIONS.VIEW_ASSEMBLY_ISSUES],
+    children: [
+      {
+        name: "Block-Level",
+        icon: "far fa-circle nav-icon",
+        path: "/assembly-issue/block-level",
+        resource: "assembly_issues",
+      },
+      {
+        name: "Bhopal-Level",
+        icon: "far fa-circle nav-icon",
+        path: "/assembly-issue/bhopal-level",
+        resource: "assembly_issues",
+      },
+      {
+        name: "USS-Level",
+        icon: "far fa-circle nav-icon",
+        path: "/assembly-issue/uss-level",
+        resource: "assembly_issues",
+      },
+    ],
   },
   {
     name: "Vidhasabha Samiti",

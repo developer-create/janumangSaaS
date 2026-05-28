@@ -52,6 +52,7 @@ import {
   Edit,
   Eye,
   Columns,
+  Users,
 } from "lucide-react";
 import { Pagination } from "@app/components/common/Pagination";
 import {
@@ -98,6 +99,9 @@ const SamitiListContent = ({
   const queryClient = useQueryClient();
 
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedBlock, setSelectedBlock] = useState("all");
+  const [selectedYear, setSelectedYear] = useState("all");
+  const [selectedDate, setSelectedDate] = useState("");
   const [entriesPerPage, setEntriesPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -151,14 +155,17 @@ const SamitiListContent = ({
     data: response,
     isLoading,
     isError,
-  } = useQuery<ISamitiResponse>({
-    queryKey: [apiEndpoint, currentPage, entriesPerPage, debouncedSearchTerm],
+  } = useQuery<any>({
+    queryKey: [apiEndpoint, currentPage, entriesPerPage, debouncedSearchTerm, selectedBlock, selectedYear, selectedDate],
     queryFn: async () => {
       const url = `/${apiEndpoint}`;
       const params: any = {
         page: currentPage,
         limit: entriesPerPage,
         search: debouncedSearchTerm || undefined,
+        block: selectedBlock !== "all" ? selectedBlock : undefined,
+        year: selectedYear !== "all" ? selectedYear : undefined,
+        date: selectedDate || undefined,
       };
       const { data } = await axios.get(url, { params });
       return data;
@@ -609,7 +616,76 @@ const SamitiListContent = ({
       <ContentHeader title={`${title} List`} />
       <section className="content">
         <div className="container-fluid px-4">
-          <div className="bg-white dark:bg-card rounded-xl shadow-lg border border-gray-200 dark:border-gray-800 mt-6 overflow-hidden">
+          
+          {/* Total Aggregate Badge */}
+          <div className="mb-4 inline-block bg-[#6B5B95] text-white px-4 py-2 rounded-md shadow-md font-semibold text-sm">
+            कुल सदस्य: {response?.totalAggregateMembers || 0}
+          </div>
+
+          {/* Filters Row */}
+          <div className="bg-white dark:bg-card rounded-xl shadow-lg border border-gray-200 dark:border-gray-800 mb-6 overflow-hidden">
+            <div className="p-4 bg-gray-50/50 dark:bg-gray-800/20 border-b border-gray-200 dark:border-gray-800 flex flex-wrap gap-4 items-end">
+              <div className="space-y-1 min-w-[150px]">
+                <label className="text-xs font-semibold text-gray-600 dark:text-gray-400">ब्लॉक (BLOCK)</label>
+                <Select value={selectedBlock} onValueChange={setSelectedBlock}>
+                  <SelectTrigger className="bg-white dark:bg-[#202123]">
+                    <SelectValue placeholder="-- All Blocks --" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">-- All Blocks --</SelectItem>
+                    {Object.entries(blocksMap).map(([id, name]) => (
+                      <SelectItem key={id} value={id}>{name as string}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {!isBhagoria && (
+                <div className="space-y-1 min-w-[150px]">
+                  <label className="text-xs font-semibold text-gray-600 dark:text-gray-400">वर्ष (YEAR)</label>
+                  <Select value={selectedYear} onValueChange={setSelectedYear}>
+                    <SelectTrigger className="bg-white dark:bg-[#202123]">
+                      <SelectValue placeholder="-- All Years --" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">-- All Years --</SelectItem>
+                      {[...Array(10)].map((_, i) => {
+                        const year = (new Date().getFullYear() - i).toString();
+                        return <SelectItem key={year} value={year}>{year}</SelectItem>;
+                      })}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+
+              {isBhagoria && (
+                <div className="space-y-1 min-w-[150px]">
+                  <label className="text-xs font-semibold text-gray-600 dark:text-gray-400">तारीख (DATE)</label>
+                  <Input 
+                    type="date" 
+                    value={selectedDate} 
+                    onChange={(e) => setSelectedDate(e.target.value)}
+                    className="bg-white dark:bg-[#202123]"
+                  />
+                </div>
+              )}
+
+              <Button 
+                variant="secondary" 
+                onClick={() => {
+                  setSelectedBlock("all");
+                  setSelectedYear("all");
+                  setSelectedDate("");
+                  setSearchTerm("");
+                }}
+                className="bg-gray-500 hover:bg-gray-600 text-white transition-colors"
+              >
+                Reset
+              </Button>
+            </div>
+          </div>
+
+          <div className="bg-white dark:bg-card rounded-xl shadow-lg border border-gray-200 dark:border-gray-800 overflow-hidden">
             <div className="p-6 border-b border-gray-200 dark:border-gray-800">
               <div className="flex flex-col lg:flex-row gap-6 items-start lg:items-center justify-between">
                 <div className="relative flex-1 max-w-lg">
@@ -976,8 +1052,14 @@ const SamitiListContent = ({
                             </TableCell>
                           )}
                           {visibleColumns.totalMembers && (
-                            <TableCell className="whitespace-nowrap text-gray-600 dark:text-gray-400">
-                              {item.totalMembers || "N/A"}
+                            <TableCell className="whitespace-nowrap text-center">
+                              <div 
+                                onClick={() => router.push(`${basePath}/${item._id}/members`)}
+                                className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-blue-500 text-white text-xs font-bold cursor-pointer hover:bg-blue-600 transition-colors shadow-sm"
+                                title="View Members"
+                              >
+                                {item.totalMembers || "0"}
+                              </div>
                             </TableCell>
                           )}
 
@@ -1019,47 +1101,43 @@ const SamitiListContent = ({
                           )}
 
                           <TableCell className="text-center whitespace-nowrap">
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
+                            <div className="flex items-center justify-center gap-1">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 bg-[#2F7E8D] hover:bg-[#2F7E8D]/90 text-white rounded cursor-pointer transition-colors"
+                                onClick={() => router.push(`${basePath}/${item._id}/members`)}
+                                title="View Members"
+                              >
+                                <Users className="w-4 h-4" />
+                              </Button>
+
+                              {hasPermission(`edit_${resourceName}`) && (
                                 <Button
                                   variant="ghost"
                                   size="icon"
-                                  className="h-8 w-8"
+                                  className="h-8 w-8 bg-[#F39C12] hover:bg-[#D68910] text-white rounded cursor-pointer transition-colors"
+                                  onClick={() => router.push(`${basePath}/${item._id}/edit`)}
+                                  title="Edit Location"
                                 >
-                                  <MoreVertical className="w-4 h-4" />
+                                  <Edit className="w-4 h-4" />
                                 </Button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end">
-                                <DropdownMenuItem
-                                  onClick={() =>
-                                    router.push(`${basePath}/${item._id}/view`)
+                              )}
+
+                              {hasPermission(`delete_${resourceName}`) && (
+                                <ConfirmDialog
+                                  onConfirm={() => handleDelete(item._id)}
+                                  trigger={
+                                    <div 
+                                      className="flex items-center justify-center h-8 w-8 bg-[#E74C3C] hover:bg-[#C0392B] text-white rounded cursor-pointer transition-colors"
+                                      title="Delete Location"
+                                    >
+                                      <Trash2 className="w-4 h-4" />
+                                    </div>
                                   }
-                                >
-                                  <Eye className="mr-2 h-4 w-4" /> View
-                                </DropdownMenuItem>
-                                {hasPermission(`edit_${resourceName}`) && (
-                                  <DropdownMenuItem
-                                    onClick={() =>
-                                      router.push(
-                                        `${basePath}/${item._id}/edit`,
-                                      )
-                                    }
-                                  >
-                                    <Edit className="mr-2 h-4 w-4" /> Edit
-                                  </DropdownMenuItem>
-                                )}
-                                {hasPermission(`delete_${resourceName}`) && (
-                                  <ConfirmDialog
-                                    onConfirm={() => handleDelete(item._id)}
-                                    trigger={
-                                      <div className="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-red-50 focus:bg-red-50 text-red-600 hover:text-red-700 w-full">
-                                        <Trash2 className="mr-2 h-4 w-4" /> Delete
-                                      </div>
-                                    }
-                                  />
-                                )}
-                              </DropdownMenuContent>
-                            </DropdownMenu>
+                                />
+                              )}
+                            </div>
                           </TableCell>
                         </TableRow>
                       );

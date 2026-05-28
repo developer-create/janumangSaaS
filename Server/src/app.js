@@ -57,6 +57,7 @@ const dispatchRegisterRoutes = require("./routes/dispatchRegisterRoute");
 const callManagementRoutes = require("./routes/callManagementRoutes");
 const activityLogRoutes = require("./routes/activityLogRoutes");
 const samitiRoutes = require("./routes/samitiRoute");
+const samitiMemberRoutes = require("./routes/samitiMemberRoute");
 
 // Additional Routes
 const dashboardRoutes = require("./routes/dashboardRoute");
@@ -166,6 +167,7 @@ app.use("/api/activity-logs", activityLogRoutes);
 
 // Additional Routes
 app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/samiti-members", samitiMemberRoutes);
 app.use("/api/assembly-issues", assemblyIssueRoutes);
 app.use("/api/events", eventRoutes);
 app.use("/api/members", memberRoutes);
