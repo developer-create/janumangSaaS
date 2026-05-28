@@ -45,6 +45,7 @@ import {
   Search,
   Download,
   Columns,
+  Upload,
 } from "lucide-react";
 import { useDebounce } from "@app/hooks/useDebounce";
 import { Skeleton } from "@app/components/ui/skeleton";
@@ -122,16 +123,57 @@ const MemberListContent = ({ memberType = "vidhan-sabha" }: { memberType?: "vidh
         endLong: false,
         endDate: false,
         image: false,
+        bg: false,
+        bc: false,
+        er: false,
+        br: false,
+        ip: false,
+        sc: false,
+        sa: false,
+        yc: false,
+        ap: false,
+        fp: false,
+        pp: false,
+        wc: false,
+        pa: false,
+        pc: false,
+        ak: false,
+        fm: false,
+        zp: false,
+        vp: false,
+        sr: false,
+        in_field: false,
+        eo: false,
+        gs: false,
+        us: false,
+        pw: false,
+        nl: false,
+        fr: false,
+        so: false,
+        st: false,
+        ob: false,
+        smw: false,
+        smtw: false,
+        it: false,
+        test: false,
+        dyc: false,
+        dcc: false,
+        obc: false,
+        cell_mp: false,
+        dt: false,
+        dp: false,
+        avp: false,
+        meet: false,
+        media: false,
+        mla_x_mla: false,
+        vech: false,
+        it_cell_exp: false,
+        info: false,
+        nsui: false,
+        imp: false,
+        advise: false,
+        ref: false,
         district: true,
-      vidhansabha: true,
-      lokSabha: false,
-      month: true,
-      date: true,
-      panchayat: true,
-      janpadPanchayat: true,
-      mandalam: true,
-      position: false,
-      year: false,
         vidhansabha: true,
         lokSabha: true,
         month: true,
@@ -207,6 +249,9 @@ const MemberListContent = ({ memberType = "vidhan-sabha" }: { memberType?: "vidh
   // Filters
   const [filterDistrict, setFilterDistrict] = useState("all");
   const [filterBlock, setFilterBlock] = useState("all");
+  const [filterVidhansabha, setFilterVidhansabha] = useState("all");
+  const [filterMonth, setFilterMonth] = useState("all");
+  const [filterYear, setFilterYear] = useState("all");
   const [filterPostYear, setFilterPostYear] = useState("all");
   const [filterVehicle, setFilterVehicle] = useState("all");
   const [filterSamiti, setFilterSamiti] = useState("all");
@@ -246,6 +291,20 @@ const MemberListContent = ({ memberType = "vidhan-sabha" }: { memberType?: "vidh
     },
   });
 
+  const { data: vidhanSabhas = [] } = useQuery<any[]>({
+    queryKey: ["vidhansabhas-list", filterDistrict],
+    queryFn: async () => {
+      let url = "/vidhan-sabha?limit=-1";
+      if (filterDistrict !== "all") {
+        const distId = districts.find((d: any) => d.name === filterDistrict)?._id;
+        if (distId) url += `&district=${distId}`;
+      }
+      const res = await axios.get(url);
+      return res.data?.data || [];
+    },
+    enabled: districts.length > 0 || filterDistrict === "all",
+  });
+
   // Fetch Members Query
   const {
     data: response,
@@ -259,6 +318,9 @@ const MemberListContent = ({ memberType = "vidhan-sabha" }: { memberType?: "vidh
       debouncedSearchTerm,
       filterDistrict,
       filterBlock,
+      filterVidhansabha,
+      filterMonth,
+      filterYear,
       filterPostYear,
       filterVehicle,
       filterSamiti,
@@ -271,6 +333,9 @@ const MemberListContent = ({ memberType = "vidhan-sabha" }: { memberType?: "vidh
         search: debouncedSearchTerm || undefined,
         district: filterDistrict === "all" ? undefined : filterDistrict,
         block: filterBlock === "all" ? undefined : filterBlock,
+        vidhansabha: filterVidhansabha === "all" ? undefined : filterVidhansabha,
+        month: filterMonth === "all" ? undefined : filterMonth,
+        year: filterYear === "all" ? undefined : filterYear,
         postYear: filterPostYear === "all" ? undefined : filterPostYear,
         vehicle: filterVehicle === "all" ? undefined : filterVehicle,
         samiti: filterSamiti === "all" ? undefined : filterSamiti,
@@ -365,7 +430,59 @@ const MemberListContent = ({ memberType = "vidhan-sabha" }: { memberType?: "vidh
           row["Government Employee"] = member.govtEmployee || "-";
         if (visibleColumns.party) row["Party"] = member.party || "-";
         if (visibleColumns.postYear) row["पद वर्ष"] = member.postYear || "-";
-        if (visibleColumns.code) row["Code"] = member.code || "-";
+        if (visibleColumns.code) {
+          row["Code"] = member.code || "-";
+          row["BG"] = member.bg ? "Yes" : "No";
+          row["BC"] = member.bc ? "Yes" : "No";
+          row["ER"] = member.er ? "Yes" : "No";
+          row["BR"] = member.br ? "Yes" : "No";
+          row["IP"] = member.ip ? "Yes" : "No";
+          row["SC"] = member.sc ? "Yes" : "No";
+          row["SA"] = member.sa ? "Yes" : "No";
+          row["YC"] = member.yc ? "Yes" : "No";
+          row["AP"] = member.ap ? "Yes" : "No";
+          row["FP"] = member.fp ? "Yes" : "No";
+          row["PP"] = member.pp ? "Yes" : "No";
+          row["WC"] = member.wc ? "Yes" : "No";
+          row["PA"] = member.pa ? "Yes" : "No";
+          row["PC"] = member.pc ? "Yes" : "No";
+          row["AK"] = member.ak ? "Yes" : "No";
+          row["FM"] = member.fm ? "Yes" : "No";
+          row["ZP"] = member.zp ? "Yes" : "No";
+          row["VP"] = member.vp ? "Yes" : "No";
+          row["SR"] = member.sr ? "Yes" : "No";
+          row["IN"] = member.in_field ? "Yes" : "No";
+          row["EO"] = member.eo ? "Yes" : "No";
+          row["GS"] = member.gs ? "Yes" : "No";
+          row["US"] = member.us ? "Yes" : "No";
+          row["PW"] = member.pw ? "Yes" : "No";
+          row["NL"] = member.nl ? "Yes" : "No";
+          row["FR"] = member.fr ? "Yes" : "No";
+          row["SO"] = member.so ? "Yes" : "No";
+          row["ST"] = member.st ? "Yes" : "No";
+          row["OB"] = member.ob ? "Yes" : "No";
+          row["SMW"] = member.smw ? "Yes" : "No";
+          row["SMTW"] = member.smtw ? "Yes" : "No";
+          row["IT"] = member.it ? "Yes" : "No";
+          row["TEST"] = member.test ? "Yes" : "No";
+          row["DYC"] = member.dyc ? "Yes" : "No";
+          row["DCC"] = member.dcc ? "Yes" : "No";
+          row["OBC"] = member.obc ? "Yes" : "No";
+          row["CELL/MP"] = member.cell_mp ? "Yes" : "No";
+          row["DT"] = member.dt ? "Yes" : "No";
+          row["DP"] = member.dp ? "Yes" : "No";
+          row["AVP"] = member.avp ? "Yes" : "No";
+          row["MEET"] = member.meet ? "Yes" : "No";
+          row["MEDIA"] = member.media ? "Yes" : "No";
+          row["MLA,X MLA"] = member.mla_x_mla ? "Yes" : "No";
+          row["VECH"] = member.vech ? "Yes" : "No";
+          row["IT CELL EXP"] = member.it_cell_exp ? "Yes" : "No";
+          row["INFO"] = member.info ? "Yes" : "No";
+          row["NSUI"] = member.nsui ? "Yes" : "No";
+          row["IMP"] = member.imp ? "Yes" : "No";
+          row["ADVISE"] = member.advise ? "Yes" : "No";
+          row["REF"] = member.ref_code ? "Yes" : "No";
+        }
         if (visibleColumns.nariSammanYojna)
           row["Nari Samman Yojna"] = member.nariSammanYojna || "-";
         if (visibleColumns.farmerLoanWaiver)
@@ -442,6 +559,9 @@ const MemberListContent = ({ memberType = "vidhan-sabha" }: { memberType?: "vidh
   const clearFilters = () => {
     setFilterDistrict("all");
     setFilterBlock("all");
+    setFilterVidhansabha("all");
+    setFilterMonth("all");
+    setFilterYear("all");
     setFilterPostYear("all");
     setFilterVehicle("all");
     setFilterSamiti("all");
@@ -484,18 +604,28 @@ const MemberListContent = ({ memberType = "vidhan-sabha" }: { memberType?: "vidh
                     <Download className="w-5 h-5 mr-2 text-blue-500" /> Export
                   </Button>
                   {hasPermission(PERMISSIONS.CREATE_MEMBERS) && (
-                    <Button
-                      size="lg"
-                      className="bg-[#368F8B] hover:bg-[#2d7a76] text-white rounded-lg shadow-lg shadow-[#368F8B]/20 border-0 transition-all"
-                      onClick={() => {
-                        const createPath = memberType === "mp-vidhan-sabha" 
-                          ? "/mp-vidhan-sabha-member/create" 
-                          : "/member-list/create";
-                        router.push(createPath);
-                      }}
-                    >
-                      <Plus className="w-5 h-5 mr-2" /> Add New
-                    </Button>
+                    <>
+                      <Button
+                        variant="outline"
+                        size="lg"
+                        className="bg-white dark:bg-[#202123] rounded-lg text-[#368F8B] border-[#368F8B] hover:bg-gray-50 dark:hover:bg-gray-800 transition-all shadow-sm"
+                        onClick={() => router.push("/member-list/bulk-upload")}
+                      >
+                        <Upload className="w-5 h-5 mr-2" /> Bulk Upload
+                      </Button>
+                      <Button
+                        size="lg"
+                        className="bg-[#368F8B] hover:bg-[#2d7a76] text-white rounded-lg shadow-lg shadow-[#368F8B]/20 border-0 transition-all"
+                        onClick={() => {
+                          const createPath = memberType === "mp-vidhan-sabha" 
+                            ? "/mp-vidhan-sabha-member/create" 
+                            : "/member-list/create";
+                          router.push(createPath);
+                        }}
+                      >
+                        <Plus className="w-5 h-5 mr-2" /> Add New
+                      </Button>
+                    </>
                   )}
                 </div>
               </div>
@@ -540,6 +670,62 @@ const MemberListContent = ({ memberType = "vidhan-sabha" }: { memberType?: "vidh
                       <SelectItem key={b._id} value={b.name}>
                         {b.name}
                       </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                <Select
+                  value={filterVidhansabha}
+                  onValueChange={(val) => {
+                    setFilterVidhansabha(val);
+                    setPagination((prev) => ({ ...prev, page: 1 }));
+                  }}
+                >
+                  <SelectTrigger className="w-36 h-9 bg-white dark:bg-[#202123] text-sm dark:border-gray-700 dark:text-gray-300">
+                    <SelectValue placeholder="Vidhan Sabha" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Vidhan Sabha</SelectItem>
+                    {vidhanSabhas.map((vs: any) => (
+                      <SelectItem key={vs._id} value={vs.vidhan_sabha_name}>
+                        {vs.vidhan_sabha_name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                <Select
+                  value={filterMonth}
+                  onValueChange={(val) => {
+                    setFilterMonth(val);
+                    setPagination((prev) => ({ ...prev, page: 1 }));
+                  }}
+                >
+                  <SelectTrigger className="w-36 h-9 bg-white dark:bg-[#202123] text-sm dark:border-gray-700 dark:text-gray-300">
+                    <SelectValue placeholder="Month" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Months</SelectItem>
+                    {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => (
+                      <SelectItem key={m} value={m.toString()}>{m}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                <Select
+                  value={filterYear}
+                  onValueChange={(val) => {
+                    setFilterYear(val);
+                    setPagination((prev) => ({ ...prev, page: 1 }));
+                  }}
+                >
+                  <SelectTrigger className="w-36 h-9 bg-white dark:bg-[#202123] text-sm dark:border-gray-700 dark:text-gray-300">
+                    <SelectValue placeholder="Year" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Years</SelectItem>
+                    {Array.from({ length: 11 }, (_, i) => 2020 + i).map((y) => (
+                      <SelectItem key={y} value={y.toString()}>{y}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -915,6 +1101,256 @@ const MemberListContent = ({ memberType = "vidhan-sabha" }: { memberType?: "vidh
                         End Date
                       </TableHead>
                     )}
+                    {visibleColumns.bg && (
+                      <TableHead className="font-semibold text-white uppercase tracking-wider text-xs whitespace-nowrap">
+                        Bg
+                      </TableHead>
+                    )}
+                    {visibleColumns.bc && (
+                      <TableHead className="font-semibold text-white uppercase tracking-wider text-xs whitespace-nowrap">
+                        Bc
+                      </TableHead>
+                    )}
+                    {visibleColumns.er && (
+                      <TableHead className="font-semibold text-white uppercase tracking-wider text-xs whitespace-nowrap">
+                        Er
+                      </TableHead>
+                    )}
+                    {visibleColumns.br && (
+                      <TableHead className="font-semibold text-white uppercase tracking-wider text-xs whitespace-nowrap">
+                        Br
+                      </TableHead>
+                    )}
+                    {visibleColumns.ip && (
+                      <TableHead className="font-semibold text-white uppercase tracking-wider text-xs whitespace-nowrap">
+                        Ip
+                      </TableHead>
+                    )}
+                    {visibleColumns.sc && (
+                      <TableHead className="font-semibold text-white uppercase tracking-wider text-xs whitespace-nowrap">
+                        Sc
+                      </TableHead>
+                    )}
+                    {visibleColumns.sa && (
+                      <TableHead className="font-semibold text-white uppercase tracking-wider text-xs whitespace-nowrap">
+                        Sa
+                      </TableHead>
+                    )}
+                    {visibleColumns.yc && (
+                      <TableHead className="font-semibold text-white uppercase tracking-wider text-xs whitespace-nowrap">
+                        Yc
+                      </TableHead>
+                    )}
+                    {visibleColumns.ap && (
+                      <TableHead className="font-semibold text-white uppercase tracking-wider text-xs whitespace-nowrap">
+                        Ap
+                      </TableHead>
+                    )}
+                    {visibleColumns.fp && (
+                      <TableHead className="font-semibold text-white uppercase tracking-wider text-xs whitespace-nowrap">
+                        Fp
+                      </TableHead>
+                    )}
+                    {visibleColumns.pp && (
+                      <TableHead className="font-semibold text-white uppercase tracking-wider text-xs whitespace-nowrap">
+                        Pp
+                      </TableHead>
+                    )}
+                    {visibleColumns.wc && (
+                      <TableHead className="font-semibold text-white uppercase tracking-wider text-xs whitespace-nowrap">
+                        Wc
+                      </TableHead>
+                    )}
+                    {visibleColumns.pa && (
+                      <TableHead className="font-semibold text-white uppercase tracking-wider text-xs whitespace-nowrap">
+                        Pa
+                      </TableHead>
+                    )}
+                    {visibleColumns.pc && (
+                      <TableHead className="font-semibold text-white uppercase tracking-wider text-xs whitespace-nowrap">
+                        Pc
+                      </TableHead>
+                    )}
+                    {visibleColumns.ak && (
+                      <TableHead className="font-semibold text-white uppercase tracking-wider text-xs whitespace-nowrap">
+                        Ak
+                      </TableHead>
+                    )}
+                    {visibleColumns.fm && (
+                      <TableHead className="font-semibold text-white uppercase tracking-wider text-xs whitespace-nowrap">
+                        Fm
+                      </TableHead>
+                    )}
+                    {visibleColumns.zp && (
+                      <TableHead className="font-semibold text-white uppercase tracking-wider text-xs whitespace-nowrap">
+                        Zp
+                      </TableHead>
+                    )}
+                    {visibleColumns.vp && (
+                      <TableHead className="font-semibold text-white uppercase tracking-wider text-xs whitespace-nowrap">
+                        Vp
+                      </TableHead>
+                    )}
+                    {visibleColumns.sr && (
+                      <TableHead className="font-semibold text-white uppercase tracking-wider text-xs whitespace-nowrap">
+                        Sr
+                      </TableHead>
+                    )}
+                    {visibleColumns.in_field && (
+                      <TableHead className="font-semibold text-white uppercase tracking-wider text-xs whitespace-nowrap">
+                        In Field
+                      </TableHead>
+                    )}
+                    {visibleColumns.eo && (
+                      <TableHead className="font-semibold text-white uppercase tracking-wider text-xs whitespace-nowrap">
+                        Eo
+                      </TableHead>
+                    )}
+                    {visibleColumns.gs && (
+                      <TableHead className="font-semibold text-white uppercase tracking-wider text-xs whitespace-nowrap">
+                        Gs
+                      </TableHead>
+                    )}
+                    {visibleColumns.us && (
+                      <TableHead className="font-semibold text-white uppercase tracking-wider text-xs whitespace-nowrap">
+                        Us
+                      </TableHead>
+                    )}
+                    {visibleColumns.pw && (
+                      <TableHead className="font-semibold text-white uppercase tracking-wider text-xs whitespace-nowrap">
+                        Pw
+                      </TableHead>
+                    )}
+                    {visibleColumns.nl && (
+                      <TableHead className="font-semibold text-white uppercase tracking-wider text-xs whitespace-nowrap">
+                        Nl
+                      </TableHead>
+                    )}
+                    {visibleColumns.fr && (
+                      <TableHead className="font-semibold text-white uppercase tracking-wider text-xs whitespace-nowrap">
+                        Fr
+                      </TableHead>
+                    )}
+                    {visibleColumns.so && (
+                      <TableHead className="font-semibold text-white uppercase tracking-wider text-xs whitespace-nowrap">
+                        So
+                      </TableHead>
+                    )}
+                    {visibleColumns.st && (
+                      <TableHead className="font-semibold text-white uppercase tracking-wider text-xs whitespace-nowrap">
+                        St
+                      </TableHead>
+                    )}
+                    {visibleColumns.ob && (
+                      <TableHead className="font-semibold text-white uppercase tracking-wider text-xs whitespace-nowrap">
+                        Ob
+                      </TableHead>
+                    )}
+                    {visibleColumns.smw && (
+                      <TableHead className="font-semibold text-white uppercase tracking-wider text-xs whitespace-nowrap">
+                        Smw
+                      </TableHead>
+                    )}
+                    {visibleColumns.smtw && (
+                      <TableHead className="font-semibold text-white uppercase tracking-wider text-xs whitespace-nowrap">
+                        Smtw
+                      </TableHead>
+                    )}
+                    {visibleColumns.it && (
+                      <TableHead className="font-semibold text-white uppercase tracking-wider text-xs whitespace-nowrap">
+                        It
+                      </TableHead>
+                    )}
+                    {visibleColumns.test && (
+                      <TableHead className="font-semibold text-white uppercase tracking-wider text-xs whitespace-nowrap">
+                        Test
+                      </TableHead>
+                    )}
+                    {visibleColumns.dyc && (
+                      <TableHead className="font-semibold text-white uppercase tracking-wider text-xs whitespace-nowrap">
+                        Dyc
+                      </TableHead>
+                    )}
+                    {visibleColumns.dcc && (
+                      <TableHead className="font-semibold text-white uppercase tracking-wider text-xs whitespace-nowrap">
+                        Dcc
+                      </TableHead>
+                    )}
+                    {visibleColumns.obc && (
+                      <TableHead className="font-semibold text-white uppercase tracking-wider text-xs whitespace-nowrap">
+                        Obc
+                      </TableHead>
+                    )}
+                    {visibleColumns.cell_mp && (
+                      <TableHead className="font-semibold text-white uppercase tracking-wider text-xs whitespace-nowrap">
+                        Cell Mp
+                      </TableHead>
+                    )}
+                    {visibleColumns.dt && (
+                      <TableHead className="font-semibold text-white uppercase tracking-wider text-xs whitespace-nowrap">
+                        Dt
+                      </TableHead>
+                    )}
+                    {visibleColumns.dp && (
+                      <TableHead className="font-semibold text-white uppercase tracking-wider text-xs whitespace-nowrap">
+                        Dp
+                      </TableHead>
+                    )}
+                    {visibleColumns.avp && (
+                      <TableHead className="font-semibold text-white uppercase tracking-wider text-xs whitespace-nowrap">
+                        Avp
+                      </TableHead>
+                    )}
+                    {visibleColumns.meet && (
+                      <TableHead className="font-semibold text-white uppercase tracking-wider text-xs whitespace-nowrap">
+                        Meet
+                      </TableHead>
+                    )}
+                    {visibleColumns.media && (
+                      <TableHead className="font-semibold text-white uppercase tracking-wider text-xs whitespace-nowrap">
+                        Media
+                      </TableHead>
+                    )}
+                    {visibleColumns.mla_x_mla && (
+                      <TableHead className="font-semibold text-white uppercase tracking-wider text-xs whitespace-nowrap">
+                        Mla X Mla
+                      </TableHead>
+                    )}
+                    {visibleColumns.vech && (
+                      <TableHead className="font-semibold text-white uppercase tracking-wider text-xs whitespace-nowrap">
+                        Vech
+                      </TableHead>
+                    )}
+                    {visibleColumns.it_cell_exp && (
+                      <TableHead className="font-semibold text-white uppercase tracking-wider text-xs whitespace-nowrap">
+                        It Cell Exp
+                      </TableHead>
+                    )}
+                    {visibleColumns.info && (
+                      <TableHead className="font-semibold text-white uppercase tracking-wider text-xs whitespace-nowrap">
+                        Info
+                      </TableHead>
+                    )}
+                    {visibleColumns.nsui && (
+                      <TableHead className="font-semibold text-white uppercase tracking-wider text-xs whitespace-nowrap">
+                        Nsui
+                      </TableHead>
+                    )}
+                    {visibleColumns.imp && (
+                      <TableHead className="font-semibold text-white uppercase tracking-wider text-xs whitespace-nowrap">
+                        Imp
+                      </TableHead>
+                    )}
+                    {visibleColumns.advise && (
+                      <TableHead className="font-semibold text-white uppercase tracking-wider text-xs whitespace-nowrap">
+                        Advise
+                      </TableHead>
+                    )}
+                    {visibleColumns.ref && (
+                      <TableHead className="font-semibold text-white uppercase tracking-wider text-xs whitespace-nowrap">
+                        Ref
+                      </TableHead>
+                    )}
                     {visibleColumns.image && (
                       <TableHead className="font-semibold text-white uppercase tracking-wider text-xs whitespace-nowrap">
                         Image
@@ -1247,7 +1683,257 @@ const MemberListContent = ({ memberType = "vidhan-sabha" }: { memberType?: "vidh
                             )}
                           </TableCell>
                         )}
-                        {visibleColumns.image && (
+                        {visibleColumns.bg && (
+                        <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-100">
+                          {member.bg ? <span className="text-green-500">✓</span> : <span className="text-gray-400">-</span>}
+                        </TableCell>
+                      )}
+                      {visibleColumns.bc && (
+                        <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-100">
+                          {member.bc ? <span className="text-green-500">✓</span> : <span className="text-gray-400">-</span>}
+                        </TableCell>
+                      )}
+                      {visibleColumns.er && (
+                        <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-100">
+                          {member.er ? <span className="text-green-500">✓</span> : <span className="text-gray-400">-</span>}
+                        </TableCell>
+                      )}
+                      {visibleColumns.br && (
+                        <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-100">
+                          {member.br ? <span className="text-green-500">✓</span> : <span className="text-gray-400">-</span>}
+                        </TableCell>
+                      )}
+                      {visibleColumns.ip && (
+                        <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-100">
+                          {member.ip ? <span className="text-green-500">✓</span> : <span className="text-gray-400">-</span>}
+                        </TableCell>
+                      )}
+                      {visibleColumns.sc && (
+                        <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-100">
+                          {member.sc ? <span className="text-green-500">✓</span> : <span className="text-gray-400">-</span>}
+                        </TableCell>
+                      )}
+                      {visibleColumns.sa && (
+                        <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-100">
+                          {member.sa ? <span className="text-green-500">✓</span> : <span className="text-gray-400">-</span>}
+                        </TableCell>
+                      )}
+                      {visibleColumns.yc && (
+                        <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-100">
+                          {member.yc ? <span className="text-green-500">✓</span> : <span className="text-gray-400">-</span>}
+                        </TableCell>
+                      )}
+                      {visibleColumns.ap && (
+                        <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-100">
+                          {member.ap ? <span className="text-green-500">✓</span> : <span className="text-gray-400">-</span>}
+                        </TableCell>
+                      )}
+                      {visibleColumns.fp && (
+                        <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-100">
+                          {member.fp ? <span className="text-green-500">✓</span> : <span className="text-gray-400">-</span>}
+                        </TableCell>
+                      )}
+                      {visibleColumns.pp && (
+                        <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-100">
+                          {member.pp ? <span className="text-green-500">✓</span> : <span className="text-gray-400">-</span>}
+                        </TableCell>
+                      )}
+                      {visibleColumns.wc && (
+                        <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-100">
+                          {member.wc ? <span className="text-green-500">✓</span> : <span className="text-gray-400">-</span>}
+                        </TableCell>
+                      )}
+                      {visibleColumns.pa && (
+                        <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-100">
+                          {member.pa ? <span className="text-green-500">✓</span> : <span className="text-gray-400">-</span>}
+                        </TableCell>
+                      )}
+                      {visibleColumns.pc && (
+                        <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-100">
+                          {member.pc ? <span className="text-green-500">✓</span> : <span className="text-gray-400">-</span>}
+                        </TableCell>
+                      )}
+                      {visibleColumns.ak && (
+                        <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-100">
+                          {member.ak ? <span className="text-green-500">✓</span> : <span className="text-gray-400">-</span>}
+                        </TableCell>
+                      )}
+                      {visibleColumns.fm && (
+                        <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-100">
+                          {member.fm ? <span className="text-green-500">✓</span> : <span className="text-gray-400">-</span>}
+                        </TableCell>
+                      )}
+                      {visibleColumns.zp && (
+                        <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-100">
+                          {member.zp ? <span className="text-green-500">✓</span> : <span className="text-gray-400">-</span>}
+                        </TableCell>
+                      )}
+                      {visibleColumns.vp && (
+                        <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-100">
+                          {member.vp ? <span className="text-green-500">✓</span> : <span className="text-gray-400">-</span>}
+                        </TableCell>
+                      )}
+                      {visibleColumns.sr && (
+                        <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-100">
+                          {member.sr ? <span className="text-green-500">✓</span> : <span className="text-gray-400">-</span>}
+                        </TableCell>
+                      )}
+                      {visibleColumns.in_field && (
+                        <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-100">
+                          {member.in_field ? <span className="text-green-500">✓</span> : <span className="text-gray-400">-</span>}
+                        </TableCell>
+                      )}
+                      {visibleColumns.eo && (
+                        <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-100">
+                          {member.eo ? <span className="text-green-500">✓</span> : <span className="text-gray-400">-</span>}
+                        </TableCell>
+                      )}
+                      {visibleColumns.gs && (
+                        <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-100">
+                          {member.gs ? <span className="text-green-500">✓</span> : <span className="text-gray-400">-</span>}
+                        </TableCell>
+                      )}
+                      {visibleColumns.us && (
+                        <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-100">
+                          {member.us ? <span className="text-green-500">✓</span> : <span className="text-gray-400">-</span>}
+                        </TableCell>
+                      )}
+                      {visibleColumns.pw && (
+                        <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-100">
+                          {member.pw ? <span className="text-green-500">✓</span> : <span className="text-gray-400">-</span>}
+                        </TableCell>
+                      )}
+                      {visibleColumns.nl && (
+                        <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-100">
+                          {member.nl ? <span className="text-green-500">✓</span> : <span className="text-gray-400">-</span>}
+                        </TableCell>
+                      )}
+                      {visibleColumns.fr && (
+                        <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-100">
+                          {member.fr ? <span className="text-green-500">✓</span> : <span className="text-gray-400">-</span>}
+                        </TableCell>
+                      )}
+                      {visibleColumns.so && (
+                        <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-100">
+                          {member.so ? <span className="text-green-500">✓</span> : <span className="text-gray-400">-</span>}
+                        </TableCell>
+                      )}
+                      {visibleColumns.st && (
+                        <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-100">
+                          {member.st ? <span className="text-green-500">✓</span> : <span className="text-gray-400">-</span>}
+                        </TableCell>
+                      )}
+                      {visibleColumns.ob && (
+                        <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-100">
+                          {member.ob ? <span className="text-green-500">✓</span> : <span className="text-gray-400">-</span>}
+                        </TableCell>
+                      )}
+                      {visibleColumns.smw && (
+                        <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-100">
+                          {member.smw ? <span className="text-green-500">✓</span> : <span className="text-gray-400">-</span>}
+                        </TableCell>
+                      )}
+                      {visibleColumns.smtw && (
+                        <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-100">
+                          {member.smtw ? <span className="text-green-500">✓</span> : <span className="text-gray-400">-</span>}
+                        </TableCell>
+                      )}
+                      {visibleColumns.it && (
+                        <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-100">
+                          {member.it ? <span className="text-green-500">✓</span> : <span className="text-gray-400">-</span>}
+                        </TableCell>
+                      )}
+                      {visibleColumns.test && (
+                        <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-100">
+                          {member.test ? <span className="text-green-500">✓</span> : <span className="text-gray-400">-</span>}
+                        </TableCell>
+                      )}
+                      {visibleColumns.dyc && (
+                        <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-100">
+                          {member.dyc ? <span className="text-green-500">✓</span> : <span className="text-gray-400">-</span>}
+                        </TableCell>
+                      )}
+                      {visibleColumns.dcc && (
+                        <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-100">
+                          {member.dcc ? <span className="text-green-500">✓</span> : <span className="text-gray-400">-</span>}
+                        </TableCell>
+                      )}
+                      {visibleColumns.obc && (
+                        <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-100">
+                          {member.obc ? <span className="text-green-500">✓</span> : <span className="text-gray-400">-</span>}
+                        </TableCell>
+                      )}
+                      {visibleColumns.cell_mp && (
+                        <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-100">
+                          {member.cell_mp ? <span className="text-green-500">✓</span> : <span className="text-gray-400">-</span>}
+                        </TableCell>
+                      )}
+                      {visibleColumns.dt && (
+                        <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-100">
+                          {member.dt ? <span className="text-green-500">✓</span> : <span className="text-gray-400">-</span>}
+                        </TableCell>
+                      )}
+                      {visibleColumns.dp && (
+                        <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-100">
+                          {member.dp ? <span className="text-green-500">✓</span> : <span className="text-gray-400">-</span>}
+                        </TableCell>
+                      )}
+                      {visibleColumns.avp && (
+                        <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-100">
+                          {member.avp ? <span className="text-green-500">✓</span> : <span className="text-gray-400">-</span>}
+                        </TableCell>
+                      )}
+                      {visibleColumns.meet && (
+                        <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-100">
+                          {member.meet ? <span className="text-green-500">✓</span> : <span className="text-gray-400">-</span>}
+                        </TableCell>
+                      )}
+                      {visibleColumns.media && (
+                        <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-100">
+                          {member.media ? <span className="text-green-500">✓</span> : <span className="text-gray-400">-</span>}
+                        </TableCell>
+                      )}
+                      {visibleColumns.mla_x_mla && (
+                        <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-100">
+                          {member.mla_x_mla ? <span className="text-green-500">✓</span> : <span className="text-gray-400">-</span>}
+                        </TableCell>
+                      )}
+                      {visibleColumns.vech && (
+                        <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-100">
+                          {member.vech ? <span className="text-green-500">✓</span> : <span className="text-gray-400">-</span>}
+                        </TableCell>
+                      )}
+                      {visibleColumns.it_cell_exp && (
+                        <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-100">
+                          {member.it_cell_exp ? <span className="text-green-500">✓</span> : <span className="text-gray-400">-</span>}
+                        </TableCell>
+                      )}
+                      {visibleColumns.info && (
+                        <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-100">
+                          {member.info ? <span className="text-green-500">✓</span> : <span className="text-gray-400">-</span>}
+                        </TableCell>
+                      )}
+                      {visibleColumns.nsui && (
+                        <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-100">
+                          {member.nsui ? <span className="text-green-500">✓</span> : <span className="text-gray-400">-</span>}
+                        </TableCell>
+                      )}
+                      {visibleColumns.imp && (
+                        <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-100">
+                          {member.imp ? <span className="text-green-500">✓</span> : <span className="text-gray-400">-</span>}
+                        </TableCell>
+                      )}
+                      {visibleColumns.advise && (
+                        <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-100">
+                          {member.advise ? <span className="text-green-500">✓</span> : <span className="text-gray-400">-</span>}
+                        </TableCell>
+                      )}
+                      {visibleColumns.ref && (
+                        <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-100">
+                          {member.ref ? <span className="text-green-500">✓</span> : <span className="text-gray-400">-</span>}
+                        </TableCell>
+                      )}
+                      {visibleColumns.image && (
                           <TableCell>
                             {member.image ? (
                               <img

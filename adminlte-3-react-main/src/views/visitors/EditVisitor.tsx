@@ -41,6 +41,7 @@ const EditVisitor = () => {
           remarks: data.remarks || "",
           bhaiyakanirdesh: data.bhaiyakanirdesh || "",
           addedBy: data.addedBy || "",
+          ussCoding: data.ussCoding || "",
         });
       } catch (error: unknown) {
         toast.error("Failed to fetch visitor details");

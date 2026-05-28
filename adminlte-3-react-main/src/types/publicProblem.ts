@@ -26,6 +26,15 @@ export interface IPublicProblemFormValues {
   middleMenContactNo: string;
   beneficialName: string;
   beneficialMobile: string;
+  
+  sectorName: string;
+  microSectorNo: string;
+  microSectorName: string;
+  tsNoDate: string;
+  asNoDate: string;
+  approvedFundOther: string;
+  po: string;
+
   status: string;
   remarkGoshana: string;
   remarkTipUsd: string;

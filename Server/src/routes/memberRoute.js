@@ -5,13 +5,29 @@ const {
   createMember,
   updateMember,
   deleteMember,
+  bulkUploadMembers,
+  downloadTemplate,
 } = require("../controller/memberController");
 const protect = require("../middleware/authMiddleware");
 const { checkPermission } = require("../middleware/permissionMiddleware");
 const { scopeQuery } = require("../middleware/scopeMiddleware");
 const { checkModuleAccess } = require("../middleware/moduleAccessMiddleware");
+const multer = require("multer");
+
+const upload = multer({ dest: "uploads/" });
 
 const router = express.Router();
+
+router.get("/template", protect, downloadTemplate);
+
+router.post(
+  "/bulk-upload",
+  protect,
+  checkModuleAccess("members"),
+  checkPermission("create_members"),
+  upload.single("bulk_file"),
+  bulkUploadMembers
+);
 
 router
   .route("/")

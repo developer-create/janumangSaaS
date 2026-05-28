@@ -394,6 +394,14 @@ const CreateEntryContent = () => {
       type: "mobile",
     },
 
+    { name: "sectorName", label: "Sector Name", type: "text" },
+    { name: "microSectorNo", label: "Micro Sector No.", type: "text" },
+    { name: "microSectorName", label: "Micro Sector Name", type: "text" },
+    { name: "tsNoDate", label: "TS No/Date", type: "text" },
+    { name: "asNoDate", label: "AS No/Date", type: "text" },
+    { name: "approvedFundOther", label: "Approved Fund Other", type: "text" },
+    { name: "po", label: "PO", type: "text" },
+
     // Note: The original image had duplicated 'Work Agency' and 'Approved Fund' fields here.
     // I am omitting them to prevent data duplication.
 

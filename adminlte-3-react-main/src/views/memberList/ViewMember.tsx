@@ -60,6 +60,14 @@ interface IMember {
   remark: string;
   facebook: string;
   instagram: string;
+  // 50 Boolean Roles
+  bg?: boolean; bc?: boolean; er?: boolean; br?: boolean; ip?: boolean; sc?: boolean; sa?: boolean; yc?: boolean;
+  ap?: boolean; fp?: boolean; pp?: boolean; wc?: boolean; pa?: boolean; pc?: boolean; ak?: boolean; fm?: boolean;
+  zp?: boolean; vp?: boolean; sr?: boolean; in_field?: boolean; eo?: boolean; gs?: boolean; us?: boolean;
+  pw?: boolean; nl?: boolean; fr?: boolean; so?: boolean; st?: boolean; ob?: boolean; smw?: boolean; smtw?: boolean;
+  it?: boolean; test?: boolean; dyc?: boolean; dcc?: boolean; obc?: boolean; cell_mp?: boolean; dt?: boolean;
+  dp?: boolean; avp?: boolean; meet?: boolean; media?: boolean; mla_x_mla?: boolean; vech?: boolean;
+  it_cell_exp?: boolean; info?: boolean; nsui?: boolean; imp?: boolean; advise?: boolean; ref_code?: boolean;
   twitter: string;
   startLat: number;
   startLong: number;
@@ -140,6 +148,24 @@ const ViewMember = () => {
       "Post Year": member.postYear,
       Reference: member.reference,
       Code: member.code,
+      BG: member.bg ? "Yes" : "No", BC: member.bc ? "Yes" : "No", ER: member.er ? "Yes" : "No",
+      BR: member.br ? "Yes" : "No", IP: member.ip ? "Yes" : "No", SC: member.sc ? "Yes" : "No",
+      SA: member.sa ? "Yes" : "No", YC: member.yc ? "Yes" : "No", AP: member.ap ? "Yes" : "No",
+      FP: member.fp ? "Yes" : "No", PP: member.pp ? "Yes" : "No", WC: member.wc ? "Yes" : "No",
+      PA: member.pa ? "Yes" : "No", PC: member.pc ? "Yes" : "No", AK: member.ak ? "Yes" : "No",
+      FM: member.fm ? "Yes" : "No", ZP: member.zp ? "Yes" : "No", VP: member.vp ? "Yes" : "No",
+      SR: member.sr ? "Yes" : "No", IN: member.in_field ? "Yes" : "No", EO: member.eo ? "Yes" : "No",
+      GS: member.gs ? "Yes" : "No", US: member.us ? "Yes" : "No", PW: member.pw ? "Yes" : "No",
+      NL: member.nl ? "Yes" : "No", FR: member.fr ? "Yes" : "No", SO: member.so ? "Yes" : "No",
+      ST: member.st ? "Yes" : "No", OB: member.ob ? "Yes" : "No", SMW: member.smw ? "Yes" : "No",
+      SMTW: member.smtw ? "Yes" : "No", IT: member.it ? "Yes" : "No", TEST: member.test ? "Yes" : "No",
+      DYC: member.dyc ? "Yes" : "No", DCC: member.dcc ? "Yes" : "No", OBC: member.obc ? "Yes" : "No",
+      "CELL/MP": member.cell_mp ? "Yes" : "No", DT: member.dt ? "Yes" : "No", DP: member.dp ? "Yes" : "No",
+      AVP: member.avp ? "Yes" : "No", MEET: member.meet ? "Yes" : "No", MEDIA: member.media ? "Yes" : "No",
+      "MLA,X MLA": member.mla_x_mla ? "Yes" : "No", VECH: member.vech ? "Yes" : "No",
+      "IT CELL EXP": member.it_cell_exp ? "Yes" : "No", INFO: member.info ? "Yes" : "No",
+      NSUI: member.nsui ? "Yes" : "No", IMP: member.imp ? "Yes" : "No", ADVISE: member.advise ? "Yes" : "No",
+      REF: member.ref_code ? "Yes" : "No",
       Vehicle: member.vehicle,
       "Added By": member.addedBy,
       "Start Date": member.startDate
@@ -187,9 +213,39 @@ const ViewMember = () => {
                         ))}
                       {!member.code && (
                         <Badge className="bg-white/10 text-white/70 italic border-transparent">
-                          No Codes Assigned
+                          No Legacy Codes Assigned
                         </Badge>
                       )}
+                    </div>
+                    {/* Render boolean flags */}
+                    <div className="flex flex-wrap justify-center md:justify-start gap-2 mt-2">
+                      {[
+                        { key: "bg", label: "BG" }, { key: "bc", label: "BC" }, { key: "er", label: "ER" },
+                        { key: "br", label: "BR" }, { key: "ip", label: "IP" }, { key: "sc", label: "SC" },
+                        { key: "sa", label: "SA" }, { key: "yc", label: "YC" }, { key: "ap", label: "AP" },
+                        { key: "fp", label: "FP" }, { key: "pp", label: "PP" }, { key: "wc", label: "WC" },
+                        { key: "pa", label: "PA" }, { key: "pc", label: "PC" }, { key: "ak", label: "AK" },
+                        { key: "fm", label: "FM" }, { key: "zp", label: "ZP" }, { key: "vp", label: "VP" },
+                        { key: "sr", label: "SR" }, { key: "in_field", label: "IN" }, { key: "eo", label: "EO" },
+                        { key: "gs", label: "GS" }, { key: "us", label: "US" }, { key: "pw", label: "PW" },
+                        { key: "nl", label: "NL" }, { key: "fr", label: "FR" }, { key: "so", label: "SO" },
+                        { key: "st", label: "ST" }, { key: "ob", label: "OB" }, { key: "smw", label: "SMW" },
+                        { key: "smtw", label: "SMTW" }, { key: "it", label: "IT" }, { key: "test", label: "TEST" },
+                        { key: "dyc", label: "DYC" }, { key: "dcc", label: "DCC" }, { key: "obc", label: "OBC" },
+                        { key: "cell_mp", label: "CELL/MP" }, { key: "dt", label: "DT" }, { key: "dp", label: "DP" },
+                        { key: "avp", label: "AVP" }, { key: "meet", label: "MEET" }, { key: "media", label: "MEDIA" },
+                        { key: "mla_x_mla", label: "MLA,X MLA" }, { key: "vech", label: "VECH" },
+                        { key: "it_cell_exp", label: "IT CELL EXP" }, { key: "info", label: "INFO" },
+                        { key: "nsui", label: "NSUI" }, { key: "imp", label: "IMP" }, { key: "advise", label: "ADVISE" },
+                        { key: "ref_code", label: "REF" }
+                      ].filter(c => (member as any)[c.key]).map(c => (
+                        <Badge
+                          key={c.key}
+                          className="bg-yellow-500/80 hover:bg-yellow-500 text-white border-white/40 px-3 py-1 mt-1"
+                        >
+                          {c.label}
+                        </Badge>
+                      ))}
                     </div>
                     <p className="text-[#E0F2F1] text-sm mt-4 opacity-90 flex items-center gap-2 justify-center md:justify-start">
                       <Info className="w-4 h-4" />

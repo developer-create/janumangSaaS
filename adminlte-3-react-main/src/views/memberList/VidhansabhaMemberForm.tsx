@@ -613,6 +613,47 @@ const VidhansabhaMemberForm = () => {
                   />
                 </div>
 
+                {/* Additional Codes / Flags */}
+                <div className="space-y-3 md:col-span-2 pt-4 pb-2 border-t border-gray-200 dark:border-gray-800">
+                  <h3 className="font-bold text-gray-800 dark:text-gray-100 text-lg">Additional Code</h3>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4">
+                    {[
+                      { key: "bg", label: "BG" }, { key: "bc", label: "BC" }, { key: "er", label: "ER" },
+                      { key: "br", label: "BR" }, { key: "ip", label: "IP" }, { key: "sc", label: "SC" },
+                      { key: "sa", label: "SA" }, { key: "yc", label: "YC" }, { key: "ap", label: "AP" },
+                      { key: "fp", label: "FP" }, { key: "pp", label: "PP" }, { key: "wc", label: "WC" },
+                      { key: "pa", label: "PA" }, { key: "pc", label: "PC" }, { key: "ak", label: "AK" },
+                      { key: "fm", label: "FM" }, { key: "zp", label: "ZP" }, { key: "vp", label: "VP" },
+                      { key: "sr", label: "SR" }, { key: "in_field", label: "IN" }, { key: "eo", label: "EO" },
+                      { key: "gs", label: "GS" }, { key: "us", label: "US" }, { key: "pw", label: "PW" },
+                      { key: "nl", label: "NL" }, { key: "fr", label: "FR" }, { key: "so", label: "SO" },
+                      { key: "st", label: "ST" }, { key: "ob", label: "OB" }, { key: "smw", label: "SMW" },
+                      { key: "smtw", label: "SMTW" }, { key: "it", label: "IT" }, { key: "test", label: "TEST" },
+                      { key: "dyc", label: "DYC" }, { key: "dcc", label: "DCC" }, { key: "obc", label: "OBC" },
+                      { key: "cell_mp", label: "CELL/MP" }, { key: "dt", label: "DT" }, { key: "dp", label: "DP" },
+                      { key: "avp", label: "AVP" }, { key: "meet", label: "MEET" }, { key: "media", label: "MEDIA" },
+                      { key: "mla_x_mla", label: "MLA,X MLA" }, { key: "vech", label: "VECH" },
+                      { key: "it_cell_exp", label: "IT CELL EXP" }, { key: "info", label: "INFO" },
+                      { key: "nsui", label: "NSUI" }, { key: "imp", label: "IMP" }, { key: "advise", label: "ADVISE" },
+                      { key: "ref_code", label: "REF" }
+                    ].map((code) => (
+                      <div key={code.key} className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id={code.key}
+                          name={code.key}
+                          onChange={formik.handleChange}
+                          checked={(formik.values as any)[code.key]}
+                          className="h-4 w-4 rounded border-gray-300 text-[#368F8B] focus:ring-[#368F8B] dark:border-gray-700 dark:bg-gray-800"
+                        />
+                        <label htmlFor={code.key} className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 dark:text-gray-300">
+                          {code.label}
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
                 {/* Address */}
                 <div className="space-y-1.5 md:col-span-2">
                   <Label className="font-bold text-gray-700 dark:text-gray-300">Address</Label>

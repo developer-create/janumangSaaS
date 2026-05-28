@@ -213,6 +213,25 @@ const EditMember = () => {
           image: memberData.image || "",
           reference: memberData.reference || "",
           remark: memberData.remark || "",
+          // 50 Boolean Roles
+          bg: memberData.bg || false, bc: memberData.bc || false, er: memberData.er || false,
+          br: memberData.br || false, ip: memberData.ip || false, sc: memberData.sc || false,
+          sa: memberData.sa || false, yc: memberData.yc || false, ap: memberData.ap || false,
+          fp: memberData.fp || false, pp: memberData.pp || false, wc: memberData.wc || false,
+          pa: memberData.pa || false, pc: memberData.pc || false, ak: memberData.ak || false,
+          fm: memberData.fm || false, zp: memberData.zp || false, vp: memberData.vp || false,
+          sr: memberData.sr || false, in_field: memberData.in_field || false, eo: memberData.eo || false,
+          gs: memberData.gs || false, us: memberData.us || false, pw: memberData.pw || false,
+          nl: memberData.nl || false, fr: memberData.fr || false, so: memberData.so || false,
+          st: memberData.st || false, ob: memberData.ob || false, smw: memberData.smw || false,
+          smtw: memberData.smtw || false, it: memberData.it || false, test: memberData.test || false,
+          dyc: memberData.dyc || false, dcc: memberData.dcc || false, obc: memberData.obc || false,
+          cell_mp: memberData.cell_mp || false, dt: memberData.dt || false, dp: memberData.dp || false,
+          avp: memberData.avp || false, meet: memberData.meet || false, media: memberData.media || false,
+          mla_x_mla: memberData.mla_x_mla || false, vech: memberData.vech || false,
+          it_cell_exp: memberData.it_cell_exp || false, info: memberData.info || false,
+          nsui: memberData.nsui || false, imp: memberData.imp || false, advise: memberData.advise || false,
+          ref_code: memberData.ref_code || false,
         });
       }
     } catch (error) {
@@ -260,6 +279,14 @@ const EditMember = () => {
       image: "",
       reference: "",
       remark: "",
+      // 50 Boolean Roles
+      bg: false, bc: false, er: false, br: false, ip: false, sc: false, sa: false, yc: false,
+      ap: false, fp: false, pp: false, wc: false, pa: false, pc: false, ak: false, fm: false,
+      zp: false, vp: false, sr: false, in_field: false, eo: false, gs: false, us: false,
+      pw: false, nl: false, fr: false, so: false, st: false, ob: false, smw: false, smtw: false,
+      it: false, test: false, dyc: false, dcc: false, obc: false, cell_mp: false, dt: false,
+      dp: false, avp: false, meet: false, media: false, mla_x_mla: false, vech: false,
+      it_cell_exp: false, info: false, nsui: false, imp: false, advise: false, ref_code: false,
     },
     validationSchema,
     onSubmit: async (values) => {
@@ -573,7 +600,7 @@ const EditMember = () => {
                 </div>
               </div>
 
-              {/* Code Section */}
+              {/* Code Section (Legacy String Array) */}
               <div className="pt-6 border-t border-gray-100 dark:border-gray-800 mt-6">
                 <Label className="font-bold text-gray-700 dark:text-gray-200 text-lg mb-4 block">Code</Label>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-y-3 gap-x-2">
@@ -586,6 +613,47 @@ const EditMember = () => {
                       />
                       <label htmlFor={`code-${opt}`} className="text-xs font-medium leading-none cursor-pointer dark:text-gray-400">
                         {opt}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Additional Codes / Flags (50 Boolean Roles) */}
+              <div className="pt-6 border-t border-gray-100 dark:border-gray-800 mt-6">
+                <h3 className="font-bold text-gray-800 dark:text-gray-100 text-lg mb-4">Additional Code (Flags)</h3>
+                <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4">
+                  {[
+                    { key: "bg", label: "BG" }, { key: "bc", label: "BC" }, { key: "er", label: "ER" },
+                    { key: "br", label: "BR" }, { key: "ip", label: "IP" }, { key: "sc", label: "SC" },
+                    { key: "sa", label: "SA" }, { key: "yc", label: "YC" }, { key: "ap", label: "AP" },
+                    { key: "fp", label: "FP" }, { key: "pp", label: "PP" }, { key: "wc", label: "WC" },
+                    { key: "pa", label: "PA" }, { key: "pc", label: "PC" }, { key: "ak", label: "AK" },
+                    { key: "fm", label: "FM" }, { key: "zp", label: "ZP" }, { key: "vp", label: "VP" },
+                    { key: "sr", label: "SR" }, { key: "in_field", label: "IN" }, { key: "eo", label: "EO" },
+                    { key: "gs", label: "GS" }, { key: "us", label: "US" }, { key: "pw", label: "PW" },
+                    { key: "nl", label: "NL" }, { key: "fr", label: "FR" }, { key: "so", label: "SO" },
+                    { key: "st", label: "ST" }, { key: "ob", label: "OB" }, { key: "smw", label: "SMW" },
+                    { key: "smtw", label: "SMTW" }, { key: "it", label: "IT" }, { key: "test", label: "TEST" },
+                    { key: "dyc", label: "DYC" }, { key: "dcc", label: "DCC" }, { key: "obc", label: "OBC" },
+                    { key: "cell_mp", label: "CELL/MP" }, { key: "dt", label: "DT" }, { key: "dp", label: "DP" },
+                    { key: "avp", label: "AVP" }, { key: "meet", label: "MEET" }, { key: "media", label: "MEDIA" },
+                    { key: "mla_x_mla", label: "MLA,X MLA" }, { key: "vech", label: "VECH" },
+                    { key: "it_cell_exp", label: "IT CELL EXP" }, { key: "info", label: "INFO" },
+                    { key: "nsui", label: "NSUI" }, { key: "imp", label: "IMP" }, { key: "advise", label: "ADVISE" },
+                    { key: "ref_code", label: "REF" }
+                  ].map((code) => (
+                    <div key={code.key} className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        id={`addcode-${code.key}`}
+                        name={code.key}
+                        onChange={formik.handleChange}
+                        checked={(formik.values as any)[code.key]}
+                        className="h-4 w-4 rounded border-gray-300 text-[#368F8B] focus:ring-[#368F8B] dark:border-gray-700 dark:bg-gray-800 cursor-pointer"
+                      />
+                      <label htmlFor={`addcode-${code.key}`} className="text-sm font-medium leading-none cursor-pointer dark:text-gray-400">
+                        {code.label}
                       </label>
                     </div>
                   ))}

@@ -123,6 +123,15 @@ const MpPublicProblem = () => {
     remarkTipUsd: true,
     addedBy: true,
     beneficialMobile: true,
+    
+    sectorName: true,
+    microSectorNo: true,
+    microSectorName: true,
+    tsNoDate: true,
+    asNoDate: true,
+    approvedFundOther: true,
+    po: true,
+
     latLong: true,
     registrationDate: true,
     avedan: true,
@@ -241,6 +250,13 @@ const MpPublicProblem = () => {
         if (visibleColumns.boothName) row["Booth Name"] = item.boothName || "-";
         if (visibleColumns.panchayatName)
           row["Gram Panchayat"] = item.panchayatName || "-";
+        if (visibleColumns.sectorName) row["Sector Name"] = item.sectorName || "-";
+        if (visibleColumns.microSectorNo) row["Micro Sector No"] = item.microSectorNo || "-";
+        if (visibleColumns.microSectorName) row["Micro Sector Name"] = item.microSectorName || "-";
+        if (visibleColumns.tsNoDate) row["TS No/Date"] = item.tsNoDate || "-";
+        if (visibleColumns.asNoDate) row["AS No/Date"] = item.asNoDate || "-";
+        if (visibleColumns.approvedFundOther) row["Approved Fund Other"] = item.approvedFundOther || "-";
+        if (visibleColumns.po) row["PO"] = item.po || "-";
         if (visibleColumns.village) row["Village"] = item.village || "-";
         if (visibleColumns.majraFaliya) row["Faliya"] = item.majraFaliya || "-";
         if (visibleColumns.workProblem)
@@ -360,6 +376,13 @@ const MpPublicProblem = () => {
           status: getColIdx(["Status"]),
           remark: getColIdx(["Remark"]),
           remarkTipUsd: getColIdx(["Remark/Tip"]),
+          sectorName: getColIdx(["Sector Name"]),
+          microSectorNo: getColIdx(["Micro Sector No"]),
+          microSectorName: getColIdx(["Micro Sector Name"]),
+          tsNoDate: getColIdx(["TS No/Date"]),
+          asNoDate: getColIdx(["AS No/Date"]),
+          approvedFundOther: getColIdx(["Approved Fund Other"]),
+          po: getColIdx(["PO"]),
         };
 
         let successCount = 0;
@@ -409,6 +432,13 @@ const MpPublicProblem = () => {
               status: getVal(colMap.status) || "Pending",
               remark: getVal(colMap.remark),
               remarkTipUsd: getVal(colMap.remarkTipUsd),
+              sectorName: getVal(colMap.sectorName),
+              microSectorNo: getVal(colMap.microSectorNo),
+              microSectorName: getVal(colMap.microSectorName),
+              tsNoDate: getVal(colMap.tsNoDate),
+              asNoDate: getVal(colMap.asNoDate),
+              approvedFundOther: getVal(colMap.approvedFundOther),
+              po: getVal(colMap.po),
             };
 
             if (!payload.regNo || !payload.district || !payload.block) {
@@ -821,6 +851,41 @@ const MpPublicProblem = () => {
                         Panchayat Name
                       </TableHead>
                     )}
+                    {(visibleColumns as any).sectorName && (
+                      <TableHead className="whitespace-nowrap font-semibold dark:text-gray-200">
+                        Sector Name
+                      </TableHead>
+                    )}
+                    {(visibleColumns as any).microSectorNo && (
+                      <TableHead className="whitespace-nowrap font-semibold dark:text-gray-200">
+                        Micro Sector No.
+                      </TableHead>
+                    )}
+                    {(visibleColumns as any).microSectorName && (
+                      <TableHead className="whitespace-nowrap font-semibold dark:text-gray-200">
+                        Micro Sector Name
+                      </TableHead>
+                    )}
+                    {(visibleColumns as any).tsNoDate && (
+                      <TableHead className="whitespace-nowrap font-semibold dark:text-gray-200">
+                        TS No/Date
+                      </TableHead>
+                    )}
+                    {(visibleColumns as any).asNoDate && (
+                      <TableHead className="whitespace-nowrap font-semibold dark:text-gray-200">
+                        AS No/Date
+                      </TableHead>
+                    )}
+                    {(visibleColumns as any).approvedFundOther && (
+                      <TableHead className="whitespace-nowrap font-semibold dark:text-gray-200">
+                        Approved Fund Other
+                      </TableHead>
+                    )}
+                    {(visibleColumns as any).po && (
+                      <TableHead className="whitespace-nowrap font-semibold dark:text-gray-200">
+                        PO
+                      </TableHead>
+                    )}
                     {visibleColumns.village && (
                       <TableHead className="whitespace-nowrap font-semibold dark:text-gray-200">
                         Village
@@ -1003,6 +1068,27 @@ const MpPublicProblem = () => {
                         )}
                         {visibleColumns.panchayatName && (
                           <TableCell>{row.panchayatName}</TableCell>
+                        )}
+                        {(visibleColumns as any).sectorName && (
+                          <TableCell>{row.sectorName}</TableCell>
+                        )}
+                        {(visibleColumns as any).microSectorNo && (
+                          <TableCell>{row.microSectorNo}</TableCell>
+                        )}
+                        {(visibleColumns as any).microSectorName && (
+                          <TableCell>{row.microSectorName}</TableCell>
+                        )}
+                        {(visibleColumns as any).tsNoDate && (
+                          <TableCell>{row.tsNoDate}</TableCell>
+                        )}
+                        {(visibleColumns as any).asNoDate && (
+                          <TableCell>{row.asNoDate}</TableCell>
+                        )}
+                        {(visibleColumns as any).approvedFundOther && (
+                          <TableCell>{row.approvedFundOther}</TableCell>
+                        )}
+                        {(visibleColumns as any).po && (
+                          <TableCell>{row.po}</TableCell>
                         )}
                         {visibleColumns.village && (
                           <TableCell>{row.village}</TableCell>

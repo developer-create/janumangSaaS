@@ -58,6 +58,15 @@ export const publicProblemInitialValues: IPublicProblemFormValues = {
   middleMenContactNo: "",
   beneficialName: "",
   beneficialMobile: "", // Contact No for Beneficial
+
+  sectorName: "",
+  microSectorNo: "",
+  microSectorName: "",
+  tsNoDate: "",
+  asNoDate: "",
+  approvedFundOther: "",
+  po: "",
+
   status: "Pending",
   remarkGoshana: "",
   remarkTipUsd: "",

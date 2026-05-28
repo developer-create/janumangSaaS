@@ -1085,6 +1085,76 @@ const EditEntryContent = () => {
                       </p>
                     )}
                 </div>
+                <div className="space-y-2">
+                  <Label className="text-gray-700 dark:text-gray-300 font-medium">Sector Name</Label>
+                  <Input
+                    name="sectorName"
+                    value={formik.values.sectorName}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    className={`bg-gray-50 dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 dark:text-gray-200 ${formik.touched.sectorName && formik.errors.sectorName ? "border-red-500" : ""}`}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-gray-700 dark:text-gray-300 font-medium">Micro Sector No.</Label>
+                  <Input
+                    name="microSectorNo"
+                    value={formik.values.microSectorNo}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    className={`bg-gray-50 dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 dark:text-gray-200 ${formik.touched.microSectorNo && formik.errors.microSectorNo ? "border-red-500" : ""}`}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-gray-700 dark:text-gray-300 font-medium">Micro Sector Name</Label>
+                  <Input
+                    name="microSectorName"
+                    value={formik.values.microSectorName}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    className={`bg-gray-50 dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 dark:text-gray-200 ${formik.touched.microSectorName && formik.errors.microSectorName ? "border-red-500" : ""}`}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-gray-700 dark:text-gray-300 font-medium">TS No/Date</Label>
+                  <Input
+                    name="tsNoDate"
+                    value={formik.values.tsNoDate}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    className={`bg-gray-50 dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 dark:text-gray-200 ${formik.touched.tsNoDate && formik.errors.tsNoDate ? "border-red-500" : ""}`}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-gray-700 dark:text-gray-300 font-medium">AS No/Date</Label>
+                  <Input
+                    name="asNoDate"
+                    value={formik.values.asNoDate}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    className={`bg-gray-50 dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 dark:text-gray-200 ${formik.touched.asNoDate && formik.errors.asNoDate ? "border-red-500" : ""}`}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-gray-700 dark:text-gray-300 font-medium">Approved Fund Other</Label>
+                  <Input
+                    name="approvedFundOther"
+                    value={formik.values.approvedFundOther}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    className={`bg-gray-50 dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 dark:text-gray-200 ${formik.touched.approvedFundOther && formik.errors.approvedFundOther ? "border-red-500" : ""}`}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-gray-700 dark:text-gray-300 font-medium">PO</Label>
+                  <Input
+                    name="po"
+                    value={formik.values.po}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    className={`bg-gray-50 dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 dark:text-gray-200 ${formik.touched.po && formik.errors.po ? "border-red-500" : ""}`}
+                  />
+                </div>
               </div>
 
               {/* Full width inputs */}

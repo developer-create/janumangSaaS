@@ -158,7 +158,8 @@ const ViewMPPublicProblem = () => {
     };
 
     fetchEntry();
-  }, [params.id, router]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [params.id]);
 
   const getStatusColor = (status: string) => {
     switch (status?.toLowerCase()) {
@@ -410,6 +411,30 @@ const ViewMPPublicProblem = () => {
                         {entry.boothNo || "N/A"}
                       </p>
                     </div>
+                    <div>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        Sector Name
+                      </p>
+                      <p className="font-semibold text-gray-800 dark:text-gray-200">
+                        {(entry as any).sectorName || "N/A"}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        Micro Sector No.
+                      </p>
+                      <p className="font-semibold text-gray-800 dark:text-gray-200">
+                        {(entry as any).microSectorNo || "N/A"}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        Micro Sector Name
+                      </p>
+                      <p className="font-semibold text-gray-800 dark:text-gray-200">
+                        {(entry as any).microSectorName || "N/A"}
+                      </p>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -494,6 +519,38 @@ const ViewMPPublicProblem = () => {
                       </p>
                       <p className="font-semibold text-gray-800 dark:text-gray-200">
                         {entry.recommendedLetterNo || "N/A"}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        TS No/Date
+                      </p>
+                      <p className="font-semibold text-gray-800 dark:text-gray-200">
+                        {(entry as any).tsNoDate || "N/A"}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        AS No/Date
+                      </p>
+                      <p className="font-semibold text-gray-800 dark:text-gray-200">
+                        {(entry as any).asNoDate || "N/A"}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        Approved Fund Other
+                      </p>
+                      <p className="font-semibold text-gray-800 dark:text-gray-200">
+                        {(entry as any).approvedFundOther || "N/A"}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        PO
+                      </p>
+                      <p className="font-semibold text-gray-800 dark:text-gray-200">
+                        {(entry as any).po || "N/A"}
                       </p>
                     </div>
                   </div>

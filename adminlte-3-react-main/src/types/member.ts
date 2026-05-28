@@ -52,6 +52,58 @@ export interface IMemberFormValues {
   month?: string;
   date?: string;
   additionalCode?: string[];
+  
+  // 50 Boolean Roles
+  bg?: boolean;
+  bc?: boolean;
+  er?: boolean;
+  br?: boolean;
+  ip?: boolean;
+  sc?: boolean;
+  sa?: boolean;
+  yc?: boolean;
+  ap?: boolean;
+  fp?: boolean;
+  pp?: boolean;
+  wc?: boolean;
+  pa?: boolean;
+  pc?: boolean;
+  ak?: boolean;
+  fm?: boolean;
+  zp?: boolean;
+  vp?: boolean;
+  sr?: boolean;
+  in_field?: boolean;
+  eo?: boolean;
+  gs?: boolean;
+  us?: boolean;
+  pw?: boolean;
+  nl?: boolean;
+  fr?: boolean;
+  so?: boolean;
+  st?: boolean;
+  ob?: boolean;
+  smw?: boolean;
+  smtw?: boolean;
+  it?: boolean;
+  test?: boolean;
+  dyc?: boolean;
+  dcc?: boolean;
+  obc?: boolean;
+  cell_mp?: boolean;
+  dt?: boolean;
+  dp?: boolean;
+  avp?: boolean;
+  meet?: boolean;
+  media?: boolean;
+  mla_x_mla?: boolean;
+  vech?: boolean;
+  it_cell_exp?: boolean;
+  info?: boolean;
+  nsui?: boolean;
+  imp?: boolean;
+  advise?: boolean;
+  ref_code?: boolean;
 }
 
 export interface IMember {
@@ -109,6 +161,58 @@ export interface IMember {
   createdAt: string;
   updatedAt: string;
   tenantId?: string | ITenantShort;
+  
+  // 50 Boolean Roles
+  bg?: boolean;
+  bc?: boolean;
+  er?: boolean;
+  br?: boolean;
+  ip?: boolean;
+  sc?: boolean;
+  sa?: boolean;
+  yc?: boolean;
+  ap?: boolean;
+  fp?: boolean;
+  pp?: boolean;
+  wc?: boolean;
+  pa?: boolean;
+  pc?: boolean;
+  ak?: boolean;
+  fm?: boolean;
+  zp?: boolean;
+  vp?: boolean;
+  sr?: boolean;
+  in_field?: boolean;
+  eo?: boolean;
+  gs?: boolean;
+  us?: boolean;
+  pw?: boolean;
+  nl?: boolean;
+  fr?: boolean;
+  so?: boolean;
+  st?: boolean;
+  ob?: boolean;
+  smw?: boolean;
+  smtw?: boolean;
+  it?: boolean;
+  test?: boolean;
+  dyc?: boolean;
+  dcc?: boolean;
+  obc?: boolean;
+  cell_mp?: boolean;
+  dt?: boolean;
+  dp?: boolean;
+  avp?: boolean;
+  meet?: boolean;
+  media?: boolean;
+  mla_x_mla?: boolean;
+  vech?: boolean;
+  it_cell_exp?: boolean;
+  info?: boolean;
+  nsui?: boolean;
+  imp?: boolean;
+  advise?: boolean;
+  ref_code?: boolean;
 }
 
 export interface IMemberResponse {

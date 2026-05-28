@@ -39,6 +39,14 @@ const publicProblemSchema = mongoose.Schema(
     beneficialName: { type: String, default: "" }, // Beneficial
     beneficialMobile: { type: String, default: "" }, // Beneficial Mobile / Beneficial Cont No.
 
+    sectorName: { type: String, default: "" },
+    microSectorNo: { type: String, default: "" },
+    microSectorName: { type: String, default: "" },
+    tsNoDate: { type: String, default: "" },
+    asNoDate: { type: String, default: "" },
+    approvedFundOther: { type: String, default: "" },
+    po: { type: String, default: "" },
+
     status: { type: String, default: "Pending", index: true },
     remarkGoshana: { type: String, default: "" },
     remarkTipUsd: { type: String, default: "" },

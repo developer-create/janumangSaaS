@@ -62,6 +62,15 @@ export interface IPublicProblem {
   remarkTipUsd: string;
   addedBy: string;
   avedan: string;
+  approvedFund?: string;
+  workAgency?: string;
+  sectorName?: string;
+  microSectorNo?: string;
+  microSectorName?: string;
+  tsNoDate?: string;
+  asNoDate?: string;
+  approvedFundOther?: string;
+  po?: string;
   startLat?: number;
   startLong?: number;
   savedAt?: string;
