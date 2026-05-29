@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useFormik } from "formik";
 import axios from "@app/utils/axios";
 import { toast } from "react-toastify";
@@ -95,7 +95,12 @@ const RoleForm = ({
   } | null>(null);
   const [isLoadingPermissions, setIsLoadingPermissions] = useState(true);
   const [tenants, setTenants] = useState<ITenant[]>([]);
-  const currentUser = useAppSelector((state: any) => state.auth.currentUser);
+  // useRef so updating guard value doesn't trigger a re-render / re-fetch cycle
+  const lastFetchedTenantId = useRef<string | undefined>(undefined);
+  const tenantsFetched = useRef(false);
+  const currentUserId = useAppSelector((state: any) => state.auth.currentUser?._id);
+  const currentUserLevel = useAppSelector((state: any) => state.auth.currentUser?.level);
+  const currentUserTenantId = useAppSelector((state: any) => state.auth.currentUser?.tenantId);
 
   const formik = useFormik<IRoleFormValues>({
     initialValues,
@@ -106,13 +111,24 @@ const RoleForm = ({
     },
   });
 
+  // Only true platform admins (no tenantId + system-level) can assign roles to specific orgs
+  const isCurrentUserGlobalAdmin =
+    !currentUserTenantId &&
+    (currentUserLevel === "system_admin" ||
+      currentUserLevel === "superadmin");
+
   useEffect(() => {
+    const tenantId = formik.values.tenantId;
+    // Only fetch if tenantId actually changed to a different value (use ref to avoid re-renders)
+    if (tenantId === lastFetchedTenantId.current) return;
+    lastFetchedTenantId.current = tenantId;
+
     const fetchPermissions = async () => {
       try {
         setIsLoadingPermissions(true);
         const res = await axios.get("/rbac/permissions/available", {
-          headers: formik.values.tenantId
-            ? { "x-tenant-id": formik.values.tenantId }
+          headers: tenantId
+            ? { "x-tenant-id": tenantId }
             : {},
         });
         setPermissionsData(
@@ -126,29 +142,25 @@ const RoleForm = ({
       }
     };
     fetchPermissions();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formik.values.tenantId]);
 
-  // Only true platform admins (no tenantId + system-level) can assign roles to specific orgs
-  const isCurrentUserGlobalAdmin =
-    !currentUser?.tenantId &&
-    (currentUser?.level === "system_admin" ||
-      currentUser?.level === "superadmin");
-
   useEffect(() => {
-    if (isCurrentUserGlobalAdmin) {
-      const fetchTenants = async () => {
-        try {
-          const res = await axios.get("/tenants?limit=-1");
-          if (res.data?.data) {
-            setTenants(res.data.data);
-          }
-        } catch (error) {
-          console.error("Failed to fetch tenants:", error);
+    if (!isCurrentUserGlobalAdmin || tenantsFetched.current) return;
+    tenantsFetched.current = true;
+    const fetchTenants = async () => {
+      try {
+        const res = await axios.get("/tenants?limit=-1");
+        if (res.data?.data) {
+          setTenants(res.data.data);
         }
-      };
-      fetchTenants();
-    }
-  }, [currentUser]);
+      } catch (error) {
+        console.error("Failed to fetch tenants:", error);
+      }
+    };
+    fetchTenants();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentUserId, currentUserLevel, currentUserTenantId]);
 
   const allPermissions =
     permissionsData?.permissions.flatMap((mp) => mp.permissions) || [];
@@ -183,6 +195,60 @@ const RoleForm = ({
     return modulePerms.permissions.every((p) =>
       formik.values.permissions.includes(p._id),
     );
+  };
+
+  const isAllTypeSelected = (type: string) => {
+    if (!permissionsData || permissionsData.permissions.length === 0) return false;
+    
+    let totalTypePerms = 0;
+    let selectedTypePerms = 0;
+
+    permissionsData.permissions.forEach((mp) => {
+      const typePerms = mp.permissions.filter((p) => {
+        if (type === "view") return p.name.includes("view") || p.name.includes("list");
+        if (type === "other") {
+          const name = p.name.toLowerCase();
+          return !name.includes("view") && !name.includes("list") && !name.includes("create") && !name.includes("edit") && !name.includes("delete");
+        }
+        return p.name.includes(type);
+      });
+      
+      totalTypePerms += typePerms.length;
+      selectedTypePerms += typePerms.filter(p => formik.values.permissions.includes(p._id)).length;
+    });
+
+    return totalTypePerms > 0 && totalTypePerms === selectedTypePerms;
+  };
+
+  const toggleAllByType = (type: string) => {
+    if (!permissionsData) return;
+    
+    let allIdsForType: string[] = [];
+    permissionsData.permissions.forEach((mp) => {
+      const typePerms = mp.permissions.filter((p) => {
+        if (type === "view") return p.name.includes("view") || p.name.includes("list");
+        if (type === "other") {
+          const name = p.name.toLowerCase();
+          return !name.includes("view") && !name.includes("list") && !name.includes("create") && !name.includes("edit") && !name.includes("delete");
+        }
+        return p.name.includes(type);
+      });
+      allIdsForType = [...allIdsForType, ...typePerms.map(p => p._id)];
+    });
+
+    const currentPermissions = [...formik.values.permissions];
+    const isAllSelected = allIdsForType.every(id => currentPermissions.includes(id));
+
+    if (isAllSelected) {
+      formik.setFieldValue(
+        "permissions",
+        currentPermissions.filter((id) => !allIdsForType.includes(id)),
+      );
+    } else {
+      formik.setFieldValue("permissions", [
+        ...new Set([...currentPermissions, ...allIdsForType]),
+      ]);
+    }
   };
 
   const togglePermissionByType = (moduleId: string, type: string) => {
@@ -445,16 +511,55 @@ const RoleForm = ({
                       onCheckedChange={toggleAllPermissions}
                     />
                   </TableHead>
-                  <TableHead className="text-center text-white">View</TableHead>
                   <TableHead className="text-center text-white">
-                    Create
+                    <div className="flex flex-col items-center gap-1">
+                      <span>View</span>
+                      <Checkbox
+                        checked={isAllTypeSelected("view")}
+                        onCheckedChange={() => toggleAllByType("view")}
+                        className="border-white data-[state=checked]:bg-white data-[state=checked]:text-[#00563B]"
+                      />
+                    </div>
                   </TableHead>
-                  <TableHead className="text-center text-white">Edit</TableHead>
                   <TableHead className="text-center text-white">
-                    Delete
+                    <div className="flex flex-col items-center gap-1">
+                      <span>Create</span>
+                      <Checkbox
+                        checked={isAllTypeSelected("create")}
+                        onCheckedChange={() => toggleAllByType("create")}
+                        className="border-white data-[state=checked]:bg-white data-[state=checked]:text-[#00563B]"
+                      />
+                    </div>
                   </TableHead>
                   <TableHead className="text-center text-white">
-                    Others
+                    <div className="flex flex-col items-center gap-1">
+                      <span>Edit</span>
+                      <Checkbox
+                        checked={isAllTypeSelected("edit")}
+                        onCheckedChange={() => toggleAllByType("edit")}
+                        className="border-white data-[state=checked]:bg-white data-[state=checked]:text-[#00563B]"
+                      />
+                    </div>
+                  </TableHead>
+                  <TableHead className="text-center text-white">
+                    <div className="flex flex-col items-center gap-1">
+                      <span>Delete</span>
+                      <Checkbox
+                        checked={isAllTypeSelected("delete")}
+                        onCheckedChange={() => toggleAllByType("delete")}
+                        className="border-white data-[state=checked]:bg-white data-[state=checked]:text-[#00563B]"
+                      />
+                    </div>
+                  </TableHead>
+                  <TableHead className="text-center text-white">
+                    <div className="flex flex-col items-center gap-1">
+                      <span>Others</span>
+                      <Checkbox
+                        checked={isAllTypeSelected("other")}
+                        onCheckedChange={() => toggleAllByType("other")}
+                        className="border-white data-[state=checked]:bg-white data-[state=checked]:text-[#00563B]"
+                      />
+                    </div>
                   </TableHead>
                 </TableRow>
               </TableHeader>

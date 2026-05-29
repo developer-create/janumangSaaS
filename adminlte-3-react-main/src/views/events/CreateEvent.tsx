@@ -10,6 +10,7 @@ import { ContentHeader } from "@app/components";
 import { RouteGuard } from '@app/components/RouteGuard';
 import { PERMISSIONS } from "@app/config/permissions";
 import EventForm from "./EventForm";
+
 import { IEventFormValues } from "./event.schema";
 
 const CreateEvent = () => {
@@ -19,7 +20,11 @@ const CreateEvent = () => {
   const handleSubmit = async (values: IEventFormValues) => {
     try {
       setIsSubmitting(true);
-      const response = await axios.post("/events", values);
+      const submitValues = { ...values };
+      if (submitValues.district === "other" && submitValues.otherDistrictName) {
+        submitValues.district = submitValues.otherDistrictName;
+      }
+      const response = await axios.post("/events", submitValues);
       toast.success("Event created successfully");
       router.push("/events");
     } catch (error: unknown) {

@@ -23,6 +23,9 @@ export interface IEventFormValues {
   dispatchNumber: string;
   remarks: string;
   addedBy: string;
+  otherDistrictName?: string;
+  block?: string;
+  office?: string;
 }
 
 export interface IEvent {

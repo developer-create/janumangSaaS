@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { useRouter } from "@app/hooks/useCustomRouter";
 
 import { useFormik } from "formik";
@@ -59,19 +59,26 @@ const UserForm = ({
   const [roles, setRoles] = useState<IRoleOption[]>([]);
   const [rolesLoading, setRolesLoading] = useState(false);
   const [rolesError, setRolesError] = useState<string | null>(null);
-  const currentUser = useAppSelector(
-    (state: RootState) => state.auth.currentUser,
-  );
+
+  // Use primitive selectors to avoid infinite re-renders from object reference changes
+  const currentUser = useAppSelector((state: RootState) => state.auth.currentUser);
+  const currentUserId = useAppSelector((state: RootState) => state.auth.currentUser?._id);
+  const currentUserLevel = useAppSelector((state: RootState) => state.auth.currentUser?.level);
+  const currentUserTenantId = useAppSelector((state: RootState) => state.auth.currentUser?.tenantId);
+
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [tenants, setTenants] = useState<ITenant[]>([]);
+
+  // Refs to guard against repeated fetches
+  const tenantsFetched = useRef(false);
+  const lastFetchedRolesTenantId = useRef<string | undefined>(undefined);
 
   const formik = useFormik<IUserFormValues>({
     initialValues,
     enableReinitialize: true,
     validationSchema: getCachedUserSchema(isEdit),
     onSubmit: (values) => {
-      // Sanitize values before submission
       const sanitizedValues = sanitizeUserFormValues(values);
       onSubmit(sanitizedValues);
     },
@@ -79,36 +86,41 @@ const UserForm = ({
 
   // Fetch tenants if true platform global admin (no tenantId + system-level)
   const isCurrentUserGlobalAdmin =
-    !currentUser?.tenantId &&
-    (currentUser?.level === "system_admin" ||
-      currentUser?.level === "superadmin");
+    !currentUserTenantId &&
+    (currentUserLevel === "system_admin" ||
+      currentUserLevel === "superadmin");
 
   useEffect(() => {
-    if (isCurrentUserGlobalAdmin) {
-      const fetchTenants = async () => {
-        try {
-          const res = await axios.get("/tenants?limit=-1");
-          if (res.data?.data) {
-            setTenants(res.data.data);
-          }
-        } catch (error: unknown) {
-          handleError(error, "Failed to fetch tenants");
+    if (!isCurrentUserGlobalAdmin || tenantsFetched.current) return;
+    tenantsFetched.current = true;
+    const fetchTenants = async () => {
+      try {
+        const res = await axios.get("/tenants?limit=-1");
+        if (res.data?.data) {
+          setTenants(res.data.data);
         }
-      };
-      fetchTenants();
-    }
-  }, [currentUser]);
+      } catch (error: unknown) {
+        handleError(error, "Failed to fetch tenants");
+      }
+    };
+    fetchTenants();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentUserId, currentUserLevel, currentUserTenantId]);
 
   useEffect(() => {
+    const tenantId = formik.values.tenantId;
+    // Only fetch if tenantId actually changed (ref guard avoids extra renders)
+    if (tenantId === lastFetchedRolesTenantId.current) return;
+    lastFetchedRolesTenantId.current = tenantId;
+
     const fetchRoles = async () => {
       try {
         setRolesLoading(true);
         setRolesError(null);
 
-        // Pass the selected tenantId to get specific roles if applicable
         const headers: any = {};
-        if (formik.values.tenantId) {
-          headers["x-tenant-id"] = formik.values.tenantId;
+        if (tenantId) {
+          headers["x-tenant-id"] = tenantId;
         }
 
         const res = await axios.get("/rbac/roles", {
@@ -123,13 +135,14 @@ const UserForm = ({
         }
       } catch (error: unknown) {
         handleError(error, "Failed to load roles");
-        setRoles([]); // Set empty array on error
+        setRoles([]);
       } finally {
         setRolesLoading(false);
       }
     };
     fetchRoles();
-  }, [formik.values.tenantId, currentUser]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formik.values.tenantId]);
 
   const filteredRoles = useMemo(() => {
     if (!roles || roles.length === 0) return [];
@@ -139,43 +152,22 @@ const UserForm = ({
       return roles;
     }
 
-    // For global admins:
-    // We only want to show exactly two "levels": System Admin and Organization Admin
+    // For global admins: show all roles
+    // If a tenant is selected, show roles belonging to that tenant + global roles
+    // If no tenant selected, show all roles
     const selectedTenantId = formik.values.tenantId;
-    const roleMap = new Map();
 
-    roles.forEach((r: any) => {
-      const name = (r.name || "").toLowerCase();
-      const level = (r.level || "").toLowerCase();
-      const isSysAdmin =
-        name === "system_admin" ||
-        name === "superadmin" ||
-        level === "system_admin";
-      const isOrgAdmin =
-        name === "tenant_admin" ||
-        name === "organization admin" ||
-        level === "tenant_admin";
+    if (!selectedTenantId) {
+      return roles;
+    }
 
-      if (isSysAdmin || isOrgAdmin) {
-        const key = isSysAdmin ? "System Administrator" : "Organization Admin";
-        const belongsToSelected =
-          selectedTenantId && r.tenantId === selectedTenantId;
+    // When a tenant is selected, show roles that belong to that tenant
+    const tenantRoles = roles.filter(
+      (r: any) => r.tenantId === selectedTenantId,
+    );
 
-        // Logic:
-        // 1. If we haven't added this role type yet, add it.
-        // 2. If we found a version of this role that belongs to the selected organization,
-        //    prefer its ID over any others to ensure correct permissions.
-        if (!roleMap.has(key) || belongsToSelected) {
-          roleMap.set(key, {
-            ...r,
-            displayName: key, // Force consistent display name
-          });
-        }
-      }
-    });
-
-    return Array.from(roleMap.values());
-  }, [roles, formik.values.tenantId, currentUser]);
+    return tenantRoles.length > 0 ? tenantRoles : roles;
+  }, [roles, formik.values.tenantId, isCurrentUserGlobalAdmin]);
 
   return (
     <div className="p-8 bg-white dark:bg-card">
@@ -395,8 +387,6 @@ const UserForm = ({
               </Select>
             </div>
           )}
-
-          {/* Hierarchy and Level fields removed as requested */}
 
           {/* Row 4: Security Section Divider */}
           <div className="md:col-span-2 pt-4 border-t border-gray-50 dark:border-gray-800">

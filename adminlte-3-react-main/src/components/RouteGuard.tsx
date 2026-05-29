@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useRouter } from "@app/hooks/useCustomRouter";
 import { usePathname } from "next/navigation";
 import { usePermissions } from "@app/hooks/usePermissions";
@@ -39,7 +39,20 @@ export const RouteGuard = ({
     user,
   } = usePermissions();
 
-  // Helper to find the first accessible path
+  // Use ref to avoid re-running effect when router/callback references change
+  const routerRef = useRef(router);
+  routerRef.current = router;
+
+  const hasPermissionRef = useRef(hasPermission);
+  hasPermissionRef.current = hasPermission;
+  const hasAnyPermissionRef = useRef(hasAnyPermission);
+  hasAnyPermissionRef.current = hasAnyPermission;
+  const hasAllPermissionsRef = useRef(hasAllPermissions);
+  hasAllPermissionsRef.current = hasAllPermissions;
+  const hasSidebarAccessRef = useRef(hasSidebarAccess);
+  hasSidebarAccessRef.current = hasSidebarAccess;
+
+  // Stable string identity for MENU access path
   const getFirstAccessiblePath = () => {
     for (const item of MENU) {
       if (item.path) {
@@ -59,7 +72,7 @@ export const RouteGuard = ({
           item.allowedPermissions &&
           item.allowedPermissions.length > 0
         ) {
-          if (hasAnyPermission(item.allowedPermissions)) {
+          if (hasAnyPermissionRef.current(item.allowedPermissions)) {
             hasAccess = true;
           }
         }
@@ -72,10 +85,10 @@ export const RouteGuard = ({
           hasAccess = true;
         }
 
-        // 4. Resource Check (Fallback if not caught by explicit permissions above, mostly for sidebar consistency)
+        // 4. Resource Check
         if (!hasAccess && item.resource) {
           const viewPermission = `view_${item.resource}`;
-          if (hasPermission(viewPermission)) {
+          if (hasPermissionRef.current(viewPermission)) {
             hasAccess = true;
           }
         }
@@ -85,58 +98,54 @@ export const RouteGuard = ({
         }
       }
     }
-    return "/no-permission"; // Redirect to no-permission page if no access found
+    return "/no-permission";
   };
 
   useEffect(() => {
     if (!user) {
-      router.push("/login");
+      routerRef.current.push("/login");
       return;
     }
 
     let hasAccess = true;
 
     // Optional: Check sidebar access
-    if (checkSidebarAccess && !hasSidebarAccess(pathname)) {
+    if (checkSidebarAccess && !hasSidebarAccessRef.current(pathname)) {
       hasAccess = false;
     }
 
     // Check specific permission
-    if (hasAccess && requiredPermission && !hasPermission(requiredPermission)) {
+    if (hasAccess && requiredPermission && !hasPermissionRef.current(requiredPermission)) {
       hasAccess = false;
     }
 
     // Check multiple permissions
     if (hasAccess && requiredPermissions && requiredPermissions.length > 0) {
       hasAccess = requireAll
-        ? hasAllPermissions(requiredPermissions)
-        : hasAnyPermission(requiredPermissions);
+        ? hasAllPermissionsRef.current(requiredPermissions)
+        : hasAnyPermissionRef.current(requiredPermissions);
     }
 
     if (!hasAccess) {
-      // Find where to go
       const fallbackPath = getFirstAccessiblePath();
-
-      // Avoid infinite loop if fallback is same as current or if we are already redirecting
       if (fallbackPath !== pathname) {
         toast.error("Permission Denied: Redirecting to authorized module...");
-        router.push(fallbackPath);
+        routerRef.current.push(fallbackPath);
       }
       return;
     }
+  // Only re-run when the actual stable data changes: user identity, pathname, permission requirements
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
-    user,
+    user?._id,
+    user?.level,
+    user?.tenantId,
     pathname,
     requiredPermission,
-    requiredPermissions,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    JSON.stringify(requiredPermissions),
     requireAll,
-    redirectTo,
     checkSidebarAccess,
-    hasPermission,
-    hasAnyPermission,
-    hasAllPermissions,
-    hasSidebarAccess,
-    router,
   ]);
 
   // Show nothing while checking permissions or redirecting
@@ -154,7 +163,6 @@ export const RouteGuard = ({
   }
 
   if (!hasAccess) {
-    // Return null instead of error message, since we are redirecting
     return null;
   }
 

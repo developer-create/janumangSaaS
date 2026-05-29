@@ -265,8 +265,16 @@ const EventForm = ({
         {formik.values.district === 'other' && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
             <div className="md:col-start-3 space-y-2">
-              <Label htmlFor="other_district_name">Enter District Name <span className="text-red-500">*</span></Label>
-              <Input id="other_district_name" placeholder="Enter new district name" />
+              <Label htmlFor="otherDistrictName">Enter District Name <span className="text-red-500">*</span></Label>
+              <Input 
+                id="otherDistrictName" 
+                {...formik.getFieldProps("otherDistrictName")}
+                placeholder="Enter new district name" 
+                className={formik.touched.otherDistrictName && formik.errors.otherDistrictName ? "border-red-500" : ""}
+              />
+              {formik.touched.otherDistrictName && formik.errors.otherDistrictName && (
+                <p className="text-red-500 text-sm">{formik.errors.otherDistrictName}</p>
+              )}
             </div>
           </div>
         )}

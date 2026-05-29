@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "@app/hooks/useCustomRouter";
 import { useParams } from "next/navigation";
 import axios from "@app/utils/axios";
@@ -27,8 +27,13 @@ const EditRoleContent = () => {
   const [initialValues, setInitialValues] =
     useState<IRoleFormValues>(roleInitialValues);
   const [pageLoading, setPageLoading] = useState(true);
+  // Use ref to prevent re-fetching when router reference changes
+  const hasFetched = useRef(false);
 
   useEffect(() => {
+    if (!id || hasFetched.current) return;
+    hasFetched.current = true;
+
     const fetchRole = async () => {
       try {
         setPageLoading(true);
@@ -55,10 +60,9 @@ const EditRoleContent = () => {
       }
     };
 
-    if (id) {
-      fetchRole();
-    }
-  }, [id, router]);
+    fetchRole();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
 
   const handleSubmit = async (values: IRoleFormValues) => {
     try {

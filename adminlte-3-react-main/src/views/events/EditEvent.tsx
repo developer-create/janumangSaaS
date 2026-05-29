@@ -31,6 +31,22 @@ const EditEvent = () => {
           eventData.receivingDate = eventData.receivingDate.split("T")[0];
         if (eventData.programDate)
           eventData.programDate = eventData.programDate.split("T")[0];
+        if (eventData.dispatchDate)
+          eventData.dispatchDate = eventData.dispatchDate.split("T")[0];
+
+        // Fetch districts list manually to check if it's "other"
+        // Actually, we can just do it in the form itself or assume it here
+        // We'll let EventForm handle the 'other' mapping in its state if needed,
+        // or just pass it in directly.
+        // Fetch districts list to check if current district is 'other'
+        const districtsRes = await axios.get("/districts?limit=1000");
+        const districts = districtsRes.data.data || [];
+        const isStandardDistrict = districts.some((d: any) => d.name === eventData.district);
+        
+        if (eventData.district && !isStandardDistrict) {
+          eventData.otherDistrictName = eventData.district;
+          eventData.district = "other";
+        }
 
         setInitialValues(eventData);
       } catch (error: unknown) {
@@ -49,7 +65,11 @@ const EditEvent = () => {
   const handleSubmit = async (values: IEventFormValues) => {
     try {
       setIsSubmitting(true);
-      await axios.put(`/events/${id}`, values);
+      const submitValues = { ...values };
+      if (submitValues.district === "other" && submitValues.otherDistrictName) {
+        submitValues.district = submitValues.otherDistrictName;
+      }
+      await axios.put(`/events/${id}`, submitValues);
       toast.success("Event updated successfully");
       router.push("/events");
     } catch (error: unknown) {

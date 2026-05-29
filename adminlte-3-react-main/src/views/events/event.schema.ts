@@ -5,6 +5,11 @@ export type { IEventFormValues };
 export const eventSchema = Yup.object().shape({
   uniqueId: Yup.string().optional(),
   district: Yup.string().required("District is required"),
+  otherDistrictName: Yup.string().when('district', {
+    is: 'other',
+    then: (schema) => schema.required('Please specify the district name'),
+    otherwise: (schema) => schema.optional()
+  }),
   year: Yup.string().required("Year is required"),
   month: Yup.string().required("Month is required"),
   receivingDate: Yup.date().required("Receiving Date is required"),
@@ -34,6 +39,7 @@ export const eventSchema = Yup.object().shape({
 export const eventInitialValues: IEventFormValues = {
   uniqueId: "",
   district: "",
+  otherDistrictName: "",
   year: "",
   month: "",
   receivingDate: "",

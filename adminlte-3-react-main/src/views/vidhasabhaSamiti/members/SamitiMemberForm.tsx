@@ -61,7 +61,7 @@ const SamitiMemberForm = ({
 
             <div className="space-y-2">
               <Label htmlFor="fatherName" className="text-gray-700 dark:text-gray-300">
-                Father's Name
+                Father&apos;s Name
               </Label>
               <Input
                 id="fatherName"

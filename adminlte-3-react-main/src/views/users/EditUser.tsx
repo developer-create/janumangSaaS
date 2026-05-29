@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "@app/hooks/useCustomRouter";
 import { useParams } from "next/navigation";
 import axios from "@app/utils/axios";
@@ -29,8 +29,13 @@ const EditUserContent = () => {
   const [initialValues, setInitialValues] =
     useState<IUserFormValues>(userInitialValues);
   const [pageLoading, setPageLoading] = useState(true);
+  // Prevent re-fetching when router reference changes on every render
+  const hasFetched = useRef(false);
 
   useEffect(() => {
+    if (!id || hasFetched.current) return;
+    hasFetched.current = true;
+
     const fetchUser = async () => {
       try {
         setPageLoading(true);
@@ -96,17 +101,14 @@ const EditUserContent = () => {
       }
     };
 
-    if (id) {
-      fetchUser();
-    }
-  }, [id, router]);
+    fetchUser();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
 
   const handleSubmit = async (values: IUserFormValues) => {
     try {
       setLoading(true);
 
-      // The values are already sanitized by the UserForm component
-      // Build the payload, excluding confirmPassword
       const payload: any = {
         name: values.name,
         email: values.email,
@@ -130,7 +132,7 @@ const EditUserContent = () => {
         payload.password = values.password;
       }
 
-      const response = await axios.put(`/auth/users/${id}`, payload);
+      await axios.put(`/auth/users/${id}`, payload);
       toast.success("User updated successfully!");
       router.push("/users");
     } catch (error: unknown) {
