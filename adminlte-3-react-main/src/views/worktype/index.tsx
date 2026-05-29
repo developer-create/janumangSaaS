@@ -42,6 +42,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@app/components/ui/select";
+import * as XLSX from "xlsx";
+import { Download } from "lucide-react";
 import { ContentHeader } from "@app/components";
 import { usePermissions } from "@app/hooks/usePermissions";
 import {
@@ -120,6 +122,24 @@ const WorktypeList = () => {
     deleteMutation.mutate(id);
   };
 
+  
+  const handleExport = () => {
+    if (!data || data.length === 0) {
+      toast.warning("No data available to export");
+      return;
+    }
+    const exportData = data.map((d: any, index: number) => ({
+      "Sr. No.": (pagination.page - 1) * pagination.limit + index + 1,
+      "Name": d.name
+    }));
+    
+    const ws = XLSX.utils.json_to_sheet(exportData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Worktypes");
+    XLSX.writeFile(wb, "Worktypes_List.xlsx");
+  };
+
+
   const data = response?.data || [];
   const totalItems = response?.total || response?.count || 0;
 
@@ -140,6 +160,15 @@ const WorktypeList = () => {
                 />
               </div>
               <div className="flex gap-2">
+                
+                  <Button
+                    size="lg"
+                    onClick={handleExport}
+                    className="bg-green-600 hover:bg-green-700 text-white rounded-lg shadow-lg border-0 transition-all mr-2"
+                  >
+                    <Download className="w-4 h-4 mr-2 font-bold" /> Export Excel
+                  </Button>
+
                 {hasPermission(PERMISSIONS.CREATE_WORK_TYPES) && (
                   <Button
                     className="bg-[#368F8B] hover:bg-[#2d7a76] text-white rounded-lg shadow-lg shadow-[#368F8B]/20 border-0 transition-all"

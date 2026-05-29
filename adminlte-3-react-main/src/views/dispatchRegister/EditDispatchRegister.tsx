@@ -33,6 +33,7 @@ const EditDispatchRegister = () => {
           date: data.date || "",
           year: data.year || "",
           month: data.month || "",
+          type: data.type || "",
           portalNo: data.portalNo || "",
           samitiNo: data.samitiNo || "",
           dispatchNo: data.dispatchNo || "",
@@ -40,6 +41,7 @@ const EditDispatchRegister = () => {
           particulars: data.particulars || "",
           reference: data.reference || "",
           district: data.district?._id || data.district || "",
+          vidhanSabha: data.vidhanSabha?._id || data.vidhanSabha || "",
           block: data.block?._id || data.block || "",
           panchayat: data.panchayat
             ? data.panchayat.map((p: any) => ({ label: p.name, value: p._id }))

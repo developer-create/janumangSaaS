@@ -36,6 +36,7 @@ exports.getDispatchRegisters = asyncHandler(async (req, res) => {
           .populate("addedBy", "name")
           .populate("department", "name")
           .populate("district", "name")
+          .populate("vidhanSabha", "name")
           .populate("block", "name")
           .populate("panchayat", "name")
           .populate("village", "name")
@@ -47,6 +48,7 @@ exports.getDispatchRegisters = asyncHandler(async (req, res) => {
           .populate("addedBy", "name")
           .populate("department", "name")
           .populate("district", "name")
+          .populate("vidhanSabha", "name")
           .populate("block", "name")
           .populate("panchayat", "name")
           .populate("village", "name")
@@ -73,6 +75,7 @@ exports.getDispatchRegister = asyncHandler(async (req, res) => {
     .populate("addedBy", "name")
     .populate("department", "name")
     .populate("district", "name")
+    .populate("vidhanSabha", "name")
     .populate("block", "name")
     .populate("panchayat", "name")
     .populate("village", "name");

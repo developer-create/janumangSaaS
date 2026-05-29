@@ -2,6 +2,7 @@ export interface IDispatchRegisterFormValues {
   date: string;
   year: string;
   month: string;
+  type: string;
   portalNo: string;
   samitiNo: string;
   dispatchNo: string;
@@ -9,6 +10,7 @@ export interface IDispatchRegisterFormValues {
   particulars: string;
   reference: string;
   district: string;
+  vidhanSabha: string;
   block: string;
   panchayat: any[]; // Stores array of {label, value} objects
   village: any[]; // Stores array of {label, value} objects
@@ -20,6 +22,7 @@ export interface IDispatchRegister {
   date: string;
   year: string;
   month: string;
+  type?: string;
   portalNo: string;
   samitiNo: string;
   dispatchNo: string;
@@ -30,6 +33,10 @@ export interface IDispatchRegister {
   particulars: string;
   reference: string;
   district?: {
+    _id: string;
+    name: string;
+  };
+  vidhanSabha?: {
     _id: string;
     name: string;
   };

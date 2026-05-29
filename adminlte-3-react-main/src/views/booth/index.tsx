@@ -42,6 +42,7 @@ import {
   SelectValue,
 } from "@app/components/ui/select";
 import { Skeleton } from "@app/components/ui/skeleton";
+import * as XLSX from "xlsx";
 import {
   Search,
   Plus,
@@ -296,6 +297,25 @@ const Booth = () => {
     reader.readAsBinaryString(file);
   };
 
+  
+  const handleExport = () => {
+    if (!data || data.length === 0) {
+      toast.warning("No data available to export");
+      return;
+    }
+    const exportData = data.map((d, index) => ({
+      "Sr. No.": (pagination.page - 1) * pagination.limit + index + 1,
+      "Name": d.name,
+      ...(d.panchayat ? { "Panchayat": typeof d.panchayat === 'object' ? d.panchayat.name : d.panchayat } : {})
+    }));
+    
+    const ws = XLSX.utils.json_to_sheet(exportData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Booths");
+    XLSX.writeFile(wb, "Booths_List.xlsx");
+  };
+
+
   const getInitials = (name: string) => {
     return name
       .split(" ")
@@ -373,7 +393,16 @@ const Booth = () => {
                       onChange={handleImport}
                       className="hidden"
                     />
-                    {hasPermission(PERMISSIONS.CREATE_BOOTHS) && (
+                    
+                  <Button
+                    size="lg"
+                    onClick={handleExport}
+                    className="bg-green-600 hover:bg-green-700 text-white rounded-lg shadow-lg border-0 transition-all mr-2"
+                  >
+                    <Download className="w-4 h-4 mr-2 font-bold" /> Export Excel
+                  </Button>
+
+                  {hasPermission(PERMISSIONS.CREATE_BOOTHS) && (
                       <Button
                         size="sm"
                         onClick={() => router.push("/booths/create")}

@@ -36,6 +36,7 @@ const DispatchRegisterForm = ({
 }: DispatchRegisterFormProps) => {
   const [departments, setDepartments] = useState<any[]>([]);
   const [districts, setDistricts] = useState<any[]>([]);
+  const [vidhanSabhas, setVidhanSabhas] = useState<any[]>([]);
   const [blocks, setBlocks] = useState<any[]>([]);
   const [panchayats, setPanchayats] = useState<any[]>([]);
   const [villages, setVillages] = useState<any[]>([]);
@@ -93,6 +94,25 @@ const DispatchRegisterForm = ({
       }
     };
     fetchBlocks();
+  }, [formik.values.district]);
+
+  // Fetch Vidhan Sabhas when District changes
+  useEffect(() => {
+    const fetchVidhanSabhas = async () => {
+      if (formik.values.district) {
+        try {
+          const res = await axios.get("/assemblies", {
+            params: { district: formik.values.district, limit: -1 },
+          });
+          setVidhanSabhas(res.data.data || []);
+        } catch (error: unknown) {
+          handleError(error, "Failed to fetch vidhan sabhas");
+        }
+      } else {
+        setVidhanSabhas([]);
+      }
+    };
+    fetchVidhanSabhas();
   }, [formik.values.district]);
 
   // Fetch Panchayats when Block changes
@@ -258,6 +278,26 @@ const DispatchRegisterForm = ({
 
           <div className="space-y-2">
             <label className="text-sm font-medium text-gray-700">
+              Type
+            </label>
+            <Select
+              value={formik.values.type}
+              onValueChange={(val) => formik.setFieldValue("type", val)}
+              disabled={isViewMode}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select Type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="1">Dispatch (Outward)</SelectItem>
+                <SelectItem value="2">Inward</SelectItem>
+                <SelectItem value="3">Miscellaneous</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-gray-700">
               Portal No.
             </label>
             <Input
@@ -360,6 +400,7 @@ const DispatchRegisterForm = ({
               value={formik.values.district}
               onValueChange={(val) => {
                 formik.setFieldValue("district", val);
+                formik.setFieldValue("vidhanSabha", "");
                 formik.setFieldValue("block", "");
                 formik.setFieldValue("panchayat", []);
                 formik.setFieldValue("village", []);
@@ -373,6 +414,30 @@ const DispatchRegisterForm = ({
                 {districts.map((d) => (
                   <SelectItem key={d._id} value={d._id}>
                     {d.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-gray-700">
+              Vidhan Sabha
+            </label>
+            <Select
+              value={formik.values.vidhanSabha}
+              onValueChange={(val) => {
+                formik.setFieldValue("vidhanSabha", val);
+              }}
+              disabled={isViewMode || !formik.values.district}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select Vidhan Sabha" />
+              </SelectTrigger>
+              <SelectContent>
+                {vidhanSabhas.map((vs) => (
+                  <SelectItem key={vs._id} value={vs._id}>
+                    {vs.name}
                   </SelectItem>
                 ))}
               </SelectContent>

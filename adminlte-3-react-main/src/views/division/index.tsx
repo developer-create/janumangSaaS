@@ -63,7 +63,7 @@ const DivisionList = () => {
   } = useListManagement<IDivision, IDivisionResponse>({
     queryKey: "divisions",
     endpoint: "/divisions",
-    initialVisibleColumns: { srNo: true, name: true, action: true },
+    initialVisibleColumns: { srNo: true, name: true, state: true, action: true },
   });
 
   const data = response?.data || [];
@@ -150,8 +150,8 @@ const DivisionList = () => {
                   {Object.keys(visibleColumns).map((key) => (
                     <DropdownMenuCheckboxItem
                       key={key}
-                      checked={visibleColumns[key]}
-                      onCheckedChange={() => toggleColumn(key)}
+                      checked={visibleColumns[key as keyof typeof visibleColumns]}
+                      onCheckedChange={() => toggleColumn(key as keyof typeof visibleColumns)}
                     >
                       {key.charAt(0).toUpperCase() +
                         key.slice(1).replace(/([A-Z])/g, " $1")}
@@ -173,6 +173,11 @@ const DivisionList = () => {
                     {visibleColumns.name && (
                       <TableHead className="text-left text-white dark:text-white font-semibold uppercase tracking-wider text-xs">
                         Division Name
+                      </TableHead>
+                    )}
+                    {visibleColumns.state && (
+                      <TableHead className="text-left text-white dark:text-white font-semibold uppercase tracking-wider text-xs">
+                        State
                       </TableHead>
                     )}
                     {visibleColumns.action && (
@@ -221,6 +226,11 @@ const DivisionList = () => {
                                 {item.name}
                               </span>
                             </div>
+                          </TableCell>
+                        )}
+                        {visibleColumns.state && (
+                          <TableCell className="text-gray-600 dark:text-gray-400 font-medium">
+                            {typeof item.state === 'object' && item.state !== null ? item.state.name : item.state || "-"}
                           </TableCell>
                         )}
                         {visibleColumns.action && (

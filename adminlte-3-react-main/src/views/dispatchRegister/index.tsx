@@ -80,6 +80,7 @@ const DispatchRegisterList = () => {
     date: true,
     year: true,
     month: true,
+    type: true,
     portalNo: true,
     samitiNo: true,
     dispatchNo: true,
@@ -87,6 +88,7 @@ const DispatchRegisterList = () => {
     particulars: true,
     reference: true,
     district: true,
+    vidhanSabha: true,
     block: true,
     panchayat: true,
     village: true,
@@ -324,6 +326,7 @@ const DispatchRegisterList = () => {
                           .replace("date", "Date")
                           .replace("year", "Year")
                           .replace("month", "Month")
+                          .replace("type", "Type")
                           .replace("portalNo", "Portal No.")
                           .replace("samitiNo", "Samiti No.")
                           .replace("dispatchNo", "Dispatch No.")
@@ -331,6 +334,7 @@ const DispatchRegisterList = () => {
                           .replace("particulars", "Particular (subject)")
                           .replace("reference", "Reference")
                           .replace("district", "District")
+                          .replace("vidhanSabha", "Vidhan Sabha")
                           .replace("block", "Block")
                           .replace("panchayat", "Panchayat")
                           .replace("village", "Village")
@@ -368,6 +372,11 @@ const DispatchRegisterList = () => {
                         Month
                       </TableHead>
                     )}
+                    {visibleColumns.type && (
+                      <TableHead className="font-semibold text-white dark:text-white uppercase tracking-wider text-xs whitespace-nowrap ">
+                        Type
+                      </TableHead>
+                    )}
                     {visibleColumns.portalNo && (
                       <TableHead className="font-semibold text-white dark:text-white uppercase tracking-wider text-xs whitespace-nowrap ">
                         Portal No.
@@ -401,6 +410,11 @@ const DispatchRegisterList = () => {
                     {visibleColumns.district && (
                       <TableHead className="font-semibold text-white dark:text-white uppercase tracking-wider text-xs whitespace-nowrap ">
                         District
+                      </TableHead>
+                    )}
+                    {visibleColumns.vidhanSabha && (
+                      <TableHead className="font-semibold text-white dark:text-white uppercase tracking-wider text-xs whitespace-nowrap ">
+                        Vidhan Sabha
                       </TableHead>
                     )}
                     {visibleColumns.block && (
@@ -483,6 +497,11 @@ const DispatchRegisterList = () => {
                             {item.month || "-"}
                           </TableCell>
                         )}
+                        {visibleColumns.type && (
+                          <TableCell className="text-gray-500 dark:text-gray-400 whitespace-nowrap ">
+                            {item.type || "-"}
+                          </TableCell>
+                        )}
                         {visibleColumns.portalNo && (
                           <TableCell className="text-gray-500 dark:text-gray-400 whitespace-nowrap ">
                             {item.portalNo || "-"}
@@ -516,6 +535,11 @@ const DispatchRegisterList = () => {
                         {visibleColumns.district && (
                           <TableCell className="text-gray-500 dark:text-gray-400 whitespace-nowrap ">
                             {item.district?.name || "-"}
+                          </TableCell>
+                        )}
+                        {visibleColumns.vidhanSabha && (
+                          <TableCell className="text-gray-500 dark:text-gray-400 whitespace-nowrap ">
+                            {item.vidhanSabha?.name || "-"}
                           </TableCell>
                         )}
                         {visibleColumns.block && (

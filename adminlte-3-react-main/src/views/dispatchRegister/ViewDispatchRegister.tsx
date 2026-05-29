@@ -103,7 +103,9 @@ const ViewDispatchRegister = () => {
       Department: data.department?.name || "",
       Particulars: data.particulars || "",
       Reference: data.reference || "",
+      Type: data.type || "",
       District: data.district?.name || "",
+      "Vidhan Sabha": data.vidhanSabha?.name || "",
       Block: data.block?.name || "",
       Panchayat: data.panchayat?.map((p: any) => p.name).join(", ") || "",
       Village: data.village?.map((v: any) => v.name).join(", ") || "",
@@ -204,13 +206,29 @@ const ViewDispatchRegister = () => {
                   <MapPin className="w-5 h-5 text-gray-400" />
                   Location Details
                 </h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+                  <div className="space-y-1">
+                    <label className="text-xs text-gray-400 uppercase">
+                      Type
+                    </label>
+                    <p className="font-medium text-gray-800">
+                      {data?.type || "-"}
+                    </p>
+                  </div>
                   <div className="space-y-1">
                     <label className="text-xs text-gray-400 uppercase">
                       District
                     </label>
                     <p className="font-medium text-gray-800">
                       {data?.district?.name || "-"}
+                    </p>
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs text-gray-400 uppercase">
+                      Vidhan Sabha
+                    </label>
+                    <p className="font-medium text-gray-800">
+                      {data?.vidhanSabha?.name || "-"}
                     </p>
                   </div>
                   <div className="space-y-1">

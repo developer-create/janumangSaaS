@@ -20,6 +20,10 @@ const dispatchRegisterSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
+    type: {
+      type: String,
+      trim: true,
+    },
     samitiNo: {
       type: String,
       trim: true,
@@ -48,6 +52,10 @@ const dispatchRegisterSchema = new mongoose.Schema(
     block: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Block",
+    },
+    vidhanSabha: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Assembly",
     },
     panchayat: [
       {
