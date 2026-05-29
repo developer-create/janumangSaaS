@@ -36,6 +36,14 @@ export interface IEvent {
   dispatchNumber: string;
   remarks: string;
   addedBy: string;
+  
+  // Legacy fields
+  block?: string;
+  office?: string;
+  press?: string;
+  day?: string;
+  approvalStatus?: "pending" | "approved" | "rejected";
+  
   createdAt?: string;
   updatedAt?: string;
 }

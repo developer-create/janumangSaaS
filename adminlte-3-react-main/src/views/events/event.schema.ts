@@ -27,6 +27,8 @@ export const eventSchema = Yup.object().shape({
   dispatchNumber: Yup.string().nullable(),
   remarks: Yup.string(),
   addedBy: Yup.string(),
+  block: Yup.string().nullable(),
+  office: Yup.string().nullable(),
 });
 
 export const eventInitialValues: IEventFormValues = {
@@ -54,4 +56,6 @@ export const eventInitialValues: IEventFormValues = {
   dispatchNumber: "",
   remarks: "",
   addedBy: "",
+  block: "",
+  office: "",
 };

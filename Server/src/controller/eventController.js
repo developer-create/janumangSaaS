@@ -1,5 +1,7 @@
 const asyncHandler = require("express-async-handler");
 const Event = require("../models/eventModel");
+const EventNotification = require("../models/eventNotificationModel");
+const User = require("../models/userModel");
 const {
   createGoogleEvent,
   updateGoogleEvent,
@@ -14,6 +16,20 @@ exports.getEvents = asyncHandler(async (req, res) => {
   const { month, search, startDate, endDate, page = 1, limit } = req.query;
 
   const query = { ...req.scopeFilter };
+  
+  // Check if user is admin
+  const isAdmin = req.user?.role?.name === 'admin' || req.user?.role?.name === 'superadmin';
+  
+  // Block RBAC
+  if (!isAdmin && req.user?.blockId) {
+    const blockIds = typeof req.user.blockId === 'string' ? req.user.blockId.split(',') : [req.user.blockId];
+    query.block = { $in: blockIds };
+  }
+  
+  // Normal users only see approved events
+  if (!isAdmin) {
+    query.approvalStatus = 'approved';
+  }
 
   if (month && month !== "All Months") {
     query.month = month;
@@ -100,17 +116,35 @@ exports.createEvent = asyncHandler(async (req, res) => {
     eventData.tenantId = req.tenantId;
 
     // Create in Local DB
+    const isAdmin = req.user?.role?.name === 'admin' || req.user?.role?.name === 'superadmin';
+    eventData.approvalStatus = isAdmin ? 'approved' : 'pending';
+    
     const event = await Event.create(eventData);
 
-    // Sync to Google Calendar
-    try {
-      const googleEventId = await createGoogleEvent(event);
-      if (googleEventId) {
-        event.googleEventId = googleEventId;
-        await event.save();
+    // If pending, notify admins
+    if (!isAdmin) {
+      const admins = await User.find({ 'role': { $exists: true } }).populate('role');
+      const adminUsers = admins.filter(u => u.role?.name === 'admin' || u.role?.name === 'superadmin');
+      
+      const notifications = adminUsers.map(admin => ({
+        eventId: event._id,
+        userId: admin._id,
+        tenantId: req.tenantId
+      }));
+      if (notifications.length > 0) {
+        await EventNotification.insertMany(notifications);
       }
-    } catch (syncError) {
-      console.error("Failed to sync new event to Google Calendar:", syncError);
+    } else {
+      // Sync to Google Calendar only if approved (created by admin)
+      try {
+        const googleEventId = await createGoogleEvent(event);
+        if (googleEventId) {
+          event.googleEventId = googleEventId;
+          await event.save();
+        }
+      } catch (syncError) {
+        console.error("Failed to sync new event to Google Calendar:", syncError);
+      }
     }
 
     await logActivity(
@@ -236,4 +270,93 @@ exports.syncAllEvents = asyncHandler(async (req, res) => {
     success: true,
     message: `Successfully synced ${syncCount} events to Google Calendar.`,
   });
+});
+
+
+// @desc    Approve event
+// @route   POST /api/events/:id/approve
+// @access  Private (Admin only)
+exports.approveEvent = asyncHandler(async (req, res) => {
+  const event = await Event.findById(req.params.id);
+  if (!event) {
+    res.status(404);
+    throw new Error("Event not found");
+  }
+
+  if (event.approvalStatus !== 'pending') {
+    res.status(400);
+    throw new Error("Event is not pending approval");
+  }
+
+  event.approvalStatus = 'approved';
+  event.approvedBy = req.user._id;
+  await event.save();
+
+  // Mark notifications as read
+  await EventNotification.updateMany({ eventId: event._id }, { isRead: true });
+
+  // Sync to Google Calendar
+  try {
+    const googleEventId = await createGoogleEvent(event);
+    if (googleEventId) {
+      event.googleEventId = googleEventId;
+      await event.save();
+    }
+  } catch (syncError) {
+    console.error("Failed to sync approved event to Google Calendar:", syncError);
+  }
+
+  await logActivity(
+    req,
+    "UPDATE",
+    "Event",
+    `Approved event: ${event.uniqueId}`,
+    { recordId: event._id, newData: event }
+  );
+
+  res.json({ success: true, message: "Event approved successfully", data: event });
+});
+
+// @desc    Reject event
+// @route   POST /api/events/:id/reject
+// @access  Private (Admin only)
+exports.rejectEvent = asyncHandler(async (req, res) => {
+  const { reason } = req.body;
+  const event = await Event.findById(req.params.id);
+  if (!event) {
+    res.status(404);
+    throw new Error("Event not found");
+  }
+
+  if (event.approvalStatus !== 'pending') {
+    res.status(400);
+    throw new Error("Event is not pending approval");
+  }
+
+  event.approvalStatus = 'rejected';
+  event.approvedBy = req.user._id;
+  event.rejectionReason = reason;
+  await event.save();
+
+  // Mark notifications as read
+  await EventNotification.updateMany({ eventId: event._id }, { isRead: true });
+
+  await logActivity(
+    req,
+    "UPDATE",
+    "Event",
+    `Rejected event: ${event.uniqueId}`,
+    { recordId: event._id, newData: event }
+  );
+
+  res.json({ success: true, message: "Event rejected successfully", data: event });
+});
+
+// @desc    Get pending events
+// @route   GET /api/events/pending
+// @access  Private (Admin only)
+exports.getPendingEvents = asyncHandler(async (req, res) => {
+  const query = { ...req.scopeFilter, approvalStatus: 'pending' };
+  const events = await Event.find(query).sort({ programDate: -1 });
+  res.json({ success: true, data: events, count: events.length });
 });

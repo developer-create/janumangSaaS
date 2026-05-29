@@ -43,6 +43,21 @@ const eventSchema = mongoose.Schema(
     dispatchNumber: { type: String, trim: true },
     remarks: { type: String, trim: true },
     addedBy: { type: String, trim: true },
+    
+    // Legacy fields ported over
+    block: { type: String, trim: true, index: true },
+    office: { type: String, trim: true },
+    press: { type: String, trim: true },
+    day: { type: String, trim: true },
+
+    approvalStatus: {
+      type: String,
+      enum: ["pending", "approved", "rejected"],
+      default: "pending",
+      index: true,
+    },
+    approvedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    rejectionReason: { type: String, trim: true },
 
     syncedToCalendar: {
       type: Boolean,

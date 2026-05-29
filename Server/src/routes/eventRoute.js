@@ -6,6 +6,9 @@ const {
   updateEvent,
   deleteEvent,
   syncAllEvents,
+  approveEvent,
+  rejectEvent,
+  getPendingEvents,
 } = require("../controller/eventController");
 const protect = require("../middleware/authMiddleware");
 const { checkPermission } = require("../middleware/permissionMiddleware");
@@ -20,6 +23,30 @@ router.post(
   checkModuleAccess("events"),
   checkPermission("edit_events"),
   syncAllEvents,
+);
+
+router.get(
+  "/pending",
+  protect,
+  checkModuleAccess("events"),
+  checkPermission("edit_events"), // Using edit_events as a proxy for admin, but ideally it should check if user is admin
+  getPendingEvents,
+);
+
+router.post(
+  "/:id/approve",
+  protect,
+  checkModuleAccess("events"),
+  checkPermission("edit_events"),
+  approveEvent,
+);
+
+router.post(
+  "/:id/reject",
+  protect,
+  checkModuleAccess("events"),
+  checkPermission("edit_events"),
+  rejectEvent,
 );
 
 router

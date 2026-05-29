@@ -19,6 +19,7 @@ import {
   TableRow,
 } from "@app/components/ui/table";
 import { Button } from "@app/components/ui/button";
+import { Badge } from "@app/components/ui/badge";
 import { Input } from "@app/components/ui/input";
 import {
   DropdownMenu,
@@ -88,6 +89,8 @@ const EventListContent = () => {
     srNo: true,
     uniqueId: true,
     district: true,
+    block: true,
+    approvalStatus: true,
     year: true,
     month: true,
     receivingDate: true,
