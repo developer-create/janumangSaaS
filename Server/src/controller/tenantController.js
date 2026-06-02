@@ -361,11 +361,12 @@ const createTenant = asyncHandler(async (req, res) => {
     plan,
     enabledModules,
     maxUsers,
+    maxStorage,
     contactEmail,
     contactPhone,
     address,
     settings,
-    owner: ownerPayload,
+    owner: owner,
   } = req.body;
 
   // Validate slug uniqueness
@@ -392,108 +393,85 @@ const createTenant = asyncHandler(async (req, res) => {
   modules = [...new Set([...coreModules, ...modules])];
 
   // Handle maxUsers and maxStorage
-  let finalMaxUsers = maxUsers;
-  let finalMaxStorage = planConfig.maxStorage;
+  let finalMaxUsers;
+  let finalMaxStorage;
 
-  // If it's the custom plan, use provided values or sensible defaults
   if (planConfig.planId === "custom") {
-    finalMaxUsers = maxUsers || 50; 
+    finalMaxUsers = maxUsers || 50;
     finalMaxStorage = maxStorage || 5120;
   } else {
-    // For predefined plans, use plan config (can be overridden by params)
     finalMaxUsers = maxUsers || planConfig.maxUsers;
-    finalMaxStorage = planConfig.maxStorage;
+    finalMaxStorage = maxStorage || planConfig.maxStorage;
   }
 
-  // Start a MongoDB session for transaction
-  const session = await mongoose.startSession();
-  session.startTransaction();
+  // Track created resources for manual cleanup on failure
+  let createdTenant = null;
+  let createdRole = null;
+  let createdUser = null;
 
   try {
-    // Create tenant within transaction
-    const [tenant] = await Tenant.create(
-      [
-        {
-          name,
-          slug,
-          plan: planConfig.id,
-          enabledModules: modules,
-          maxUsers: finalMaxUsers,
-          maxStorage: finalMaxStorage,
-          contactEmail,
-          contactPhone,
-          address,
-          subscriptionStatus: "trial",
-          status: "trialing", // Default status for new tenants
-          subscriptionStartDate: new Date(),
-          trialEndsAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
-          settings,
-          createdBy: req.user?._id,
-        },
-      ],
-      { session },
-    );
+    // 1. Create tenant
+    createdTenant = await Tenant.create({
+      name,
+      slug,
+      plan: planConfig.planId || planConfig._id,
+      enabledModules: modules,
+      maxUsers: finalMaxUsers,
+      maxStorage: finalMaxStorage,
+      contactEmail,
+      contactPhone,
+      address,
+      subscriptionStatus: "trial",
+      status: "trialing",
+      subscriptionStartDate: new Date(),
+      trialEndsAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
+      settings,
+      createdBy: req.user?._id,
+    });
 
-    
-
-    // Create default tenant admin role within transaction
-    const tenantAdminRole = await createDefaultTenantAdminRole(
-      tenant._id,
+    // 2. Create default tenant admin role
+    createdRole = await createDefaultTenantAdminRole(
+      createdTenant._id,
       modules,
-      session, // Pass session to helper function
     );
 
-    
-
-    // Create tenant admin user if provided
+    // 3. Create tenant admin user if provided
     let ownerUser = null;
     if (
-      ownerPayload &&
-      typeof ownerPayload === "object" &&
-      ownerPayload.email &&
-      ownerPayload.name &&
-      ownerPayload.password
+      owner &&
+      typeof owner === "object" &&
+      owner.email &&
+      owner.name &&
+      owner.password
     ) {
       // Check if user with this email already exists
-      const existingUser = await User.findOne({ email: ownerPayload.email });
+      const existingUser = await User.findOne({ email: owner.email });
       if (existingUser) {
         throw new AppError(
-          `A user with email ${ownerPayload.email} already exists. Use a different email for the organization admin.`,
+          `A user with email ${owner.email} already exists. Use a different email for the organization admin.`,
           400,
         );
       }
 
-      // Create owner user within transaction
-      [ownerUser] = await User.create(
-        [
-          {
-            name: ownerPayload.name,
-            email: ownerPayload.email,
-            password: ownerPayload.password,
-            role: tenantAdminRole._id,
-            mobile: ownerPayload.mobile || "",
-            userType: "tenant_admin",
-            level: "tenant_admin",
-            tenantId: tenant._id,
-            permissions: {},
-          },
-        ],
-        { session },
-      );
-
-      
+      createdUser = await User.create({
+        name: owner.name,
+        email: owner.email,
+        password: owner.password,
+        role: createdRole._id,
+        mobile: owner.mobile || "",
+        userType: "tenant_admin",
+        level: "tenant_admin",
+        tenantId: createdTenant._id,
+        permissions: {},
+      });
 
       // Update tenant with owner reference
-      tenant.owner = ownerUser._id;
-      await tenant.save({ session });
+      createdTenant.owner = createdUser._id;
+      await createdTenant.save();
     }
 
-    // Commit the transaction
-    await session.commitTransaction();
-    
-
     // Fetch populated tenant data
-    const populated = await Tenant.findById(tenant._id)
+    const populated = await Tenant.findById(createdTenant._id)
       .populate("owner", "name email")
       .lean();
 
@@ -501,19 +479,24 @@ const createTenant = asyncHandler(async (req, res) => {
       status: "success",
       data: {
         ...populated,
-        defaultRole: tenantAdminRole,
+        defaultRole: createdRole,
       },
     });
   } catch (error) {
-    // Rollback transaction on error
-    await session.abortTransaction();
-    console.error(`[Tenant] Transaction aborted:`, error.message);
+    // Manual rollback — clean up any created resources
+    console.error(`[Tenant] Creation failed, rolling back:`, error);
 
-    // Re-throw the error to be handled by asyncHandler
+    if (createdUser) {
+      await User.findByIdAndDelete(createdUser._id).catch(() => {});
+    }
+    if (createdRole) {
+      await Role.findByIdAndDelete(createdRole._id).catch(() => {});
+    }
+    if (createdTenant) {
+      await Tenant.findByIdAndDelete(createdTenant._id).catch(() => {});
+    }
+
     throw error;
-  } finally {
-    // End the session
-    session.endSession();
   }
 });
 
