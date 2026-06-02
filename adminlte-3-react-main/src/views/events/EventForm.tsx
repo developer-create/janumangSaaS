@@ -176,7 +176,7 @@ const EventForm = ({
           </div>
           <div className="space-y-2">
             <Label htmlFor="year">Event Year <span className="text-red-500">*</span></Label>
-            <Input id="year" name="year" type="number" {...formik.getFieldProps("year")} className={formik.touched.year && formik.errors.year ? "border-red-500" : ""} />
+            <Input id="year" type="number" {...formik.getFieldProps("year")} className={formik.touched.year && formik.errors.year ? "border-red-500" : ""} />
             {formik.touched.year && formik.errors.year && (
               <p className="text-red-500 text-sm">{formik.errors.year}</p>
             )}
@@ -204,7 +204,7 @@ const EventForm = ({
           </div>
           <div className="space-y-2">
             <Label htmlFor="time">Event Time <span className="text-red-500">*</span></Label>
-            <Input id="time" type="time" name="time" {...formik.getFieldProps("time")} className={formik.touched.time && formik.errors.time ? "border-red-500" : ""} />
+            <Input id="time" type="time" {...formik.getFieldProps("time")} className={formik.touched.time && formik.errors.time ? "border-red-500" : ""} />
             {formik.touched.time && formik.errors.time && (
               <p className="text-red-500 text-sm">{formik.errors.time}</p>
             )}
@@ -218,7 +218,7 @@ const EventForm = ({
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="space-y-2">
             <Label htmlFor="eventDetails">Event (Name) Details <span className="text-red-500">*</span></Label>
-            <Input id="eventDetails" name="eventDetails" {...formik.getFieldProps("eventDetails")} className={formik.touched.eventDetails && formik.errors.eventDetails ? "border-red-500" : ""} />
+            <Input id="eventDetails" {...formik.getFieldProps("eventDetails")} className={formik.touched.eventDetails && formik.errors.eventDetails ? "border-red-500" : ""} />
             {formik.touched.eventDetails && formik.errors.eventDetails && (
               <p className="text-red-500 text-sm">{formik.errors.eventDetails}</p>
             )}

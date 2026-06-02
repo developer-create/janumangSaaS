@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "@app/hooks/useCustomRouter";
+import { useParams } from "next/navigation";
 
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -49,77 +50,16 @@ const validationSchema = Yup.object().shape({
   name: Yup.string().required("Name is required"),
 });
 
-const MPVidhansabhaMemberForm = () => {
+const EditMPVidhansabhaMember = () => {
   const router = useRouter();
+  const { id } = useParams();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const [districtsList, setDistrictsList] = useState<any[]>([]);
   const [blocksList, setBlocksList] = useState<any[]>([]);
   const [panchayatsList, setPanchayatsList] = useState<any[]>([]);
   const [vidhansabhaList, setVidhansabhaList] = useState<any[]>([]);
-
-  useEffect(() => {
-    fetchDistricts();
-    fetchVidhansabha();
-  }, []);
-
-  const fetchDistricts = async () => {
-    try {
-      const res = await axios.get("/districts?limit=-1");
-      setDistrictsList(res.data?.data || []);
-    } catch (err) {
-      console.error("Error fetching districts:", err);
-      setDistrictsList([
-        { _id: "1", name: "Nagpur" },
-        { _id: "2", name: "Wardha" },
-        { _id: "3", name: "Aurangabad" },
-        { _id: "4", name: "Ahmedabad" },
-        { _id: "5", name: "Indore" },
-        { _id: "6", name: "Jaipur" },
-      ]);
-    }
-  };
-
-  const fetchVidhansabha = async () => {
-    try {
-      const res = await axios.get("/assemblies?limit=-1");
-      setVidhansabhaList(res.data?.data || []);
-    } catch (err) {
-      console.error("Error fetching vidhan sabha:", err);
-    }
-  };
-
-  const fetchBlocks = async (districtId: string) => {
-    try {
-      const res = await axios.get(`/blocks?limit=-1&district=${districtId}`);
-      setBlocksList(res.data?.data || []);
-    } catch (err) {
-      console.error("Error fetching blocks:", err);
-      setBlocksList([
-        { _id: "1", name: "Nagpur Block" },
-        { _id: "2", name: "Wardha Block" },
-        { _id: "3", name: "Aurangabad Block" },
-        { _id: "4", name: "Ahmedabad Block" },
-        { _id: "5", name: "Indore Block" },
-      ]);
-    }
-  };
-
-  const fetchPanchayats = async (blockId: string) => {
-    try {
-      const res = await axios.get(`/panchayat?limit=-1&block=${blockId}`);
-      setPanchayatsList(res.data?.data || []);
-    } catch (err) {
-      console.error("Error fetching panchayats:", err);
-      setPanchayatsList([
-        { _id: "1", name: "Panchayat A" },
-        { _id: "2", name: "Panchayat B" },
-        { _id: "3", name: "Panchayat C" },
-        { _id: "4", name: "Panchayat D" },
-        { _id: "5", name: "Panchayat E" },
-      ]);
-    }
-  };
 
   const formik = useFormik({
     initialValues: {
@@ -153,14 +93,14 @@ const MPVidhansabhaMemberForm = () => {
         const dataToSubmit = {
           month: values.month,
           date: values.date,
-          district_id: values.district_id,
           district: districtsList.find((d: any) => d._id === values.district_id)?.name || "",
-          vidhan_sabha_id: values.vidhan_sabha_id,
+          district_id: values.district_id,
           vidhansabha: vidhansabhaList.find((v: any) => v._id === values.vidhan_sabha_id)?.name || "",
-          block_id: values.block_id,
+          vidhan_sabha_id: values.vidhan_sabha_id,
           block: blocksList.find((b: any) => b._id === values.block_id)?.name || "",
-          panchayat_id: values.panchayat_id,
+          block_id: values.block_id,
           panchayat: panchayatsList.find((p: any) => p._id === values.panchayat_id)?.name || "",
+          panchayat_id: values.panchayat_id,
           name: values.name,
           position: values.position,
           mobile_no: values.mobile_no,
@@ -184,30 +124,235 @@ const MPVidhansabhaMemberForm = () => {
           advise: values.advise, ref: values.ref,
         };
         
-        console.log("Submitting data:", dataToSubmit);
+        console.log("Updating data:", dataToSubmit);
         
-        const response = await axios.post("/members", dataToSubmit);
+        const response = await axios.put(`/members/${id}`, dataToSubmit);
         console.log("Response:", response.data);
         
-        toast.success("MP Vidhan Sabha Member created successfully");
+        toast.success("MP Vidhan Sabha Member updated successfully");
         router.push("/mp-vidhan-sabha-members");
       } catch (error: any) {
         console.error("Error:", error.response?.data || error.message);
-        toast.error(error.response?.data?.message || "Failed to create member");
+        toast.error(error.response?.data?.message || "Failed to update member");
       } finally {
         setIsSubmitting(false);
       }
     },
   });
 
+  useEffect(() => {
+    fetchInitialData();
+  }, []);
+
+  const fetchDistricts = async () => {
+    try {
+      const res = await axios.get("/districts?limit=-1");
+      return res.data?.data || [];
+    } catch (err) {
+      console.error("Error fetching districts:", err);
+      return [];
+    }
+  };
+
+  const fetchVidhansabha = async () => {
+    try {
+      const res = await axios.get("/assemblies?limit=-1");
+      setVidhansabhaList(res.data?.data || []);
+    } catch (err) {
+      console.error("Error fetching vidhan sabha:", err);
+    }
+  };
+
+  const fetchBlocks = async (districtId: string) => {
+    try {
+      const res = await axios.get(`/blocks?limit=-1&district=${districtId}`);
+      setBlocksList(res.data?.data || []);
+    } catch (err) {
+      console.error("Error fetching blocks:", err);
+    }
+  };
+
+  const fetchPanchayats = async (blockId: string) => {
+    try {
+      const res = await axios.get(`/panchayat?limit=-1&block=${blockId}`);
+      setPanchayatsList(res.data?.data || []);
+    } catch (err) {
+      console.error("Error fetching panchayats:", err);
+    }
+  };
+
+  const fetchInitialData = async () => {
+    try {
+      setLoading(true);
+
+      // Fetch all lists
+      const districts = await fetchDistricts();
+      setDistrictsList(districts);
+      const vidhansabhas = await (async () => {
+        try {
+          const res = await axios.get("/assemblies?limit=-1");
+          return res.data?.data || [];
+        } catch (err) {
+          return [];
+        }
+      })();
+      setVidhansabhaList(vidhansabhas);
+
+      // Fetch member data
+      const { data: memberResponse } = await axios.get(`/members/${id}`);
+      const memberData = memberResponse.data;
+
+      console.log("Member data:", memberData);
+
+      // Extract IDs and names from member data
+      let districtId = memberData.district_id;
+      let blockId = memberData.block_id;
+      let panchayatId = memberData.panchayat_id;
+      let vidhansabhaId = memberData.vidhan_sabha_id;
+
+      // If we don't have IDs but have names, find them
+      if (!districtId && memberData.district) {
+        const dist = districts.find((d: any) => d.name === memberData.district);
+        districtId = dist?._id;
+      }
+      
+      if (!vidhansabhaId && memberData.vidhansabha) {
+        const vs = vidhansabhas.find((v: any) => v.name === memberData.vidhansabha);
+        vidhansabhaId = vs?._id;
+      }
+
+      console.log("IDs after lookup:", { districtId, vidhansabhaId, blockId, panchayatId });
+      console.log("Names from API:", { block: memberData.block, panchayat: memberData.panchayat });
+
+      // Fetch blocks based on district
+      let blocksForDistrict = [];
+      if (districtId) {
+        console.log("Fetching blocks for district:", districtId);
+        const res = await axios.get(`/blocks?limit=-1&district=${districtId}`);
+        blocksForDistrict = res.data?.data || [];
+        setBlocksList(blocksForDistrict);
+      }
+
+      // If we still don't have blockId but have block name, find it
+      if (!blockId && memberData.block && blocksForDistrict.length > 0) {
+        const block = blocksForDistrict.find((b: any) => b.name === memberData.block);
+        blockId = block?._id;
+        console.log("Found blockId from name:", blockId, "Available blocks:", blocksForDistrict.map((b: any) => b.name));
+      }
+
+      // Fetch panchayats based on block - THIS IS CRITICAL
+      let panchayatsForBlock = [];
+      if (blockId) {
+        console.log("Fetching panchayats for block:", blockId);
+        try {
+          const res = await axios.get(`/panchayat?limit=-1&block=${blockId}`);
+          panchayatsForBlock = res.data?.data || [];
+          console.log("Fetched panchayats:", panchayatsForBlock);
+          setPanchayatsList(panchayatsForBlock);
+        } catch (err) {
+          console.error("Error fetching panchayats:", err);
+        }
+        
+        // If we still don't have panchayatId but have panchayat name, find it
+        if (!panchayatId && memberData.panchayat && panchayatsForBlock.length > 0) {
+          const panchayat = panchayatsForBlock.find((p: any) => p.name === memberData.panchayat);
+          panchayatId = panchayat?._id;
+          console.log("Found panchayatId from name:", panchayatId, "Available panchayats:", panchayatsForBlock.map((p: any) => p.name));
+        }
+      }
+
+      console.log("Final IDs:", { districtId, vidhansabhaId, blockId, panchayatId });
+
+      // Set form values
+      formik.setValues({
+        month: memberData.month || "",
+        date: memberData.date ? memberData.date.split("T")[0] : "",
+        district_id: districtId || "",
+        vidhan_sabha_id: vidhansabhaId || "",
+        block_id: blockId || "",
+        panchayat_id: panchayatId || "",
+        name: memberData.name || "",
+        position: memberData.position || "",
+        mobile_no: memberData.mobile_no || memberData.mobile || "",
+        locksabha: memberData.locksabha || memberData.lokSabha || "",
+        year: memberData.year || "",
+        remark: memberData.remark || "",
+        // Code fields
+        bg: memberData.bg || false,
+        bc: memberData.bc || false,
+        er: memberData.er || false,
+        br: memberData.br || false,
+        ip: memberData.ip || false,
+        sc: memberData.sc || false,
+        sa: memberData.sa || false,
+        yc: memberData.yc || false,
+        ap: memberData.ap || false,
+        fp: memberData.fp || false,
+        pp: memberData.pp || false,
+        wc: memberData.wc || false,
+        pa: memberData.pa || false,
+        pc: memberData.pc || false,
+        ak: memberData.ak || false,
+        fm: memberData.fm || false,
+        zp: memberData.zp || false,
+        vp: memberData.vp || false,
+        sr: memberData.sr || false,
+        in_field: memberData.in_field || false,
+        eo: memberData.eo || false,
+        gs: memberData.gs || false,
+        us: memberData.us || false,
+        pw: memberData.pw || false,
+        nl: memberData.nl || false,
+        fr: memberData.fr || false,
+        so: memberData.so || false,
+        st: memberData.st || false,
+        ob: memberData.ob || false,
+        smw: memberData.smw || false,
+        smtw: memberData.smtw || false,
+        it: memberData.it || false,
+        test: memberData.test || false,
+        dyc: memberData.dyc || false,
+        dcc: memberData.dcc || false,
+        obc: memberData.obc || false,
+        cell_mp: memberData.cell_mp || false,
+        dt: memberData.dt || false,
+        dp: memberData.dp || false,
+        avp: memberData.avp || false,
+        meet: memberData.meet || false,
+        media: memberData.media || false,
+        mla_x_mla: memberData.mla_x_mla || false,
+        vech: memberData.vech || false,
+        it_cell_exp: memberData.it_cell_exp || false,
+        info: memberData.info || false,
+        nsui: memberData.nsui || false,
+        imp: memberData.imp || false,
+        advise: memberData.advise || false,
+        ref: memberData.ref || memberData.ref_code || false,
+      });
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      toast.error("Failed to load member data");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="p-10 text-center text-gray-500">
+        Loading Member Data...
+      </div>
+    );
+  }
+
   return (
-    <RouteGuard requiredPermissions={[PERMISSIONS.CREATE_MEMBERS]}>
-      <ContentHeader title="Add MP Vidhan Sabha Member" />
+    <RouteGuard requiredPermissions={[PERMISSIONS.EDIT_MEMBERS]}>
+      <ContentHeader title="Edit MP Vidhan Sabha Member" />
       <section className="content pb-10">
         <div className="container-fluid px-4">
           <div className="bg-white dark:bg-card rounded-xl shadow-lg border border-gray-200 dark:border-gray-800 p-8 mx-auto mt-6">
             <h2 className="text-3xl font-bold text-gray-800 dark:text-gray-100 mb-8 border-b border-gray-100 dark:border-gray-800 pb-4">
-              MP Vidhan Sabha Member Form
+              Edit MP Vidhan Sabha Member
             </h2>
             <form onSubmit={formik.handleSubmit} className="space-y-6 text-sm">
               {/* Main Fields Grid */}
@@ -392,10 +537,10 @@ const MPVidhansabhaMemberForm = () => {
                   {isSubmitting ? (
                     <div className="flex items-center">
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Submitting
+                      Updating
                     </div>
                   ) : (
-                    "Submit"
+                    "Update"
                   )}
                 </Button>
               </div>
@@ -407,4 +552,4 @@ const MPVidhansabhaMemberForm = () => {
   );
 };
 
-export default MPVidhansabhaMemberForm;
+export default EditMPVidhansabhaMember;

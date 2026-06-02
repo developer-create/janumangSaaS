@@ -199,54 +199,6 @@ const ViewMember = () => {
                     <h2 className="text-4xl font-extrabold tracking-tight">
                       {member.name || "Unnamed Member"}
                     </h2>
-                    <div className="flex flex-wrap justify-center md:justify-start gap-2 mt-3">
-                      {(member.code || "")
-                        .split(",")
-                        .filter(Boolean)
-                        .map((c) => (
-                          <Badge
-                            key={c}
-                            className="bg-white/20 hover:bg-white/30 text-white border-white/40 px-3 py-1"
-                          >
-                            {c}
-                          </Badge>
-                        ))}
-                      {!member.code && (
-                        <Badge className="bg-white/10 text-white/70 italic border-transparent">
-                          No Legacy Codes Assigned
-                        </Badge>
-                      )}
-                    </div>
-                    {/* Render boolean flags */}
-                    <div className="flex flex-wrap justify-center md:justify-start gap-2 mt-2">
-                      {[
-                        { key: "bg", label: "BG" }, { key: "bc", label: "BC" }, { key: "er", label: "ER" },
-                        { key: "br", label: "BR" }, { key: "ip", label: "IP" }, { key: "sc", label: "SC" },
-                        { key: "sa", label: "SA" }, { key: "yc", label: "YC" }, { key: "ap", label: "AP" },
-                        { key: "fp", label: "FP" }, { key: "pp", label: "PP" }, { key: "wc", label: "WC" },
-                        { key: "pa", label: "PA" }, { key: "pc", label: "PC" }, { key: "ak", label: "AK" },
-                        { key: "fm", label: "FM" }, { key: "zp", label: "ZP" }, { key: "vp", label: "VP" },
-                        { key: "sr", label: "SR" }, { key: "in_field", label: "IN" }, { key: "eo", label: "EO" },
-                        { key: "gs", label: "GS" }, { key: "us", label: "US" }, { key: "pw", label: "PW" },
-                        { key: "nl", label: "NL" }, { key: "fr", label: "FR" }, { key: "so", label: "SO" },
-                        { key: "st", label: "ST" }, { key: "ob", label: "OB" }, { key: "smw", label: "SMW" },
-                        { key: "smtw", label: "SMTW" }, { key: "it", label: "IT" }, { key: "test", label: "TEST" },
-                        { key: "dyc", label: "DYC" }, { key: "dcc", label: "DCC" }, { key: "obc", label: "OBC" },
-                        { key: "cell_mp", label: "CELL/MP" }, { key: "dt", label: "DT" }, { key: "dp", label: "DP" },
-                        { key: "avp", label: "AVP" }, { key: "meet", label: "MEET" }, { key: "media", label: "MEDIA" },
-                        { key: "mla_x_mla", label: "MLA,X MLA" }, { key: "vech", label: "VECH" },
-                        { key: "it_cell_exp", label: "IT CELL EXP" }, { key: "info", label: "INFO" },
-                        { key: "nsui", label: "NSUI" }, { key: "imp", label: "IMP" }, { key: "advise", label: "ADVISE" },
-                        { key: "ref_code", label: "REF" }
-                      ].filter(c => (member as any)[c.key]).map(c => (
-                        <Badge
-                          key={c.key}
-                          className="bg-yellow-500/80 hover:bg-yellow-500 text-white border-white/40 px-3 py-1 mt-1"
-                        >
-                          {c.label}
-                        </Badge>
-                      ))}
-                    </div>
                     <p className="text-[#E0F2F1] text-sm mt-4 opacity-90 flex items-center gap-2 justify-center md:justify-start">
                       <Info className="w-4 h-4" />
                       Survey ID: {member._id.slice(-8).toUpperCase()} | Added

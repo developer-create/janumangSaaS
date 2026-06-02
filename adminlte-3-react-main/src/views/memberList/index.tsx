@@ -2083,11 +2083,12 @@ const MemberListContent = ({ memberType = "vidhan-sabha" }: { memberType?: "vidh
                                 </DropdownMenuItem>
                                 {hasPermission(PERMISSIONS.EDIT_MEMBERS) && (
                                   <DropdownMenuItem
-                                    onClick={() =>
-                                      router.push(
-                                        `/member-list/${member._id}/edit`,
-                                      )
-                                    }
+                                    onClick={() => {
+                                      const editPath = memberType === "mp-vidhan-sabha"
+                                        ? `/mp-vidhan-sabha-members/${member._id}/edit`
+                                        : `/member-list/${member._id}/edit`;
+                                      router.push(editPath);
+                                    }}
                                   >
                                     <Edit className="mr-2 h-4 w-4" /> Edit
                                   </DropdownMenuItem>
