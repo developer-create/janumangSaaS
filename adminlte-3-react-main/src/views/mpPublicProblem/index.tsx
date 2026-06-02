@@ -821,16 +821,8 @@ const MpPublicProblem = () => {
                         Block
                       </TableHead>
                     )}
-                    {visibleColumns.approvedFund && (
-                      <TableHead className="whitespace-nowrap font-semibold dark:text-gray-200">
-                        Approved Fund
-                      </TableHead>
-                    )}
-                    {visibleColumns.workAgency && (
-                      <TableHead className="whitespace-nowrap font-semibold dark:text-gray-200">
-                        Work Agency
-                      </TableHead>
-                    )}
+                    
+                    
                     {visibleColumns.recLetterNo && (
                       <TableHead className="whitespace-nowrap font-semibold dark:text-gray-200">
                         Rec. Letter No
@@ -876,11 +868,7 @@ const MpPublicProblem = () => {
                         AS No/Date
                       </TableHead>
                     )}
-                    {(visibleColumns as any).approvedFundOther && (
-                      <TableHead className="whitespace-nowrap font-semibold dark:text-gray-200">
-                        Approved Fund Other
-                      </TableHead>
-                    )}
+                    
                     {(visibleColumns as any).po && (
                       <TableHead className="whitespace-nowrap font-semibold dark:text-gray-200">
                         PO
@@ -966,6 +954,21 @@ const MpPublicProblem = () => {
                         Beneficially Mobile
                       </TableHead>
                     )}
+                      {visibleColumns.approvedFund && (
+                        <TableHead className="whitespace-nowrap font-semibold dark:text-gray-200">
+                          Approved Fund
+                        </TableHead>
+                      )}
+                      {(visibleColumns as any).approvedFundOther && (
+                        <TableHead className="whitespace-nowrap font-semibold dark:text-gray-200">
+                          Approved Fund Other
+                        </TableHead>
+                      )}
+                      {visibleColumns.workAgency && (
+                        <TableHead className="whitespace-nowrap font-semibold dark:text-gray-200">
+                          Work Agency
+                        </TableHead>
+                      )}
                     {(visibleColumns as any).latLong && (
                       <TableHead className="whitespace-nowrap font-semibold dark:text-gray-200">
                         Lat-Long
@@ -1051,12 +1054,8 @@ const MpPublicProblem = () => {
                         {visibleColumns.block && (
                           <TableCell>{row.block}</TableCell>
                         )}
-                        {visibleColumns.approvedFund && (
-                          <TableCell>{row.approvedFund}</TableCell>
-                        )}
-                        {visibleColumns.workAgency && (
-                          <TableCell>{row.workAgency}</TableCell>
-                        )}
+                        
+                        
                         {visibleColumns.recLetterNo && (
                           <TableCell>{row.recommendedLetterNo}</TableCell>
                         )}
@@ -1084,9 +1083,7 @@ const MpPublicProblem = () => {
                         {(visibleColumns as any).asNoDate && (
                           <TableCell>{row.asNoDate}</TableCell>
                         )}
-                        {(visibleColumns as any).approvedFundOther && (
-                          <TableCell>{row.approvedFundOther}</TableCell>
-                        )}
+                        
                         {(visibleColumns as any).po && (
                           <TableCell>{row.po}</TableCell>
                         )}
@@ -1150,6 +1147,15 @@ const MpPublicProblem = () => {
                         {(visibleColumns as any).beneficialMobile && (
                           <TableCell>{row.beneficialMobile}</TableCell>
                         )}
+                          {visibleColumns.approvedFund && (
+                            <TableCell>{row.approvedFund}</TableCell>
+                          )}
+                          {(visibleColumns as any).approvedFundOther && (
+                            <TableCell>{row.approvedFundOther}</TableCell>
+                          )}
+                          {visibleColumns.workAgency && (
+                            <TableCell>{row.workAgency}</TableCell>
+                          )}
                         {(visibleColumns as any).latLong && (
                           <TableCell className="dark:text-gray-300">
                             {(row as any).startLat && (row as any).startLong

@@ -306,7 +306,7 @@ const Booth = () => {
     const exportData = data.map((d, index) => ({
       "Sr. No.": (pagination.page - 1) * pagination.limit + index + 1,
       "Name": d.name,
-      ...(d.panchayat ? { "Panchayat": typeof d.panchayat === 'object' ? d.panchayat.name : d.panchayat } : {})
+      ...((d as any).panchayat ? { "Panchayat": typeof (d as any).panchayat === 'object' ? (d as any).panchayat.name : (d as any).panchayat } : {})
     }));
     
     const ws = XLSX.utils.json_to_sheet(exportData);

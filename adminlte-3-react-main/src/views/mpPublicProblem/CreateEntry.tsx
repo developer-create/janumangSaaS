@@ -405,7 +405,9 @@ const CreateEntryContent = () => {
     // Note: The original image had duplicated 'Work Agency' and 'Approved Fund' fields here.
     // I am omitting them to prevent data duplication.
 
-    { name: "avedan", label: "Avedan", type: "file" },
+    { name: "startLat", label: "Start Lat", type: "text" },
+    { name: "startLong", label: "Start Long", type: "text" },
+    { name: "avedan", label: "Avedan", type: "file", fullWidth: true },
     {
       name: "status",
       label: "Status",

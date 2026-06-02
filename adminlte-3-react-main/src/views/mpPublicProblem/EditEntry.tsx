@@ -568,138 +568,6 @@ const EditEntryContent = () => {
 
                 <div className="space-y-2">
                   <Label className="text-gray-700 dark:text-gray-300 font-medium">
-                    Approved Fund *
-                  </Label>
-                  <Select
-                    value={formik.values.approvedFund}
-                    onValueChange={(v) => formik.setFieldValue("approvedFund", v)}
-                  >
-                    <SelectTrigger
-                      className={`bg-gray-50 dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 dark:text-gray-200 ${
-                        formik.touched.approvedFund && formik.errors.approvedFund
-                          ? "border-red-500 ring-red-500"
-                          : ""
-                      }`}
-                    >
-                      <SelectValue placeholder="Select Approved Fund" />
-                    </SelectTrigger>
-                    <SelectContent className="dark:bg-slate-900 dark:border-gray-800">
-                      {["MP Fund", "MLA Fund", "Other"].map((f) => (
-                        <SelectItem key={f} value={f}>
-                          {f}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  {formik.touched.approvedFund && formik.errors.approvedFund && (
-                    <p className="text-red-500 text-xs mt-1 font-medium italic">
-                      {formik.errors.approvedFund}
-                    </p>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <Label className="text-gray-700 dark:text-gray-300 font-medium">
-                    Work Agency *
-                  </Label>
-                  <Input
-                    name="workAgency"
-                    value={formik.values.workAgency}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    className={`bg-gray-50 dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 dark:text-gray-200 ${
-                      formik.touched.workAgency && formik.errors.workAgency
-                        ? "border-red-500 ring-red-500"
-                        : ""
-                    }`}
-                  />
-                  {formik.touched.workAgency && formik.errors.workAgency && (
-                    <p className="text-red-500 text-xs mt-1 font-medium italic">
-                      {formik.errors.workAgency}
-                    </p>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <Label className="text-gray-700 dark:text-gray-300 font-medium">
-                    Panchayat Name
-                  </Label>
-                  <Select
-                    value={formik.values.panchayatName}
-                    onValueChange={(v) => {
-                      formik.setFieldValue("panchayatName", v);
-                      const p: any = panchayatsList.find(
-                        (x: any) => x.name === v,
-                      );
-                      if (p) setSelectedPanchayatId(p._id);
-                      else setSelectedPanchayatId("");
-
-                      // Reset Child
-                      formik.setFieldValue("village", "");
-                    }}
-                    disabled={!selectedBlockId && panchayatsList.length === 0}
-                  >
-                    <SelectTrigger
-                      className={`bg-gray-50 dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 dark:text-gray-200 ${
-                        formik.touched.panchayatName &&
-                        formik.errors.panchayatName
-                          ? "border-red-500 ring-red-500"
-                          : ""
-                      }`}
-                    >
-                      <SelectValue placeholder="Select Panchayat" />
-                    </SelectTrigger>
-                    <SelectContent className="dark:bg-slate-900 dark:border-gray-800">
-                      {panchayatsList.map((p: any) => (
-                        <SelectItem key={p._id} value={p.name}>
-                          {p.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  {formik.touched.panchayatName &&
-                    formik.errors.panchayatName && (
-                      <p className="text-red-500 text-xs mt-1 font-medium italic">
-                        {formik.errors.panchayatName}
-                      </p>
-                    )}
-                </div>
-
-                <div className="space-y-2">
-                  <Label className="text-gray-700 dark:text-gray-300 font-medium">
-                    Village
-                  </Label>
-                  <Select
-                    value={formik.values.village}
-                    onValueChange={(v) => formik.setFieldValue("village", v)}
-                    disabled={!selectedPanchayatId && villagesList.length === 0}
-                  >
-                    <SelectTrigger
-                      className={`bg-gray-50 dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 dark:text-gray-200 ${
-                        formik.touched.village && formik.errors.village
-                          ? "border-red-500 ring-red-500"
-                          : ""
-                      }`}
-                    >
-                      <SelectValue placeholder="Select Village" />
-                    </SelectTrigger>
-                    <SelectContent className="dark:bg-slate-900 dark:border-gray-800">
-                      {villagesList.map((v: any) => (
-                        <SelectItem key={v._id} value={v.name}>
-                          {v.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  {formik.touched.village && formik.errors.village && (
-                    <p className="text-red-500 text-xs mt-1 font-medium italic">
-                      {formik.errors.village}
-                    </p>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <Label className="text-gray-700 dark:text-gray-300 font-medium">
                     Recommended Letter No
                   </Label>
                   <Input
@@ -778,6 +646,84 @@ const EditEntryContent = () => {
                   {formik.touched.boothNo && formik.errors.boothNo && (
                     <p className="text-red-500 text-xs mt-1 font-medium italic">
                       {formik.errors.boothNo}
+                    </p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-gray-700 dark:text-gray-300 font-medium">
+                    Panchayat Name
+                  </Label>
+                  <Select
+                    value={formik.values.panchayatName}
+                    onValueChange={(v) => {
+                      formik.setFieldValue("panchayatName", v);
+                      const p: any = panchayatsList.find(
+                        (x: any) => x.name === v,
+                      );
+                      if (p) setSelectedPanchayatId(p._id);
+                      else setSelectedPanchayatId("");
+
+                      // Reset Child
+                      formik.setFieldValue("village", "");
+                    }}
+                    disabled={!selectedBlockId && panchayatsList.length === 0}
+                  >
+                    <SelectTrigger
+                      className={`bg-gray-50 dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 dark:text-gray-200 ${
+                        formik.touched.panchayatName &&
+                        formik.errors.panchayatName
+                          ? "border-red-500 ring-red-500"
+                          : ""
+                      }`}
+                    >
+                      <SelectValue placeholder="Select Panchayat" />
+                    </SelectTrigger>
+                    <SelectContent className="dark:bg-slate-900 dark:border-gray-800">
+                      {panchayatsList.map((p: any) => (
+                        <SelectItem key={p._id} value={p.name}>
+                          {p.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {formik.touched.panchayatName &&
+                    formik.errors.panchayatName && (
+                      <p className="text-red-500 text-xs mt-1 font-medium italic">
+                        {formik.errors.panchayatName}
+                      </p>
+                    )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-gray-700 dark:text-gray-300 font-medium">
+                    Village
+                  </Label>
+                  <Select
+                    value={formik.values.village}
+                    onValueChange={(v) => formik.setFieldValue("village", v)}
+                    disabled={!selectedPanchayatId && villagesList.length === 0}
+                  >
+                    <SelectTrigger
+                      className={`bg-gray-50 dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 dark:text-gray-200 ${
+                        formik.touched.village && formik.errors.village
+                          ? "border-red-500 ring-red-500"
+                          : ""
+                      }`}
+                    >
+                      <SelectValue placeholder="Select Village" />
+                    </SelectTrigger>
+                    <SelectContent className="dark:bg-slate-900 dark:border-gray-800">
+                      {villagesList.map((v: any) => (
+                        <SelectItem key={v._id} value={v.name}>
+                          {v.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {formik.touched.village && formik.errors.village && (
+                    <p className="text-red-500 text-xs mt-1 font-medium italic">
+                      {formik.errors.village}
                     </p>
                   )}
                 </div>
@@ -972,36 +918,6 @@ const EditEntryContent = () => {
                 </div>
                 <div className="space-y-2">
                   <Label className="text-gray-700 dark:text-gray-300 font-medium">
-                    Status
-                  </Label>
-                  <Select
-                    value={formik.values.status}
-                    onValueChange={(v) => formik.setFieldValue("status", v)}
-                  >
-                    <SelectTrigger
-                      className={`bg-gray-50 dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 dark:text-gray-200 ${
-                        formik.touched.status && formik.errors.status
-                          ? "border-red-500 ring-red-500"
-                          : ""
-                      }`}
-                    >
-                      <SelectValue placeholder="Status" />
-                    </SelectTrigger>
-                    <SelectContent className="dark:bg-slate-900 dark:border-gray-800">
-                      <SelectItem value="Pending">Pending</SelectItem>
-                      <SelectItem value="Resolved">Resolved</SelectItem>
-                      <SelectItem value="Rejected">Rejected</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  {formik.touched.status && formik.errors.status && (
-                    <p className="text-red-500 text-xs mt-1 font-medium italic">
-                      {formik.errors.status}
-                    </p>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <Label className="text-gray-700 dark:text-gray-300 font-medium">
                     Middle Man Cont No.
                   </Label>
                   <Input
@@ -1086,6 +1002,70 @@ const EditEntryContent = () => {
                     )}
                 </div>
                 <div className="space-y-2">
+                  <Label className="text-gray-700 dark:text-gray-300 font-medium">
+                    Approved Fund *
+                  </Label>
+                  <Select
+                    value={formik.values.approvedFund}
+                    onValueChange={(v) => formik.setFieldValue("approvedFund", v)}
+                  >
+                    <SelectTrigger
+                      className={`bg-gray-50 dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 dark:text-gray-200 ${
+                        formik.touched.approvedFund && formik.errors.approvedFund
+                          ? "border-red-500 ring-red-500"
+                          : ""
+                      }`}
+                    >
+                      <SelectValue placeholder="Select Approved Fund" />
+                    </SelectTrigger>
+                    <SelectContent className="dark:bg-slate-900 dark:border-gray-800">
+                      {["MP Fund", "MLA Fund", "Other"].map((f) => (
+                        <SelectItem key={f} value={f}>
+                          {f}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {formik.touched.approvedFund && formik.errors.approvedFund && (
+                    <p className="text-red-500 text-xs mt-1 font-medium italic">
+                      {formik.errors.approvedFund}
+                    </p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-gray-700 dark:text-gray-300 font-medium">Approved Fund Other</Label>
+                  <Input
+                    name="approvedFundOther"
+                    value={formik.values.approvedFundOther}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    className={`bg-gray-50 dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 dark:text-gray-200 ${formik.touched.approvedFundOther && formik.errors.approvedFundOther ? "border-red-500" : ""}`}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-gray-700 dark:text-gray-300 font-medium">
+                    Work Agency *
+                  </Label>
+                  <Input
+                    name="workAgency"
+                    value={formik.values.workAgency}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    className={`bg-gray-50 dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 dark:text-gray-200 ${
+                      formik.touched.workAgency && formik.errors.workAgency
+                        ? "border-red-500 ring-red-500"
+                        : ""
+                    }`}
+                  />
+                  {formik.touched.workAgency && formik.errors.workAgency && (
+                    <p className="text-red-500 text-xs mt-1 font-medium italic">
+                      {formik.errors.workAgency}
+                    </p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
                   <Label className="text-gray-700 dark:text-gray-300 font-medium">Sector Name</Label>
                   <Input
                     name="sectorName"
@@ -1136,16 +1116,6 @@ const EditEntryContent = () => {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-gray-700 dark:text-gray-300 font-medium">Approved Fund Other</Label>
-                  <Input
-                    name="approvedFundOther"
-                    value={formik.values.approvedFundOther}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    className={`bg-gray-50 dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 dark:text-gray-200 ${formik.touched.approvedFundOther && formik.errors.approvedFundOther ? "border-red-500" : ""}`}
-                  />
-                </div>
-                <div className="space-y-2">
                   <Label className="text-gray-700 dark:text-gray-300 font-medium">PO</Label>
                   <Input
                     name="po"
@@ -1159,7 +1129,30 @@ const EditEntryContent = () => {
 
               {/* Full width inputs */}
               <div className="mt-6 space-y-4">
-                <div className="space-y-2">
+                
+                  <div className="space-y-2">
+                    <Label className="text-gray-700 dark:text-gray-300 font-medium">Start Lat</Label>
+                    <Input
+                      name="startLat"
+                      value={formik.values.startLat}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      className={`bg-gray-50 dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 
+dark:text-gray-200 ${(formik.touched as any).startLat && (formik.errors as any).startLat ? "border-red-500 ring-red-500" : ""}`}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-gray-700 dark:text-gray-300 font-medium">Start Long</Label>
+                    <Input
+                      name="startLong"
+                      value={formik.values.startLong}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      className={`bg-gray-50 dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 
+dark:text-gray-200 ${(formik.touched as any).startLong && (formik.errors as any).startLong ? "border-red-500 ring-red-500" : ""}`}
+                    />
+                  </div>
+                  <div className="space-y-2">
                   <Label className="text-gray-700 dark:text-gray-300 font-medium">
                     Avedan
                   </Label>
@@ -1211,6 +1204,36 @@ const EditEntryContent = () => {
                   {formik.touched.avedan && formik.errors.avedan && (
                     <p className="text-red-500 text-xs mt-1 font-medium italic">
                       {formik.errors.avedan}
+                    </p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-gray-700 dark:text-gray-300 font-medium">
+                    Status
+                  </Label>
+                  <Select
+                    value={formik.values.status}
+                    onValueChange={(v) => formik.setFieldValue("status", v)}
+                  >
+                    <SelectTrigger
+                      className={`bg-gray-50 dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 dark:text-gray-200 ${
+                        formik.touched.status && formik.errors.status
+                          ? "border-red-500 ring-red-500"
+                          : ""
+                      }`}
+                    >
+                      <SelectValue placeholder="Status" />
+                    </SelectTrigger>
+                    <SelectContent className="dark:bg-slate-900 dark:border-gray-800">
+                      <SelectItem value="Pending">Pending</SelectItem>
+                      <SelectItem value="Resolved">Resolved</SelectItem>
+                      <SelectItem value="Rejected">Rejected</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  {formik.touched.status && formik.errors.status && (
+                    <p className="text-red-500 text-xs mt-1 font-medium italic">
+                      {formik.errors.status}
                     </p>
                   )}
                 </div>

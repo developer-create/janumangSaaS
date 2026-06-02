@@ -77,9 +77,9 @@ const EventForm = ({
         const monthName = monthNames[date.getMonth()];
         const year = date.getFullYear().toString();
 
-        if (formik.values.day !== dayName) formik.setFieldValue("day", dayName);
-        if (formik.values.month !== monthName) formik.setFieldValue("month", monthName);
-        if (formik.values.year !== year) formik.setFieldValue("year", year);
+        if ((formik.values as any).day !== dayName) formik.setFieldValue("day", dayName);
+        if ((formik.values as any).month !== monthName) formik.setFieldValue("month", monthName);
+        if ((formik.values as any).year !== year) formik.setFieldValue("year", year);
       }
     }
   }, [formik.values.programDate]);
@@ -147,24 +147,20 @@ const EventForm = ({
           </div>
           <div className="space-y-2">
             <Label htmlFor="day">Event Day</Label>
-            <Select onValueChange={(val) => formik.setFieldValue("day", val)} value={formik.values.day || ""}>
+            <Select onValueChange={(val) => formik.setFieldValue("day", val)} value={(formik.values as any).day || ""}>
               <SelectTrigger>
                 <SelectValue placeholder="-- Select Day --" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="Monday">Monday</SelectItem>
-                <SelectItem value="Tuesday">Tuesday</SelectItem>
-                <SelectItem value="Wednesday">Wednesday</SelectItem>
-                <SelectItem value="Thursday">Thursday</SelectItem>
-                <SelectItem value="Friday">Friday</SelectItem>
-                <SelectItem value="Saturday">Saturday</SelectItem>
-                <SelectItem value="Sunday">Sunday</SelectItem>
+                {["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"].map((d) => (
+                  <SelectItem key={d} value={d}>{d}</SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
           <div className="space-y-2">
             <Label htmlFor="month">Event Month <span className="text-red-500">*</span></Label>
-            <Select onValueChange={(val) => formik.setFieldValue("month", val)} value={formik.values.month || ""}>
+            <Select onValueChange={(val) => formik.setFieldValue("month", val)} value={(formik.values as any).month || ""}>
               <SelectTrigger className={formik.touched.month && formik.errors.month ? "border-red-500" : ""}>
                 <SelectValue placeholder="Select Month" />
               </SelectTrigger>

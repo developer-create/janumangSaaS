@@ -163,12 +163,14 @@ const ViewMPPublicProblem = () => {
 
   const getStatusColor = (status: string) => {
     switch (status?.toLowerCase()) {
-      case "resolved":
+      case "complete":
         return "bg-green-100 text-green-800 border-green-200";
-      case "pending":
+      case "in progress":
         return "bg-yellow-100 text-yellow-800 border-yellow-200";
-      case "rejected":
+      case "reject":
         return "bg-red-100 text-red-800 border-red-200";
+      case "incomplete":
+        return "bg-gray-100 text-gray-800 border-gray-200";
       default:
         return "bg-gray-100 text-gray-800 border-gray-200";
     }
@@ -411,30 +413,6 @@ const ViewMPPublicProblem = () => {
                         {entry.boothNo || "N/A"}
                       </p>
                     </div>
-                    <div>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
-                        Sector Name
-                      </p>
-                      <p className="font-semibold text-gray-800 dark:text-gray-200">
-                        {(entry as any).sectorName || "N/A"}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
-                        Micro Sector No.
-                      </p>
-                      <p className="font-semibold text-gray-800 dark:text-gray-200">
-                        {(entry as any).microSectorNo || "N/A"}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
-                        Micro Sector Name
-                      </p>
-                      <p className="font-semibold text-gray-800 dark:text-gray-200">
-                        {(entry as any).microSectorName || "N/A"}
-                      </p>
-                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -465,6 +443,16 @@ const ViewMPPublicProblem = () => {
                         {entry.approvedFund || "N/A"}
                       </p>
                     </div>
+                    {entry.approvedFund === "others" && (
+                      <div>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                          Approved Fund Other
+                        </p>
+                        <p className="font-semibold text-gray-800 dark:text-gray-200">
+                          {(entry as any).approvedFundOther || "N/A"}
+                        </p>
+                      </div>
+                    )}
                     <div>
                       <p className="text-sm text-gray-500 dark:text-gray-400">
                         Work Agency
@@ -519,38 +507,6 @@ const ViewMPPublicProblem = () => {
                       </p>
                       <p className="font-semibold text-gray-800 dark:text-gray-200">
                         {entry.recommendedLetterNo || "N/A"}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
-                        TS No/Date
-                      </p>
-                      <p className="font-semibold text-gray-800 dark:text-gray-200">
-                        {(entry as any).tsNoDate || "N/A"}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
-                        AS No/Date
-                      </p>
-                      <p className="font-semibold text-gray-800 dark:text-gray-200">
-                        {(entry as any).asNoDate || "N/A"}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
-                        Approved Fund Other
-                      </p>
-                      <p className="font-semibold text-gray-800 dark:text-gray-200">
-                        {(entry as any).approvedFundOther || "N/A"}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
-                        PO
-                      </p>
-                      <p className="font-semibold text-gray-800 dark:text-gray-200">
-                        {(entry as any).po || "N/A"}
                       </p>
                     </div>
                   </div>
