@@ -16,6 +16,7 @@ export interface IProjectFormValues {
 
 export interface IProject {
   _id: string;
+  uniqueId?: string;
   district: string;
   block: string;
   department: string;

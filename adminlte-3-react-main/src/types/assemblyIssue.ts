@@ -45,6 +45,7 @@ export interface IAssemblyIssueFormValues {
   registrationDate?: string;
   status?: string;
   issueType?: string;
+  remarkTipUsd?: string;
 }
 
 export interface IAssemblyIssue extends IAssemblyIssueFormValues {

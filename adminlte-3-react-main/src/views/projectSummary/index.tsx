@@ -89,26 +89,26 @@ const ProjectSummary = () => {
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
   // Column Visibility
-  const [visibleColumns, setVisibleColumns] = useState({
+    const [visibleColumns, setVisibleColumns] = useState({
     srNo: true,
-    workName: true,
+    uniqueId: true,
     district: true,
     block: true,
     department: true,
+    workName: true,
     projectCost: true,
     proposalEstimate: true,
     status: true,
-    tenderStatus: true,
     officerName: true,
     contactNumber: true,
-    companyName: false,
-    contractorName: false,
-    phoneNo: false,
-    usdRemark: false,
-    view: true,
-    action: true,
+    technicalSession: true,
+    administrativeSession: true,
+    tenderStatus: true,
+    companyName: true,
+    contractorName: true,
+    phoneNo: true,
+    usdRemark: true,
     remarks: true,
-    lastComment: true,
     currentProgress: true,
     createdAt: true,
   });
@@ -444,105 +444,28 @@ const ProjectSummary = () => {
               <Table>
                 <TableHeader>
                   <TableRow className="bg-gray-50 dark:bg-gray-800/50 hover:bg-transparent border-gray-200 dark:border-gray-800">
-                    {visibleColumns.srNo && (
-                      <TableHead className="font-semibold text-white dark:text-white uppercase tracking-wider text-xs">
-                        Sr. No.
-                      </TableHead>
-                    )}
-                    {visibleColumns.workName && (
-                      <TableHead className="font-semibold text-white dark:text-white uppercase tracking-wider text-xs">
-                        Work Name
-                      </TableHead>
-                    )}
-                    {visibleColumns.district && (
-                      <TableHead className="font-semibold text-white dark:text-white uppercase tracking-wider text-xs">
-                        District
-                      </TableHead>
-                    )}
-                    {visibleColumns.block && (
-                      <TableHead className="font-semibold text-white dark:text-white uppercase tracking-wider text-xs">
-                        Block
-                      </TableHead>
-                    )}
-                    {visibleColumns.department && (
-                      <TableHead className="font-semibold text-white dark:text-white uppercase tracking-wider text-xs">
-                        Department
-                      </TableHead>
-                    )}
-
-                    {visibleColumns.projectCost && (
-                      <TableHead className="font-semibold text-white dark:text-white uppercase tracking-wider text-xs">
-                        Project Cost (₹)
-                      </TableHead>
-                    )}
-                    {visibleColumns.proposalEstimate && (
-                      <TableHead className="font-semibold text-white dark:text-white uppercase tracking-wider text-xs">
-                        Proposal Estimate (₹)
-                      </TableHead>
-                    )}
-                    {visibleColumns.status && (
-                      <TableHead className="font-semibold text-white dark:text-white uppercase tracking-wider text-xs">
-                        Status
-                      </TableHead>
-                    )}
-                    {visibleColumns.tenderStatus && (
-                      <TableHead className="font-semibold text-white dark:text-white uppercase tracking-wider text-xs">
-                        Tender Status
-                      </TableHead>
-                    )}
-                    {visibleColumns.officerName && (
-                      <TableHead className="font-semibold text-white dark:text-white uppercase tracking-wider text-xs">
-                        Officer Name
-                      </TableHead>
-                    )}
-                    {visibleColumns.contactNumber && (
-                      <TableHead className="font-semibold text-white dark:text-white uppercase tracking-wider text-xs">
-                        Contact Number
-                      </TableHead>
-                    )}
-                    {visibleColumns.companyName && (
-                      <TableHead className="font-semibold text-white dark:text-white uppercase tracking-wider text-xs">
-                        Company Name
-                      </TableHead>
-                    )}
-                    {visibleColumns.contractorName && (
-                      <TableHead className="font-semibold text-white dark:text-white uppercase tracking-wider text-xs">
-                        Contractor Name
-                      </TableHead>
-                    )}
-                    {visibleColumns.phoneNo && (
-                      <TableHead className="font-semibold text-white dark:text-white uppercase tracking-wider text-xs">
-                        Contractor Phone
-                      </TableHead>
-                    )}
-                    {visibleColumns.usdRemark && (
-                      <TableHead className="font-semibold text-white dark:text-white uppercase tracking-wider text-xs">
-                        USD Remark
-                      </TableHead>
-                    )}
-                    {visibleColumns.remarks && (
-                      <TableHead className="font-semibold text-white dark:text-white uppercase tracking-wider text-xs">
-                        Remarks
-                      </TableHead>
-                    )}
-                    {visibleColumns.lastComment && (
-                      <TableHead className="font-semibold text-white dark:text-white uppercase tracking-wider text-xs">
-                        Last Comment
-                      </TableHead>
-                    )}
-                    {visibleColumns.currentProgress && (
-                      <TableHead className="font-semibold text-white dark:text-white uppercase tracking-wider text-xs">
-                        Current Progress
-                      </TableHead>
-                    )}
-                    {visibleColumns.createdAt && (
-                      <TableHead className="font-semibold text-white dark:text-white uppercase tracking-wider text-xs">
-                        Created On
-                      </TableHead>
-                    )}
-                    <TableHead className="text-right font-semibold text-white dark:text-white uppercase tracking-wider text-xs">
-                      Actions
-                    </TableHead>
+                    {visibleColumns.srNo && <TableHead className="font-semibold text-white dark:text-white uppercase tracking-wider text-xs">Sr No</TableHead>}
+                    {visibleColumns.uniqueId && <TableHead className="font-semibold text-white dark:text-white uppercase tracking-wider text-xs">Unique ID</TableHead>}
+                    {visibleColumns.district && <TableHead className="font-semibold text-white dark:text-white uppercase tracking-wider text-xs">District</TableHead>}
+                    {visibleColumns.block && <TableHead className="font-semibold text-white dark:text-white uppercase tracking-wider text-xs">Block</TableHead>}
+                    {visibleColumns.department && <TableHead className="font-semibold text-white dark:text-white uppercase tracking-wider text-xs">Department</TableHead>}
+                    {visibleColumns.workName && <TableHead className="font-semibold text-white dark:text-white uppercase tracking-wider text-xs">Work Name</TableHead>}
+                    {visibleColumns.projectCost && <TableHead className="font-semibold text-white dark:text-white uppercase tracking-wider text-xs">Project Cost (₹)</TableHead>}
+                    {visibleColumns.proposalEstimate && <TableHead className="font-semibold text-white dark:text-white uppercase tracking-wider text-xs">Proposal Estimate (₹)</TableHead>}
+                    {visibleColumns.status && <TableHead className="font-semibold text-white dark:text-white uppercase tracking-wider text-xs">Work Status</TableHead>}
+                    {visibleColumns.officerName && <TableHead className="font-semibold text-white dark:text-white uppercase tracking-wider text-xs">Officer Name</TableHead>}
+                    {visibleColumns.contactNumber && <TableHead className="font-semibold text-white dark:text-white uppercase tracking-wider text-xs">Contact No</TableHead>}
+                    {visibleColumns.technicalSession && <TableHead className="font-semibold text-white dark:text-white uppercase tracking-wider text-xs">Technical Session</TableHead>}
+                    {visibleColumns.administrativeSession && <TableHead className="font-semibold text-white dark:text-white uppercase tracking-wider text-xs">Administrative Session</TableHead>}
+                    {visibleColumns.tenderStatus && <TableHead className="font-semibold text-white dark:text-white uppercase tracking-wider text-xs">Tender Status</TableHead>}
+                    {visibleColumns.companyName && <TableHead className="font-semibold text-white dark:text-white uppercase tracking-wider text-xs">Company Name</TableHead>}
+                    {visibleColumns.contractorName && <TableHead className="font-semibold text-white dark:text-white uppercase tracking-wider text-xs">Contractor Name</TableHead>}
+                    {visibleColumns.phoneNo && <TableHead className="font-semibold text-white dark:text-white uppercase tracking-wider text-xs">Phone No</TableHead>}
+                    {visibleColumns.usdRemark && <TableHead className="font-semibold text-white dark:text-white uppercase tracking-wider text-xs">USD Remark</TableHead>}
+                    {visibleColumns.remarks && <TableHead className="font-semibold text-white dark:text-white uppercase tracking-wider text-xs">Remark</TableHead>}
+                    {visibleColumns.currentProgress && <TableHead className="font-semibold text-white dark:text-white uppercase tracking-wider text-xs">Current Progress</TableHead>}
+                    {visibleColumns.createdAt && <TableHead className="font-semibold text-white dark:text-white uppercase tracking-wider text-xs">Created Date</TableHead>}
+                    <TableHead className="text-right font-semibold text-white dark:text-white uppercase tracking-wider text-xs">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -576,129 +499,27 @@ const ProjectSummary = () => {
                         key={project._id}
                         className="hover:bg-gray-50 dark:hover:bg-white/5 border-gray-100 dark:border-gray-800 transition-colors"
                       >
-                        {visibleColumns.srNo && (
-                          <TableCell className="dark:text-gray-300">
-                            {entriesPerPage === -1
-                              ? idx + 1
-                              : (currentPage - 1) * entriesPerPage + idx + 1}
-                          </TableCell>
-                        )}
-                        {visibleColumns.workName && (
-                          <TableCell className="dark:text-gray-300">
-                            {project.workName}
-                          </TableCell>
-                        )}
-                        {visibleColumns.district && (
-                          <TableCell className="dark:text-gray-300">
-                            {project.district}
-                          </TableCell>
-                        )}
-                        {visibleColumns.block && (
-                          <TableCell className="dark:text-gray-300">
-                            {project.block}
-                          </TableCell>
-                        )}
-                        {visibleColumns.department && (
-                          <TableCell className="dark:text-gray-300">
-                            {project.department}
-                          </TableCell>
-                        )}
-
-                        {visibleColumns.projectCost && (
-                          <TableCell className="dark:text-gray-300">
-                            ₹{project.projectCost.toLocaleString()}
-                          </TableCell>
-                        )}
-                        {visibleColumns.proposalEstimate && (
-                          <TableCell className="dark:text-gray-300">
-                            ₹{project.proposalEstimate.toLocaleString()}
-                          </TableCell>
-                        )}
-                        {visibleColumns.status && (
-                          <TableCell>
-                            <Badge variant={getStatusVariant(project.status)}>
-                              {project.status}
-                            </Badge>
-                          </TableCell>
-                        )}
-                        {visibleColumns.tenderStatus && (
-                          <TableCell className="dark:text-gray-300">
-                            {project.tenderStatus || "-"}
-                          </TableCell>
-                        )}
-                        {visibleColumns.officerName && (
-                          <TableCell className="dark:text-gray-300">
-                            {project.officerName || "-"}
-                          </TableCell>
-                        )}
-                        {visibleColumns.contactNumber && (
-                          <TableCell className="dark:text-gray-300">
-                            {project.contactNumber || "-"}
-                          </TableCell>
-                        )}
-                        {visibleColumns.companyName && (
-                          <TableCell className="dark:text-gray-300">
-                            {project.companyName || "-"}
-                          </TableCell>
-                        )}
-                        {visibleColumns.contractorName && (
-                          <TableCell className="dark:text-gray-300">
-                            {project.contractorName || "-"}
-                          </TableCell>
-                        )}
-                        {visibleColumns.phoneNo && (
-                          <TableCell className="dark:text-gray-300">
-                            {project.phoneNo || "-"}
-                          </TableCell>
-                        )}
-                        {visibleColumns.usdRemark && (
-                          <TableCell className="dark:text-gray-300">
-                            {project.usdRemark || "-"}
-                          </TableCell>
-                        )}
-                        {visibleColumns.remarks && (
-                          <TableCell
-                            className="max-w-[150px] truncate cursor-pointer hover:text-[#368F8B] transition-colors dark:text-gray-300"
-                            onClick={() =>
-                              setTextModal({
-                                title: "Project Remarks",
-                                content: project.remarks || "No remarks",
-                              })
-                            }
-                            title="Click to view full remarks"
-                          >
-                            {project.remarks || "-"}
-                          </TableCell>
-                        )}
-                        {visibleColumns.lastComment && (
-                          <TableCell
-                            className="max-w-[200px] truncate cursor-pointer hover:text-[#368F8B] transition-colors dark:text-gray-300"
-                            onClick={() => setSelectedProjectId(project._id)}
-                            title="Click to view comments"
-                          >
-                            {project.lastComment || "-"}
-                          </TableCell>
-                        )}
-                        {visibleColumns.currentProgress && (
-                          <TableCell
-                            className="max-w-[150px] truncate cursor-pointer hover:text-[#368F8B] transition-colors dark:text-gray-300"
-                            onClick={() =>
-                              setTextModal({
-                                title: "Current Progress",
-                                content:
-                                  project.currentProgress || "No progress data",
-                              })
-                            }
-                            title="Click to view full progress"
-                          >
-                            {project.currentProgress || "-"}
-                          </TableCell>
-                        )}
-                        {visibleColumns.createdAt && (
-                          <TableCell className="dark:text-gray-300 whitespace-nowrap">
-                            {new Date(project.createdAt).toLocaleDateString()}
-                          </TableCell>
-                        )}
+                        {visibleColumns.srNo && <TableCell className="dark:text-gray-300">{entriesPerPage === -1 ? idx + 1 : (currentPage - 1) * entriesPerPage + idx + 1}</TableCell>}
+                        {visibleColumns.uniqueId && <TableCell className="dark:text-gray-300">{project.uniqueId || "-"}</TableCell>}
+                        {visibleColumns.district && <TableCell className="dark:text-gray-300">{project.district}</TableCell>}
+                        {visibleColumns.block && <TableCell className="dark:text-gray-300">{project.block}</TableCell>}
+                        {visibleColumns.department && <TableCell className="dark:text-gray-300">{project.department}</TableCell>}
+                        {visibleColumns.workName && <TableCell className="dark:text-gray-300">{project.workName}</TableCell>}
+                        {visibleColumns.projectCost && <TableCell className="dark:text-gray-300">₹{(project.projectCost || 0).toLocaleString()}</TableCell>}
+                        {visibleColumns.proposalEstimate && <TableCell className="dark:text-gray-300">₹{(project.proposalEstimate || 0).toLocaleString()}</TableCell>}
+                        {visibleColumns.status && <TableCell><Badge variant={getStatusVariant(project.status)}>{project.status}</Badge></TableCell>}
+                        {visibleColumns.officerName && <TableCell className="dark:text-gray-300">{project.officerName || "-"}</TableCell>}
+                        {visibleColumns.contactNumber && <TableCell className="dark:text-gray-300">{project.contactNumber || "-"}</TableCell>}
+                        {visibleColumns.technicalSession && <TableCell className="dark:text-gray-300">{project.technicalSession || "-"}</TableCell>}
+                        {visibleColumns.administrativeSession && <TableCell className="dark:text-gray-300">{project.administrativeSession || "-"}</TableCell>}
+                        {visibleColumns.tenderStatus && <TableCell className="dark:text-gray-300">{project.tenderStatus || "-"}</TableCell>}
+                        {visibleColumns.companyName && <TableCell className="dark:text-gray-300">{project.companyName || "-"}</TableCell>}
+                        {visibleColumns.contractorName && <TableCell className="dark:text-gray-300">{project.contractorName || "-"}</TableCell>}
+                        {visibleColumns.phoneNo && <TableCell className="dark:text-gray-300">{project.phoneNo || "-"}</TableCell>}
+                        {visibleColumns.usdRemark && <TableCell className="dark:text-gray-300">{project.usdRemark || "-"}</TableCell>}
+                        {visibleColumns.remarks && <TableCell className="max-w-[150px] truncate cursor-pointer hover:text-[#368F8B] transition-colors dark:text-gray-300" onClick={() => setTextModal({title: "Project Remarks", content: project.remarks || "No remarks"})} title="Click to view full remarks">{project.remarks || "-"}</TableCell>}
+                        {visibleColumns.currentProgress && <TableCell className="max-w-[150px] truncate cursor-pointer hover:text-[#368F8B] transition-colors dark:text-gray-300" onClick={() => setTextModal({title: "Current Progress", content: project.currentProgress || "No progress"})} title="Click to view full progress">{project.currentProgress || "-"}</TableCell>}
+                        {visibleColumns.createdAt && <TableCell className="dark:text-gray-300 whitespace-nowrap">{new Date(project.createdAt).toLocaleDateString()}</TableCell>}
                         <TableCell className="text-right">
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
