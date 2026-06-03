@@ -1,10 +1,12 @@
 import { useRouter as useNextRouter } from "next/navigation";
 import NProgress from "nprogress";
 
+import { useMemo } from "react";
+
 export const useRouter = () => {
   const router = useNextRouter();
 
-  return {
+  return useMemo(() => ({
     ...router,
     push: (href: string, options?: any) => {
       NProgress.start();
@@ -14,5 +16,5 @@ export const useRouter = () => {
       NProgress.start();
       router.replace(href, options);
     },
-  };
+  }), [router]);
 };

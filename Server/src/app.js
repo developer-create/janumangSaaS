@@ -71,7 +71,8 @@ const publicProblemRoutes = require("./routes/publicProblemRoute");
 const villageRoutes = require("./routes/villageRoute");
 const paymentRoutes = require("./routes/paymentRoute");
 const planRoutes = require("./routes/planRoute");
-
+const fundBudgetRoutes = require("./routes/fundBudgetRoutes");
+const fundSummaryRoutes = require("./routes/fundSummaryRoutes");
 const app = express();
 
 // 0) HELPER MIDDLEWARES
@@ -178,7 +179,8 @@ app.use("/api/projects", projectRoutes);
 app.use("/api/public-problems", publicProblemRoutes);
 app.use("/api/villages", villageRoutes);
 app.use("/api/plans", planRoutes);
-
+app.use("/api/fund-budgets", fundBudgetRoutes);
+app.use("/api/fund-summary", fundSummaryRoutes);
 const SAMITI_TYPES = [
   "ganesh-samiti",
   "tenkar-samiti",

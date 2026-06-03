@@ -21,6 +21,9 @@ exports.getAssemblyIssues = asyncHandler(async (req, res) => {
     year,
     department,
     approvedFund,
+    approvedFundIn,
+    startDate,
+    endDate,
   } = req.query;
 
   // Build filter query
@@ -34,18 +37,61 @@ exports.getAssemblyIssues = asyncHandler(async (req, res) => {
   if (gramPanchayat)
     query.panchayatName = { $regex: gramPanchayat, $options: "i" };
   if (month) query.month = month;
-  if (year) query.year = year;
+  if (year && year !== "all") {
+    const parts = year.split("-");
+    if (parts.length === 2) {
+      const startYear = parts[0];
+      const shortYear = startYear + "-" + parts[1].slice(-2);
+      query.year = { $in: [startYear, year, shortYear] };
+    } else {
+      query.year = year;
+    }
+  }
+
   if (department) query.department = department;
-  if (approvedFund) query.approvedFund = approvedFund;
+
+  const mlaSweechaRegex = /MLA Sweechanudan|MLA Swechanudan/i;
+  const clpRegex = /^CLP\s/i;
+  const janSamparkRegex = /jan.*sampark.*fund|जन.*संपर्क|जन.*सम्पर्क/i;
+  const mlaFundRegex = /MLA FUND/i;
+
+  if (approvedFund) {
+    if (mlaSweechaRegex.test(approvedFund)) query.approvedFund = { $regex: mlaSweechaRegex };
+    else if (clpRegex.test(approvedFund)) query.approvedFund = { $regex: clpRegex };
+    else if (janSamparkRegex.test(approvedFund)) query.approvedFund = { $regex: janSamparkRegex };
+    else if (mlaFundRegex.test(approvedFund)) query.approvedFund = { $regex: mlaFundRegex };
+    else query.approvedFund = approvedFund;
+  }
+
+  if (approvedFundIn) {
+    if (!query.$and) query.$and = [];
+    query.$and.push({
+      $or: [
+        { approvedFund: { $regex: mlaSweechaRegex } },
+        { approvedFund: { $regex: clpRegex } },
+        { approvedFund: { $regex: janSamparkRegex } },
+        { approvedFund: { $regex: mlaFundRegex } }
+      ]
+    });
+  }
+
+  if (startDate || endDate) {
+    query.registrationDate = {};
+    if (startDate) query.registrationDate.$gte = startDate;
+    if (endDate) query.registrationDate.$lte = endDate;
+  }
 
   if (search) {
-    query.$or = [
-      { uniqueId: { $regex: search, $options: "i" } },
-      { block: { $regex: search, $options: "i" } },
-      { village: { $regex: search, $options: "i" } },
-      { boothName: { $regex: search, $options: "i" } },
-      { panchayatName: { $regex: search, $options: "i" } },
-    ];
+    if (!query.$and) query.$and = [];
+    query.$and.push({
+      $or: [
+        { uniqueId: { $regex: search, $options: "i" } },
+        { block: { $regex: search, $options: "i" } },
+        { village: { $regex: search, $options: "i" } },
+        { boothName: { $regex: search, $options: "i" } },
+        { panchayatName: { $regex: search, $options: "i" } },
+      ]
+    });
   }
 
   const limitNum = parseInt(limit) === -1 ? -1 : parseInt(limit) || 10;

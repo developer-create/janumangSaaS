@@ -167,6 +167,18 @@ export const MENU: IMenuItem[] = [
     ],
   },
   {
+    name: "Fund Budget",
+    icon: "fas fa-money-bill-alt nav-icon",
+    path: "/fund-budget",
+    resource: "projects",
+  },
+  {
+    name: "Fund Summary",
+    icon: "fas fa-chart-pie nav-icon",
+    path: "/fund-summary",
+    resource: "projects",
+  },
+  {
     name: "Project Summary",
     icon: "fas fa-user-friends nav-icon",
     path: "/project-summary",
