@@ -133,8 +133,8 @@ const CreateMember = () => {
 
         const payload = { ...sanitizedValues, memberType: "vidhan-sabha" };
 
-        await axios.post("/members", payload);
-        toast.success("Survey form submitted successfully!");
+        await axios.post("/mp-vidhan-sabha-members", payload);
+        toast.success("Member added successfully!");
         router.push("/mp-vidhan-sabha-member");
       } catch (error: any) {
         toast.error(error.response?.data?.message || "Failed to submit form");

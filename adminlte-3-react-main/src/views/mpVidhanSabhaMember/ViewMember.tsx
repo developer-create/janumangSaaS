@@ -89,11 +89,11 @@ const ViewMember = () => {
   useEffect(() => {
     const fetchMember = async () => {
       try {
-        const { data } = await axios.get(`/members/${id}`);
+        const { data } = await axios.get(`/mp-vidhan-sabha-members/${id}`);
         setMember(data.data);
       } catch (error: unknown) {
         toast.error("Failed to load member details");
-        router.push("/member-list");
+        router.push("/mp-vidhan-sabha-member");
       } finally {
         setLoading(false);
       }
@@ -215,7 +215,7 @@ const ViewMember = () => {
                   <Button
                     className="bg-white text-[#368F8B] hover:bg-white/90 font-bold px-6 border-none shadow-lg"
                     onClick={() =>
-                      router.push(`/member-list/${member._id}/edit`)
+                      router.push(`/mp-vidhan-sabha-member/${member._id}/edit`)
                     }
                   >
                     Edit Profile

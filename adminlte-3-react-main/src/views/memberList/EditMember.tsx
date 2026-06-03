@@ -94,12 +94,14 @@ const EditMember = () => {
     }
   };
 
-  const fetchPanchayats = async (blockIdOrName: string) => {
+  const fetchPanchayats = async (blockIdOrName: string, loadedBlocks?: any[]) => {
     try {
-      let block = blocksList.find(
-        (b) => b.name === blockIdOrName || b._id === blockIdOrName,
+      const blocksToSearch = loadedBlocks || blocksList;
+      let block = blocksToSearch.find(
+        (b: any) => b.name === blockIdOrName || b._id === blockIdOrName,
       );
       if (!block) {
+        // Try direct ID or name lookup via API
         const resB = await axios.get("/blocks?limit=-1");
         block = resB.data?.data?.find(
           (b: any) => b.name === blockIdOrName || b._id === blockIdOrName,
@@ -114,10 +116,11 @@ const EditMember = () => {
     }
   };
 
-  const fetchVillages = async (panchayatIdOrName: string) => {
+  const fetchVillages = async (panchayatIdOrName: string, loadedPanchayats?: any[]) => {
     try {
-      let gp = panchayatsList.find(
-        (p) => p.name === panchayatIdOrName || p._id === panchayatIdOrName,
+      const panchayatsToSearch = loadedPanchayats || panchayatsList;
+      let gp = panchayatsToSearch.find(
+        (p: any) => p.name === panchayatIdOrName || p._id === panchayatIdOrName,
       );
       if (!gp) {
         const resP = await axios.get("/panchayat?limit=-1");
@@ -157,21 +160,25 @@ const EditMember = () => {
   const fetchInitialData = async () => {
     try {
       setLoading(true);
-      await fetchDistricts();
-      await fetchSamitis();
-      await fetchVidhansabha();
+      await Promise.all([fetchDistricts(), fetchSamitis(), fetchVidhansabha()]);
 
       if (id) {
         const { data } = await axios.get(`/members/${id}`);
         const memberData = data.data;
 
+        let loadedBlocks: any[] = [];
+        let loadedPanchayats: any[] = [];
+
         if (memberData.district) {
-          await fetchBlocks(memberData.district);
+          loadedBlocks = await fetchBlocks(memberData.district);
           if (memberData.block) {
-            await fetchPanchayats(memberData.block);
+            loadedPanchayats = await fetchPanchayats(memberData.block, loadedBlocks);
             await fetchBooths(memberData.block);
             if (memberData.grampanchayat) {
-              await fetchVillages(memberData.grampanchayat);
+              const gpValue = typeof memberData.grampanchayat === "object"
+                ? memberData.grampanchayat?.name || memberData.grampanchayat?._id
+                : memberData.grampanchayat;
+              await fetchVillages(gpValue, loadedPanchayats);
             }
           }
         }
