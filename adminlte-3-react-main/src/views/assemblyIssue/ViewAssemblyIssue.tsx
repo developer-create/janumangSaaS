@@ -121,7 +121,7 @@ const ViewAssemblyIssueContent = ({
       Month: issue.month,
       Date: issue.date,
       "Recommended Letter No": issue.recommendedLetterNo,
-      "AC/MP No.": issue.acMpNo,
+
       Block: issue.block,
       Sector: issue.sectorName,
       "Micro Sector No": issue.microSectorNo,
@@ -131,7 +131,7 @@ const ViewAssemblyIssueContent = ({
       "Panchayat Name": issue.panchayatName,
       Village: issue.village,
       "Majra/Faliya": issue.majraFaliya,
-      "Total Members": issue.totalMembers,
+
       "Created At": issue.createdAt,
       "Updated At": issue.updatedAt,
       Description:
@@ -208,7 +208,7 @@ const ViewAssemblyIssueContent = ({
                   label="Recommended Letter No"
                   value={issue.recommendedLetterNo}
                 />
-                <DetailItem label="AC/MP No." value={issue.acMpNo || "N/A"} />
+                
                 <DetailItem label="Block" value={issue.block} />
                 <DetailItem label="Sector" value={issue.sectorName} />
                 <DetailItem
@@ -227,7 +227,7 @@ const ViewAssemblyIssueContent = ({
                 />
                 <DetailItem label="Village" value={issue.village} />
                 <DetailItem label="Majra/Faliya" value={issue.majraFaliya} />
-                <DetailItem label="Total Members" value={issue.totalMembers} />
+                
                 <DetailItem label="Status" value={issue.status} />
                 <DetailItem label="Added By" value={issue.addedBy} />
                 <DetailItem

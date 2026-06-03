@@ -70,7 +70,7 @@ const EditAssemblyIssueContent = ({
             date: resData.date || "",
             district: resData.district || "",
             assembly: resData.assembly || "",
-            acMpNo: resData.acMpNo || "",
+
             block:
               (typeof resData.block === "object"
                 ? resData.block._id
@@ -106,10 +106,9 @@ const EditAssemblyIssueContent = ({
             documentFile: resData.documentFile || "",
             documentFileName: resData.documentFileName || "",
             remarkGoshana: resData.remarkGoshana || "",
-            remarkTipUsd: resData.remarkTipUsd || "",
+
             latLng: resData.latLng || "",
             registrationDate: resData.registrationDate || "",
-            totalMembers: resData.totalMembers || 0,
           });
         }
       } catch (error: unknown) {
@@ -130,7 +129,7 @@ const EditAssemblyIssueContent = ({
       setLoading(true);
       await axios.put(`/assembly-issues/${id}`, {
         ...values,
-        totalMembers: Number(values.totalMembers),
+
       });
 
       toast.success(`${title} updated successfully!`);

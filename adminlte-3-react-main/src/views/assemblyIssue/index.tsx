@@ -153,6 +153,10 @@ const AssemblyIssueListContent = ({
   // Filters
   const [filterBlock, setFilterBlock] = useState("all");
   const [filterPanchayat, setFilterPanchayat] = useState("all");
+  const [filterTab, setFilterTab] = useState("all");
+  const [filterStatus, setFilterStatus] = useState("all");
+  const [filterMonth, setFilterMonth] = useState("all");
+  const [filterYear, setFilterYear] = useState("all");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(false);
 
@@ -241,6 +245,10 @@ const AssemblyIssueListContent = ({
       debouncedSearchTerm,
       filterBlock,
       filterPanchayat,
+      filterTab,
+      filterStatus,
+      filterMonth,
+      filterYear,
     ],
     queryFn: async () => {
       const params: Record<string, string | number | undefined> = {
@@ -249,8 +257,21 @@ const AssemblyIssueListContent = ({
         search: debouncedSearchTerm || undefined,
         block: filterBlock === "all" ? undefined : filterBlock,
         gramPanchayat: filterPanchayat === "all" ? undefined : filterPanchayat,
+        month: filterMonth === "all" ? undefined : filterMonth,
+        year: filterYear === "all" ? undefined : filterYear,
+        status: filterStatus === "all" ? undefined : filterStatus,
         issueType,
       };
+
+      if (filterTab === "approval" || filterTab === "complete") {
+        params.status = "Complete";
+      } else if (filterTab === "incomplete") {
+        params.status = "Incomplete";
+      } else if (filterTab === "inprogress") {
+        params.status = "In progress";
+      } else if (filterTab === "reject") {
+        params.status = "Reject";
+      }
 
       const { data } = await axios.get("/assembly-issues", { params });
       return data;
@@ -680,6 +701,48 @@ const AssemblyIssueListContent = ({
                     ))}
                   </SelectContent>
                 </Select>
+
+                <Select value={filterStatus} onValueChange={(val) => { setFilterStatus(val); setCurrentPage(1); }}>
+                  <SelectTrigger className="w-32 h-9 bg-white dark:bg-[#202123] text-sm dark:border-gray-700 dark:text-gray-300">
+                    <SelectValue placeholder="Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Status</SelectItem>
+                    <SelectItem value="Pending">Pending</SelectItem>
+                    <SelectItem value="In Progress">In Progress</SelectItem>
+                    <SelectItem value="Complete">Complete</SelectItem>
+                    <SelectItem value="Incomplete">Incomplete</SelectItem>
+                    <SelectItem value="Reject">Reject</SelectItem>
+                    <SelectItem value="Approved">Approved</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                <Select value={filterMonth} onValueChange={(val) => { setFilterMonth(val); setCurrentPage(1); }}>
+                  <SelectTrigger className="w-32 h-9 bg-white dark:bg-[#202123] text-sm dark:border-gray-700 dark:text-gray-300">
+                    <SelectValue placeholder="Month" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Months</SelectItem>
+                    {["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"].map((m) => (
+                      <SelectItem key={m} value={m}>{m}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                <Select value={filterYear} onValueChange={(val) => { setFilterYear(val); setCurrentPage(1); }}>
+                  <SelectTrigger className="w-36 h-9 bg-white dark:bg-[#202123] text-sm dark:border-gray-700 dark:text-gray-300">
+                    <SelectValue placeholder="Financial Year" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Years</SelectItem>
+                    {Array.from({length: 20}, (_, i) => {
+                      const startYear = new Date().getFullYear() + 2 - i;
+                      const endYear = String(startYear + 1).slice(-2);
+                      const fy = `${startYear}-${endYear}`;
+                      return <SelectItem key={fy} value={fy}>{fy}</SelectItem>;
+                    })}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 
@@ -725,6 +788,34 @@ const AssemblyIssueListContent = ({
                   ))}
                 </DropdownMenuContent>
               </DropdownMenu>
+            </div>
+
+            {/* Tab Navigation */}
+            <div className="border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-[#202123]">
+              <nav className="-mb-px flex space-x-8 px-6 overflow-x-auto" aria-label="Tabs">
+                {[
+                  { id: "all", label: "All Records" },
+                  { id: "approval", label: "Approval" },
+                  { id: "complete", label: "Complete" },
+                  { id: "incomplete", label: "Incomplete" },
+                  { id: "inprogress", label: "In Progress" },
+                  { id: "reject", label: "Reject" }
+                ].map((tab) => (
+                  <button
+                    key={tab.id}
+                    onClick={() => { setFilterTab(tab.id); setCurrentPage(1); }}
+                    className={`
+                      whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors outline-none
+                      \${filterTab === tab.id
+                        ? "border-[#368F8B] text-[#368F8B]"
+                        : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300"
+                      }
+                    `}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </nav>
             </div>
 
             {/* Table */}

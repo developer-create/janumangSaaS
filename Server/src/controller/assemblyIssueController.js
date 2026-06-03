@@ -17,6 +17,10 @@ exports.getAssemblyIssues = asyncHandler(async (req, res) => {
     issueType,
     block,
     gramPanchayat,
+    month,
+    year,
+    department,
+    approvedFund,
   } = req.query;
 
   // Build filter query
@@ -29,6 +33,10 @@ exports.getAssemblyIssues = asyncHandler(async (req, res) => {
   if (block) query.block = { $regex: block, $options: "i" };
   if (gramPanchayat)
     query.panchayatName = { $regex: gramPanchayat, $options: "i" };
+  if (month) query.month = month;
+  if (year) query.year = year;
+  if (department) query.department = department;
+  if (approvedFund) query.approvedFund = approvedFund;
 
   if (search) {
     query.$or = [

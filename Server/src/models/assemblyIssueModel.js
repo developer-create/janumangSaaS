@@ -91,6 +91,18 @@ const assemblyIssueSchema = mongoose.Schema(
       type: String,
       trim: true,
     },
+    approvedFund: {
+      type: String,
+      trim: true,
+    },
+    approvedFundOther: {
+      type: String,
+      trim: true,
+    },
+    workAgency: {
+      type: String,
+      trim: true,
+    },
     priority: {
       type: String,
       trim: true,

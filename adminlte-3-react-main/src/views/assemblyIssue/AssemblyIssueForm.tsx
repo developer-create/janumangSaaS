@@ -42,19 +42,21 @@ interface AssemblyIssueFormProps {
 }
 
 interface FormFieldConfig {
-  name: keyof IAssemblyIssueFormValues;
-  label: string;
-  type: "text" | "number" | "date" | "select" | "file" | "textarea" | "mobile";
+  name?: keyof IAssemblyIssueFormValues;
+  label?: string;
+  type?: "text" | "number" | "date" | "select" | "file" | "textarea" | "mobile";
   placeholder?: string;
   optionsSource?: string;
   required?: boolean;
   readOnly?: boolean;
   fullWidth?: boolean;
-  fileNameField?: keyof IAssemblyIssueFormValues;
+  fileNameField?: keyof IAssemblyIssueFormValues | string;
   accept?: string;
   useIdAsValue?: boolean;
   dependsOn?: keyof IAssemblyIssueFormValues;
   dependsOnLabel?: string;
+  isSectionHeader?: boolean;
+  sectionTitle?: string;
 }
 
 const AssemblyIssueForm = ({
@@ -161,6 +163,39 @@ const AssemblyIssueForm = ({
     fetchSubWorkTypes();
   }, [formik.values.typeOfWork]);
 
+  
+  // Auto-fill Month and Financial Year from Date
+  useEffect(() => {
+    if (formik.values.date) {
+      const date = new Date(formik.values.date);
+      if (!isNaN(date.getTime())) {
+        const monthIndex = date.getMonth();
+        const year = date.getFullYear();
+        
+        // Set Month (months array is 0-indexed and matches getMonth())
+        const monthName = months[monthIndex];
+        if (formik.values.month !== monthName) {
+            formik.setFieldValue("month", monthName);
+        }
+
+        // Calculate Financial Year
+        let financialYear;
+        if (monthIndex >= 3) { // April onwards
+            const nextYear = String(year + 1).slice(-2);
+            financialYear = `${year}-${nextYear}`;
+        } else { // Jan to March
+            const prevYear = year - 1;
+            const currentYearLast2 = String(year).slice(-2);
+            financialYear = `${prevYear}-${currentYearLast2}`;
+        }
+        
+        if (formik.values.year !== financialYear) {
+            formik.setFieldValue("year", financialYear);
+        }
+      }
+    }
+  }, [formik.values.date, formik.setFieldValue]);
+
   // Sync selectedDistrictId
   useEffect(() => {
     if (formik.values.district && districts.length > 0) {
@@ -263,18 +298,16 @@ const AssemblyIssueForm = ({
   const handleFileChange = async (
     e: React.ChangeEvent<HTMLInputElement>,
     fieldName: string,
-    fileNameField: string,
+    fileNameField?: string,
   ) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.size > 10 * 1024 * 1024) {
-        toast.error("File size must be less than 10MB");
-        e.target.value = "";
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error("File size should not exceed 5MB");
         return;
       }
 
       setFileUploading((prev) => ({ ...prev, [fieldName]: true }));
-
       try {
         const formData = new FormData();
         formData.append("file", file);
@@ -284,12 +317,12 @@ const AssemblyIssueForm = ({
         });
 
         formik.setFieldValue(fieldName, data.url);
-        formik.setFieldValue(fileNameField, file.name);
+        if (fileNameField) formik.setFieldValue(fileNameField, file.name);
         toast.success("File uploaded successfully");
       } catch (err: unknown) {
         handleError(err, "File upload failed");
         formik.setFieldValue(fieldName, "");
-        formik.setFieldValue(fileNameField, "");
+        if (fileNameField) formik.setFieldValue(fileNameField, "");
       } finally {
         setFileUploading((prev) => ({ ...prev, [fieldName]: false }));
       }
@@ -346,6 +379,23 @@ const AssemblyIssueForm = ({
           name: s.subTypeOfWork,
           value: s.subTypeOfWork,
         }));
+      
+      case "offices":
+        return [
+          { id: "Bhopal", name: "Bhopal", value: "Bhopal" },
+          { id: "Dhar", name: "Dhar", value: "Dhar" },
+          { id: "Bagh", name: "Bagh", value: "Bagh" },
+          { id: "Gandhwani", name: "Gandhwani", value: "Gandhwani" },
+          { id: "Tanda", name: "Tanda", value: "Tanda" },
+        ];
+      case "approvedFunds":
+        return [
+          { id: "MLA FUND", name: "MLA FUND", value: "MLA FUND" },
+          { id: "MLA Swechanudan", name: "MLA Swechanudan", value: "MLA Swechanudan" },
+          { id: "CLP Swechanudan", name: "CLP Swechanudan", value: "CLP Swechanudan" },
+          { id: "Jansampark Fund", name: "Jansampark Fund", value: "Jansampark Fund" },
+          { id: "others", name: "Others", value: "others" },
+        ];
       case "statusOptions":
         return [
           { id: "Pending", name: "Pending", value: "Pending" },
@@ -360,166 +410,77 @@ const AssemblyIssueForm = ({
   };
 
   const FORM_FIELDS: FormFieldConfig[] = [
+    { isSectionHeader: true, sectionTitle: "1. Receiving information" },
+    { name: "office", label: "Office", type: "select", optionsSource: "offices" },
+    { name: "date", label: "Date", type: "date" },
+    { name: "month", label: "Month", type: "select", optionsSource: "months" },
+    { name: "year", label: "Financial Year", type: "text", required: true },
+    
+    { isSectionHeader: true, sectionTitle: "2. Geographyical Details" },
     { name: "sectorName", label: "Sector Name", type: "text" },
     { name: "microSectorNo", label: "Micro Sector No.", type: "text" },
     { name: "microSectorName", label: "Micro Sector Name", type: "text" },
-    { name: "year", label: "Year", type: "text", required: true },
-    {
-      name: "month",
-      label: "Month",
-      type: "select",
-      optionsSource: "months",
-    },
-    { name: "date", label: "Date", type: "date" },
-    {
-      name: "district",
-      label: "District",
-      type: "select",
-      optionsSource: "districts",
-    },
-    {
-      name: "assembly",
-      label: "Assembly",
-      type: "select",
-      optionsSource: "assemblies",
-      dependsOn: "district",
-      dependsOnLabel: "District",
-    },
-    {
-      name: "acMpNo",
-      label: "AC/MP No.",
-      type: "text",
-    },
-    {
-      name: "block",
-      label: "Block",
-      type: "select",
-      optionsSource: "blocks",
-      required: true,
-      useIdAsValue: true,
-      dependsOn: "assembly",
-      dependsOnLabel: "Assembly",
-    },
-    {
-      name: "recommendedLetterNo",
-      label: "Recommended Letter No",
-      type: "text",
-    },
-    {
-      name: "boothName",
-      label: "Booth Name",
-      type: "select",
-      optionsSource: "booths",
-      useIdAsValue: true,
-      dependsOn: "block",
-      dependsOnLabel: "Block",
-    },
-    { name: "boothNo", label: "Booth No.", type: "text", readOnly: true },
-    {
-      name: "panchayatName",
-      label: "Panchayat Name",
-      type: "select",
-      optionsSource: "panchayats",
-      required: true,
-      dependsOn: "block",
-      dependsOnLabel: "Block",
-    },
-    {
-      name: "village",
-      label: "Village",
-      type: "select",
-      optionsSource: "villages",
-      required: true,
-      dependsOn: "panchayatName",
-      dependsOnLabel: "Panchayat",
-    },
+    { name: "district", label: "District", type: "select", optionsSource: "districts" },
+    { name: "assembly", label: "Assembly", type: "select", optionsSource: "assemblies", dependsOn: "district", dependsOnLabel: "District" },
+    { name: "block", label: "Block", type: "select", optionsSource: "blocks", required: true, useIdAsValue: true, dependsOn: "assembly", dependsOnLabel: "Assembly" },
+    { name: "boothName", label: "Booth Name", type: "select", optionsSource: "booths", dependsOn: "block", dependsOnLabel: "Block" },
+    { name: "boothNo", label: "Booth No.", type: "select", optionsSource: "booths", dependsOn: "block", dependsOnLabel: "Block" },
+    { name: "panchayatName", label: "Panchayat Name", type: "select", optionsSource: "panchayats", required: true, useIdAsValue: true, dependsOn: "block", dependsOnLabel: "Block" },
+    { name: "village", label: "Village", type: "select", optionsSource: "villages", required: true, useIdAsValue: true, dependsOn: "panchayatName", dependsOnLabel: "Panchayat" },
     { name: "majraFaliya", label: "Majra/Faliya", type: "text" },
-    {
-      name: "workProblem",
-      label: "Work/Problem",
-      type: "text",
-      required: true,
-    },
-    { name: "office", label: "Office", type: "text" },
-    { name: "approximateCost", label: "Approximate Cost", type: "number" },
-    { name: "totalMembers", label: "Total Members", type: "number" },
-    {
-      name: "department",
-      label: "Department",
-      type: "select",
-      optionsSource: "departments",
-      required: true,
-    },
+
+    { isSectionHeader: true, sectionTitle: "3. Work Info" },
+    { name: "workProblem", label: "Work/Problem", type: "text", required: true },
+    { name: "typeOfWork", label: "Type of Work", type: "select", optionsSource: "workTypes" },
+    { name: "subWorkType", label: "Sub Work Type", type: "select", optionsSource: "subWorkTypes", dependsOn: "typeOfWork", dependsOnLabel: "Type of Work" },
     { name: "priority", label: "Priority", type: "text" },
+
+    { isSectionHeader: true, sectionTitle: "4. Department & Fund Info" },
+    { name: "department", label: "Department", type: "select", optionsSource: "departments", required: true },
+    { name: "approximateCost", label: "Approximate Cost", type: "number" },
+    { name: "approvedFund", label: "Approved Fund", type: "select", optionsSource: "approvedFunds" },
+    { name: "approvedFundOther", label: "Enter Fund Name", type: "text" },
+    { name: "workAgency", label: "Work Agency", type: "text", placeholder: "Enter work executing agency" },
+    { name: "recommendedLetterNo", label: "Recommended Letter No", type: "text" },
     { name: "tsNoDate", label: "TS No/Date", type: "text" },
     { name: "asNoDate", label: "AS No/Date", type: "text" },
-    {
-      name: "typeOfWork",
-      label: "Type of Work",
-      type: "select",
-      optionsSource: "workTypes",
-    },
-    {
-      name: "subWorkType",
-      label: "Sub Work Type",
-      type: "select",
-      optionsSource: "subWorkTypes",
-      dependsOn: "typeOfWork",
-      dependsOnLabel: "Type of Work",
-    },
-    { name: "middleMen", label: "Middle Man", type: "text" },
-    { name: "middleManContact", label: "Middle Man Cont No.", type: "mobile" },
-    { name: "beneficiaryName", label: "Beneficial (Name)", type: "text" },
-    {
-      name: "beneficiaryContact",
-      label: "Beneficial Cont No.",
-      type: "mobile",
-    },
-    { name: "po", label: "PO", type: "text" },
-    { name: "accountDetails", label: "Account Details", type: "text" },
-    { name: "adharCardNumber", label: "Adhar Card Number", type: "number" },
+
+    { isSectionHeader: true, sectionTitle: "5. Middle Man - Beneficial Details" },
+    { name: "middleMen", label: "Middle Man name", type: "text" },
+    { name: "middleManContact", label: "Middle Man Cont No.", type: "text", placeholder: "10 digits only" },
+    { name: "beneficiaryName", label: "Beneficial(Name)", type: "text" },
+    { name: "po", label: "Beneficial PO", type: "text" },
+    { name: "beneficiaryContact", label: "Beneficial Cont No.", type: "text", placeholder: "10 digits only" },
+    
+    { name: "status", label: "Work Status", type: "select", optionsSource: "statuses" },
+
+    { isSectionHeader: true, sectionTitle: "6. Section Details" },
+    { name: "accountDetails", label: "Account Details", type: "textarea", fullWidth: true },
     { name: "ifscNumber", label: "IFSC Number", type: "text" },
-    {
-      name: "status",
-      label: "Status",
-      type: "select",
-      optionsSource: "statusOptions",
-    },
-    {
-      name: "avedanFile",
-      label: "Avedan",
-      type: "file",
-      fileNameField: "avedanFileName",
-      fullWidth: true,
-    },
-    {
-      name: "documentFile",
-      label: "Upload Document (Set Of Complete Doc Pdf)",
-      type: "file",
-      fileNameField: "documentFileName",
-      accept: "application/pdf",
-      fullWidth: true,
-    },
-    {
-      name: "remarkGoshana",
-      label: "Remark/Goshana ( भईया द्वारा दिए गए निर्देश )",
-      type: "textarea",
-      fullWidth: true,
-    },
-    {
-      name: "remarkTipUsd",
-      label: "REMARK / TIP / USD",
-      type: "textarea",
-      fullWidth: true,
-    },
+    { name: "adharCardNumber", label: "Adhar Card Number", type: "text" },
+    { name: "documentFile", label: "Upload Document (Set Of Complete Doc Pdf)", type: "file", fileNameField: "documentFileName", fullWidth: true, accept: "application/pdf" },
+    
+    { isSectionHeader: true, sectionTitle: "7. Additional Info" },
+    { name: "remarkGoshana", label: "Remark/Goshana (भईया द्वारा दिए गए निर्देश)", type: "textarea", fullWidth: true },
+    { name: "avedanFile", label: "Avedan", type: "file", fileNameField: "avedanFileName", fullWidth: true },
   ];
 
   return (
     <form onSubmit={formik.handleSubmit} className="p-8 dark:bg-card">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {FORM_FIELDS.filter((f) => !f.fullWidth).map((field) => {
+        {FORM_FIELDS.filter((f) => !f.fullWidth).map((field, index) => {
+          if (field.isSectionHeader) {
+            return (
+              <div key={`section-${index}`} className="col-span-1 md:col-span-3 mt-4 mb-2">
+                <h4 className="bg-[#3C8DBC] text-white px-4 py-2 rounded-md font-bold text-lg">
+                  {field.sectionTitle}
+                </h4>
+              </div>
+            );
+          }
+
           const isError =
-            formik.touched[field.name] && formik.errors[field.name];
+            formik.touched[field.name!] && formik.errors[field.name!];
           const isDisabled = field.dependsOn && !formik.values[field.dependsOn];
 
           return (
@@ -552,13 +513,13 @@ const AssemblyIssueForm = ({
                               (b) => b.name === formik.values.boothName,
                             )?._id || ""
                           : field.useIdAsValue &&
-                              typeof formik.values[field.name] !== "string"
+                              typeof formik.values[field.name!] !== "string"
                             ? (
-                                formik.values[field.name] as unknown as {
+                                formik.values[field.name!] as unknown as {
                                   _id: string;
                                 }
                               )?._id
-                            : formik.values[field.name]?.toString() || ""
+                            : formik.values[field.name!]?.toString() || ""
                       }
                       onValueChange={(val) => {
                         if (field.name === "district") {
@@ -591,7 +552,7 @@ const AssemblyIssueForm = ({
                           formik.setFieldValue("typeOfWork", val);
                           formik.setFieldValue("subWorkType", "");
                         } else {
-                          formik.setFieldValue(field.name, val);
+                          formik.setFieldValue(field.name!, val);
                         }
                       }}
                     >
@@ -615,11 +576,11 @@ const AssemblyIssueForm = ({
                   maxLength={10}
                   inputMode="numeric"
                   placeholder={field.placeholder || `Enter ${field.label}`}
-                  value={formik.values[field.name] as string}
+                  value={formik.values[field.name!] as string}
                   onChange={(e) => {
                     const value = e.target.value.replace(/\D/g, "");
                     if (value.length <= 10) {
-                      formik.setFieldValue(field.name, value);
+                      formik.setFieldValue(field.name!, value);
                     }
                   }}
                   onBlur={formik.handleBlur}
@@ -629,7 +590,7 @@ const AssemblyIssueForm = ({
                 <Input
                   id={field.name}
                   type={field.type}
-                  {...formik.getFieldProps(field.name)}
+                  {...formik.getFieldProps(field.name!)}
                   placeholder={field.placeholder || `Enter ${field.label}`}
                   readOnly={field.readOnly}
                   className={`dark:bg-gray-800/50 dark:border-gray-700 dark:text-gray-200 ${field.readOnly ? "bg-gray-50 border-gray-100" : ""}`}
@@ -638,7 +599,7 @@ const AssemblyIssueForm = ({
 
               {isError && (
                 <p className="text-sm text-red-500">
-                  {formik.errors[field.name] as string}
+                  {formik.errors[field.name!] as string}
                 </p>
               )}
             </div>
@@ -648,9 +609,18 @@ const AssemblyIssueForm = ({
 
       {/* Full Width Fields */}
       <div className="mt-8 space-y-6">
-        {FORM_FIELDS.filter((f) => f.fullWidth).map((field) => {
+        {FORM_FIELDS.filter((f) => f.fullWidth).map((field, index) => {
+          if (field.isSectionHeader) {
+            return (
+              <div key={`section-${index}`} className="mt-4 mb-2">
+                <h4 className="bg-[#3C8DBC] text-white px-4 py-2 rounded-md font-bold text-lg">
+                  {field.sectionTitle}
+                </h4>
+              </div>
+            );
+          }
           const isError =
-            formik.touched[field.name] && formik.errors[field.name];
+            formik.touched[field.name!] && formik.errors[field.name!];
 
           return (
             <div key={field.name} className="space-y-2">
@@ -668,7 +638,7 @@ const AssemblyIssueForm = ({
                   name={field.name}
                   className="flex min-h-[100px] w-full rounded-md border border-input bg-transparent dark:bg-gray-800/50 dark:border-gray-700 dark:text-gray-200 px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                   placeholder={field.placeholder || `Enter ${field.label}`}
-                  value={String(formik.values[field.name] || "")}
+                  value={String(formik.values[field.name!] || "")}
                   onChange={formik.handleChange}
                 />
               ) : field.type === "file" ? (
@@ -677,7 +647,7 @@ const AssemblyIssueForm = ({
                     className="max-w-md dark:bg-gray-800/50 dark:border-gray-700 dark:text-gray-200"
                     value={String(
                       (field.fileNameField &&
-                        formik.values[field.fileNameField]) ||
+                        formik.values[field.fileNameField as keyof IAssemblyIssueFormValues]) ||
                         "",
                     )}
                     placeholder="No file chosen"
@@ -702,13 +672,13 @@ const AssemblyIssueForm = ({
                     Choose File
                   </Button>
 
-                  {formik.values[field.name] &&
-                    typeof formik.values[field.name] === "string" && (
+                  {formik.values[field.name!] &&
+                    typeof formik.values[field.name!] === "string" && (
                       <a
                         href={
-                          (formik.values[field.name] as string).startsWith("/")
-                            ? `${API_BASE_URL.replace("/api", "")}${formik.values[field.name]}`
-                            : (formik.values[field.name] as string)
+                          (formik.values[field.name!] as string).startsWith("/")
+                            ? `${API_BASE_URL.replace("/api", "")}${formik.values[field.name!]}`
+                            : (formik.values[field.name!] as string)
                         }
                         target="_blank"
                         rel="noreferrer"
@@ -724,7 +694,7 @@ const AssemblyIssueForm = ({
                     className="hidden"
                     accept={field.accept}
                     onChange={(e) =>
-                      handleFileChange(e, field.name, field.fileNameField || "")
+                      handleFileChange(e, field.name!, field.fileNameField as string | undefined)
                     }
                   />
                 </div>
@@ -732,7 +702,7 @@ const AssemblyIssueForm = ({
                 <Input
                   id={field.name}
                   type={field.type}
-                  {...formik.getFieldProps(field.name)}
+                  {...formik.getFieldProps(field.name!)}
                   placeholder={field.placeholder || `Enter ${field.label}`}
                   className="dark:bg-gray-800/50 dark:border-gray-700 dark:text-gray-200"
                 />
@@ -740,7 +710,7 @@ const AssemblyIssueForm = ({
 
               {isError && (
                 <p className="text-sm text-red-500">
-                  {formik.errors[field.name] as string}
+                  {formik.errors[field.name!] as string}
                 </p>
               )}
             </div>

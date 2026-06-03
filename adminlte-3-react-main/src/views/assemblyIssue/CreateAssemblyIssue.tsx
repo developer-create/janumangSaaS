@@ -51,7 +51,7 @@ const CreateAssemblyIssueContent = ({
       setLoading(true);
       const payload = {
         ...values,
-        totalMembers: Number(values.totalMembers),
+
         issueType,
       };
 

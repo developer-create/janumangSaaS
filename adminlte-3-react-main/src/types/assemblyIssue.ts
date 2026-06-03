@@ -8,7 +8,6 @@ export interface IAssemblyIssueFormValues {
   date: string;
   district: string;
   assembly: string;
-  acMpNo: string;
   block: string;
   recommendedLetterNo: string;
   boothName: string;
@@ -20,6 +19,9 @@ export interface IAssemblyIssueFormValues {
   office: string;
   approximateCost: number;
   department: string;
+  approvedFund?: string;
+  approvedFundOther?: string;
+  workAgency?: string;
   priority: string;
   tsNoDate: string;
   asNoDate: string;
@@ -38,10 +40,8 @@ export interface IAssemblyIssueFormValues {
   documentFile?: string;
   documentFileName?: string;
   remarkGoshana: string;
-  remarkTipUsd?: string; // Optional if not in form
   addedBy?: string; // Likely handled by backend context, but good to have
   latLng?: string;
-  totalMembers?: number;
   registrationDate?: string;
   status?: string;
   issueType?: string;
