@@ -12,6 +12,26 @@ import { Badge } from "@app/components/ui/badge";
 import { ContentHeader } from "@app/components";
 import { RouteGuard } from "@app/components/RouteGuard";
 import { PERMISSIONS } from "@app/config/permissions";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@app/components/ui/dialog";
+import { ViewPageActions } from "@app/components/ViewPageActions";
+import { ArrowLeft, Edit, FileImage, MessageSquare, Plus, Clock, Upload } from "lucide-react";
+import { API_BASE_URL } from "@app/utils/api";
+import { Label } from "@app/components/ui/label";
+import { Input } from "@app/components/ui/input";
+import { Textarea } from "@app/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@app/components/ui/select";
+import { IAssemblyIssue } from "@app/types/assemblyIssue";
 
 interface ViewAssemblyIssueProps {
   issueType?: string;
@@ -34,28 +54,6 @@ const ViewAssemblyIssue = ({
     </RouteGuard>
   );
 };
-
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@app/components/ui/dialog";
-import { ViewPageActions } from "@app/components/ViewPageActions";
-import { ArrowLeft, Edit, FileImage, MessageSquare, Plus, Clock, Upload } from "lucide-react";
-import { API_BASE_URL } from "@app/utils/api";
-import { Label } from "@app/components/ui/label";
-import { Input } from "@app/components/ui/input";
-import { Textarea } from "@app/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@app/components/ui/select";
-
-import { IAssemblyIssue } from "@app/types/assemblyIssue";
 
 const ViewAssemblyIssueContent = ({
   issueType,
