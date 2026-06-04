@@ -187,7 +187,19 @@ const DispatchRegisterForm = ({
               type="date"
               name="date"
               value={formatDateForInput(formik.values.date)}
-              onChange={formik.handleChange}
+              onChange={(e) => {
+                formik.handleChange(e);
+                const dateVal = e.target.value;
+                if (dateVal) {
+                  const d = new Date(dateVal);
+                  if (!isNaN(d.getTime())) {
+                    const year = d.getFullYear().toString();
+                    const month = d.toLocaleString("default", { month: "long" });
+                    formik.setFieldValue("year", year);
+                    formik.setFieldValue("month", month);
+                  }
+                }
+              }}
               onBlur={formik.handleBlur}
               disabled={isViewMode}
               className={
@@ -300,12 +312,39 @@ const DispatchRegisterForm = ({
             <label className="text-sm font-medium text-gray-700">
               Portal No.
             </label>
-            <Input
-              name="portalNo"
-              value={formik.values.portalNo}
-              onChange={formik.handleChange}
-              disabled={isViewMode}
-            />
+            <div className="flex">
+              <Select
+                value={formik.values.portalNo?.startsWith("MP/") ? "MP/" : "AC/"}
+                onValueChange={(val) => {
+                  const currentNum = formik.values.portalNo?.startsWith("MP/") || formik.values.portalNo?.startsWith("AC/")
+                    ? formik.values.portalNo.substring(3)
+                    : (formik.values.portalNo || "");
+                  formik.setFieldValue("portalNo", val + currentNum);
+                }}
+                disabled={isViewMode}
+              >
+                <SelectTrigger className="w-[90px] rounded-r-none border-r-0 bg-gray-100">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="AC/">AC/</SelectItem>
+                  <SelectItem value="MP/">MP/</SelectItem>
+                </SelectContent>
+              </Select>
+              <Input
+                className="rounded-l-none"
+                value={
+                  formik.values.portalNo?.startsWith("MP/") || formik.values.portalNo?.startsWith("AC/")
+                    ? formik.values.portalNo.substring(3)
+                    : (formik.values.portalNo || "")
+                }
+                onChange={(e) => {
+                  const prefix = formik.values.portalNo?.startsWith("MP/") ? "MP/" : "AC/";
+                  formik.setFieldValue("portalNo", prefix + e.target.value);
+                }}
+                disabled={isViewMode}
+              />
+            </div>
           </div>
 
           <div className="space-y-2">

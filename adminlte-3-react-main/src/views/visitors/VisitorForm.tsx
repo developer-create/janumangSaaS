@@ -243,6 +243,7 @@ const VisitorForm = ({
           );
           if (d) {
             setSelectedDistrictId(d._id);
+            formik.setFieldValue("district", d.name);
             // We need to wait for assemblies to load if we want to select vidhansabha
             const assRes = await axios.get(
               `/assemblies?limit=-1&district=${d._id}`,
@@ -256,6 +257,7 @@ const VisitorForm = ({
               );
               if (a) {
                 setSelectedAssemblyId(a._id);
+                formik.setFieldValue("vidhansabha", a.name);
                 const blkRes = await axios.get(
                   `/blocks?limit=-1&assembly=${a._id}`,
                 );
@@ -266,7 +268,10 @@ const VisitorForm = ({
                   const b = fetchedBlocks.find(
                     (b: IBlock) => b.name === initialValues.block,
                   );
-                  if (b) setSelectedBlockId(b._id);
+                  if (b) {
+                    setSelectedBlockId(b._id);
+                    formik.setFieldValue("block", b.name);
+                  }
                 }
               }
             }
@@ -524,18 +529,31 @@ const VisitorForm = ({
           <Label htmlFor="category">
             Category <span className="text-red-500">*</span>
           </Label>
-          <Input
-            id="category"
-            name="category"
+          <Select
             value={formik.values.category}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            className={
-              formik.touched.category && formik.errors.category
-                ? "border-red-500"
-                : ""
-            }
-          />
+            onValueChange={(val) => formik.setFieldValue("category", val)}
+          >
+            <SelectTrigger
+              className={
+                formik.touched.category && formik.errors.category
+                  ? "border-red-500"
+                  : ""
+              }
+            >
+              <SelectValue placeholder="-- Select Category --" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="General Visitor">General Visitor</SelectItem>
+              <SelectItem value="Party Worker">Party Worker</SelectItem>
+              <SelectItem value="Jan Pratinidhi (जन प्रतिनिधि)">Jan Pratinidhi (जन प्रतिनिधि)</SelectItem>
+              <SelectItem value="Govt. Employee">Govt. Employee</SelectItem>
+              <SelectItem value="Pvt. Employee">Pvt. Employee</SelectItem>
+              <SelectItem value="Social Worker (NGO)">Social Worker (NGO)</SelectItem>
+              <SelectItem value="Media Person">Media Person</SelectItem>
+              <SelectItem value="Student">Student</SelectItem>
+              <SelectItem value="Others">Others</SelectItem>
+            </SelectContent>
+          </Select>
           {formik.touched.category && formik.errors.category && (
             <div className="text-red-500 text-xs">{formik.errors.category}</div>
           )}

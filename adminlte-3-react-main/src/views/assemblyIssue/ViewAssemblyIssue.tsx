@@ -35,15 +35,24 @@ const ViewAssemblyIssue = ({
   );
 };
 
-import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@app/components/ui/dialog";
 import { ViewPageActions } from "@app/components/ViewPageActions";
-import { ArrowLeft, Edit, FileImage } from "lucide-react";
+import { ArrowLeft, Edit, FileImage, MessageSquare, Plus, Clock, Upload } from "lucide-react";
 import { API_BASE_URL } from "@app/utils/api";
+import { Label } from "@app/components/ui/label";
+import { Input } from "@app/components/ui/input";
+import { Textarea } from "@app/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@app/components/ui/select";
 
 import { IAssemblyIssue } from "@app/types/assemblyIssue";
 
@@ -63,6 +72,24 @@ const ViewAssemblyIssueContent = ({
   const [issue, setIssue] = useState<IAssemblyIssue | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Remarks State
+  const [comments, setComments] = useState<any[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [remarkText, setRemarkText] = useState("");
+  const [remarkStatus, setRemarkStatus] = useState("");
+  const [remarkStage, setRemarkStage] = useState(issueType);
+  const [remarkFile, setRemarkFile] = useState<File | null>(null);
+
+  const fetchComments = async () => {
+    try {
+      const { data } = await axios.get(`/assembly-issues/${id}/comments`);
+      setComments(data.data || []);
+    } catch (error) {
+      console.error("Failed to fetch comments", error);
+    }
+  };
+
   useEffect(() => {
     const fetchIssue = async () => {
       try {
@@ -78,8 +105,56 @@ const ViewAssemblyIssueContent = ({
 
     if (id) {
       fetchIssue();
+      fetchComments();
     }
   }, [id, router, basePath]);
+
+  const handleAddRemark = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!remarkText.trim()) {
+      toast.error("Please enter a remark");
+      return;
+    }
+    setSubmitting(true);
+    try {
+      let fileUrl = "";
+      let fileName = "";
+
+      if (remarkFile) {
+        const formData = new FormData();
+        formData.append("file", remarkFile);
+        const uploadRes = await axios.post("/upload", formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+        fileUrl = uploadRes.data.url;
+        fileName = remarkFile.name;
+      }
+
+      const payload = {
+        comment: remarkText,
+        status: remarkStatus || issue?.status,
+        issueType: remarkStage || issue?.issueType,
+        fileUrl,
+        fileName,
+      };
+
+      await axios.post(`/assembly-issues/${id}/comments`, payload);
+      toast.success("Remark added successfully");
+      
+      // Reset form & Refresh data
+      setRemarkText("");
+      setRemarkFile(null);
+      setIsModalOpen(false);
+      fetchComments();
+      // Refetch issue to update the status badge
+      const { data } = await axios.get(`/assembly-issues/${id}`);
+      setIssue(data.data || null);
+    } catch (error) {
+      handleError(error, "Failed to add remark");
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -329,6 +404,14 @@ const ViewAssemblyIssueContent = ({
 
                 <div className="flex gap-3">
                   <Button
+                    onClick={() => setIsModalOpen(true)}
+                    variant="outline"
+                    className="border-[#368F8B] text-[#368F8B] hover:bg-[#368F8B] hover:text-white transition-colors"
+                  >
+                    <MessageSquare className="w-4 h-4 mr-2" />
+                    Add Remark
+                  </Button>
+                  <Button
                     onClick={() => router.push(`${basePath}/${issue._id}/edit`)}
                     className="bg-[#368F8B] hover:bg-[#2d7a76] text-white rounded-lg shadow-lg shadow-[#368F8B]/20 border-0 transition-all min-w-[140px] font-bold"
                   >
@@ -337,10 +420,205 @@ const ViewAssemblyIssueContent = ({
                   </Button>
                 </div>
               </div>
+
+              {/* Follow-up Timeline */}
+              <div className="pt-8 border-t border-gray-100 dark:border-gray-800">
+                <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-6 flex items-center gap-2">
+                  <Clock className="w-5 h-5 text-[#368F8B]" />
+                  Follow-up Timeline
+                </h2>
+                
+                {comments.length === 0 ? (
+                  <div className="p-8 text-center bg-gray-50/50 dark:bg-gray-800/20 rounded-xl border border-dashed border-gray-200 dark:border-gray-700">
+                    <MessageSquare className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
+                    <p className="text-gray-500 dark:text-gray-400 font-medium">No remarks or follow-ups yet.</p>
+                    <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">Add a remark to track the progress of this issue.</p>
+                  </div>
+                ) : (
+                  <div className="space-y-6">
+                    {comments.map((comment, index) => (
+                      <div key={comment._id} className="relative pl-8 pb-6 last:pb-0">
+                        {/* Timeline line */}
+                        {index !== comments.length - 1 && (
+                          <div className="absolute left-[11px] top-8 bottom-0 w-[2px] bg-gray-100 dark:bg-gray-800"></div>
+                        )}
+                        {/* Timeline dot */}
+                        <div className="absolute left-0 top-1 w-6 h-6 rounded-full bg-[#368F8B]/10 border-2 border-[#368F8B] flex items-center justify-center">
+                          <div className="w-2 h-2 rounded-full bg-[#368F8B]"></div>
+                        </div>
+                        
+                        <div className="bg-white dark:bg-gray-800/40 p-5 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm transition-all hover:shadow-md">
+                          <div className="flex flex-wrap justify-between items-start gap-4 mb-3">
+                            <div>
+                              <div className="flex items-center gap-2">
+                                <span className="font-bold text-gray-900 dark:text-gray-100">{comment.addedBy}</span>
+                                <span className="text-xs text-gray-400 dark:text-gray-500">•</span>
+                                <span className="text-sm text-gray-500 dark:text-gray-400">
+                                  {new Date(comment.createdAt).toLocaleString("en-IN", {
+                                    day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit"
+                                  })}
+                                </span>
+                              </div>
+                            </div>
+                            <div className="flex gap-2">
+                              {comment.stage && (
+                                <Badge variant="outline" className="text-[10px] bg-slate-50 dark:bg-slate-800 border-slate-200">
+                                  {comment.stage}
+                                </Badge>
+                              )}
+                              <Badge className={
+                                comment.status === 'Complete' ? 'bg-green-500 hover:bg-green-600 text-white' : 
+                                comment.status === 'Reject' ? 'bg-red-500 hover:bg-red-600 text-white' : 
+                                'bg-yellow-500 hover:bg-yellow-600 text-white'
+                              }>
+                                {comment.status}
+                              </Badge>
+                            </div>
+                          </div>
+                          
+                          <p className="text-gray-700 dark:text-gray-300 text-sm whitespace-pre-wrap leading-relaxed">
+                            {comment.comment}
+                          </p>
+                          
+                          {comment.fileUrl && (
+                            <div className="mt-4 pt-3 border-t border-gray-100 dark:border-gray-800">
+                              <a
+                                href={comment.fileUrl.startsWith("/") ? `${API_BASE_URL.replace("/api", "")}${comment.fileUrl}` : comment.fileUrl}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="inline-flex items-center gap-2 text-sm font-semibold text-[#368F8B] hover:text-[#2d7a76] hover:underline bg-[#368F8B]/5 px-3 py-1.5 rounded-lg transition-colors"
+                              >
+                                <FileImage className="w-4 h-4" />
+                                {comment.fileName || "View Attachment"}
+                              </a>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
       </section>
+
+      {/* Add Remark Modal */}
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent className="sm:max-w-[550px] dark:bg-[#1a1c1e] dark:border-gray-800 p-0 overflow-hidden">
+          <div className="bg-[#368F8B] px-6 py-4 flex items-center justify-between">
+            <DialogTitle className="text-xl font-bold text-white flex items-center gap-2 m-0">
+              <MessageSquare className="w-5 h-5" />
+              Add Follow-up Remark
+            </DialogTitle>
+          </div>
+          
+          <form onSubmit={handleAddRemark} className="p-6 space-y-5">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="status" className="text-gray-700 dark:text-gray-300 font-semibold">Update Status</Label>
+                <Select
+                  value={remarkStatus || issue.status}
+                  onValueChange={setRemarkStatus}
+                >
+                  <SelectTrigger className="w-full bg-white dark:bg-[#202123] border-gray-200 dark:border-gray-700">
+                    <SelectValue placeholder="Select Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Pending">Pending</SelectItem>
+                    <SelectItem value="Incomplete">Incomplete</SelectItem>
+                    <SelectItem value="In Progress">In Progress</SelectItem>
+                    <SelectItem value="Complete">Complete</SelectItem>
+                    <SelectItem value="Reject">Reject</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="stage" className="text-gray-700 dark:text-gray-300 font-semibold flex justify-between">
+                  Promote/Transfer Level 
+                </Label>
+                <Select
+                  value={remarkStage || issue.issueType}
+                  onValueChange={setRemarkStage}
+                >
+                  <SelectTrigger className="w-full bg-white dark:bg-[#202123] border-gray-200 dark:border-gray-700">
+                    <SelectValue placeholder="Select Level" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="assembly-issue">Assembly Issue (General)</SelectItem>
+                    <SelectItem value="block-level">Block Level</SelectItem>
+                    <SelectItem value="bhopal-level">Bhopal Level</SelectItem>
+                    <SelectItem value="uss-level">USS Level</SelectItem>
+                  </SelectContent>
+                </Select>
+                <p className="text-[10px] text-gray-500 mt-1">Updates where this issue appears.</p>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="comment" className="text-gray-700 dark:text-gray-300 font-semibold">Remark / Comment <span className="text-red-500">*</span></Label>
+              <Textarea
+                id="comment"
+                value={remarkText}
+                onChange={(e) => setRemarkText(e.target.value)}
+                placeholder="Enter details about the follow-up or status update..."
+                className="min-h-[120px] bg-white dark:bg-[#202123] border-gray-200 dark:border-gray-700 resize-y"
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="file" className="text-gray-700 dark:text-gray-300 font-semibold">Attachment (Optional)</Label>
+              <div className="flex items-center gap-3">
+                <div className="relative flex-1">
+                  <Input
+                    id="file"
+                    type="file"
+                    onChange={(e) => setRemarkFile(e.target.files?.[0] || null)}
+                    className="pl-10 bg-white dark:bg-[#202123] border-gray-200 dark:border-gray-700 cursor-pointer file:cursor-pointer file:border-0 file:bg-transparent file:text-sm file:font-medium"
+                  />
+                  <Upload className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                </div>
+                {remarkFile && (
+                  <Button 
+                    type="button" 
+                    variant="ghost" 
+                    onClick={() => setRemarkFile(null)}
+                    className="text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 px-3"
+                  >
+                    Clear
+                  </Button>
+                )}
+              </div>
+            </div>
+
+            <div className="pt-4 flex justify-end gap-3 border-t border-gray-100 dark:border-gray-800">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setIsModalOpen(false)}
+                className="border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300"
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                disabled={submitting || !remarkText.trim()}
+                className="bg-[#368F8B] hover:bg-[#2d7a76] text-white font-bold px-6 shadow-md shadow-[#368F8B]/20"
+              >
+                {submitting ? (
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                ) : (
+                  <Plus className="w-4 h-4 mr-2" />
+                )}
+                Save Remark
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
     </>
   );
 };

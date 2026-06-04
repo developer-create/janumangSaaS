@@ -1,7 +1,9 @@
 const asyncHandler = require("express-async-handler");
 const AssemblyIssue = require("../models/assemblyIssueModel");
+const AssemblyIssueComment = require("../models/assemblyIssueCommentModel");
 const { logActivity } = require("./activityLogController");
 const { getCreateTenantId } = require("../utils/authHelpers");
+const { checkFundBudget } = require("../utils/fundBudgetHelper");
 
 // @desc    Get all assembly issues
 // @route   GET /api/assembly-issues
@@ -148,6 +150,20 @@ exports.createAssemblyIssue = asyncHandler(async (req, res) => {
       registrationDate: req.body.registrationDate || new Date().toISOString(),
       tenantId: getCreateTenantId(req), // SaaS: system admins create orphan records
     };
+
+    // Fund Budget Validation
+    const budgetCheck = await checkFundBudget(
+      issueData.tenantId,
+      issueData.approvedFund,
+      issueData.year,
+      Number(issueData.approximateCost) || 0
+    );
+
+    if (!budgetCheck.ok) {
+      res.status(400);
+      throw new Error(budgetCheck.message);
+    }
+
     const issue = await AssemblyIssue.create(issueData);
 
     await logActivity(
@@ -183,6 +199,20 @@ exports.updateAssemblyIssue = asyncHandler(async (req, res) => {
       throw new Error("Issue not found");
     }
     const oldData = issue.toObject();
+
+    // Fund Budget Validation
+    const budgetCheck = await checkFundBudget(
+      req.tenantId || oldData.tenantId,
+      req.body.approvedFund !== undefined ? req.body.approvedFund : oldData.approvedFund,
+      req.body.year !== undefined ? req.body.year : oldData.year,
+      Number(req.body.approximateCost !== undefined ? req.body.approximateCost : oldData.approximateCost) || 0,
+      issue._id
+    );
+
+    if (!budgetCheck.ok) {
+      res.status(400);
+      throw new Error(budgetCheck.message);
+    }
 
     const updatedIssue = await AssemblyIssue.findByIdAndUpdate(
       req.params.id,
@@ -231,6 +261,90 @@ exports.deleteAssemblyIssue = asyncHandler(async (req, res) => {
   );
 
   res.json({ success: true, message: "Issue removed" });
+});
+
+// @desc    Get comments for an assembly issue
+// @route   GET /api/assembly-issues/:id/comments
+// @access  Private
+exports.getAssemblyIssueComments = asyncHandler(async (req, res) => {
+  const issue = await AssemblyIssue.findOne({
+    _id: req.params.id,
+    ...req.scopeFilter,
+  });
+
+  if (!issue) {
+    res.status(404);
+    throw new Error("Issue not found");
+  }
+
+  const comments = await AssemblyIssueComment.find({ issueId: issue._id })
+    .sort({ createdAt: -1 })
+    .lean();
+
+  res.json({ success: true, data: comments });
+});
+
+// @desc    Add a comment to an assembly issue
+// @route   POST /api/assembly-issues/:id/comments
+// @access  Private
+exports.addAssemblyIssueComment = asyncHandler(async (req, res) => {
+  const { comment, status, fileUrl, fileName, issueType } = req.body;
+
+  if (!comment) {
+    res.status(400);
+    throw new Error("Comment is required");
+  }
+
+  const issue = await AssemblyIssue.findOne({
+    _id: req.params.id,
+    ...req.scopeFilter,
+  });
+
+  if (!issue) {
+    res.status(404);
+    throw new Error("Issue not found");
+  }
+
+  const newComment = await AssemblyIssueComment.create({
+    issueId: issue._id,
+    comment,
+    status: status || issue.status,
+    stage: issueType || issue.issueType,
+    fileUrl,
+    fileName,
+    createdBy: req.user ? req.user._id : null,
+    addedBy: req.user ? req.user.name || req.user.email : "Unknown",
+    tenantId: issue.tenantId,
+  });
+
+  // Automatically update the parent issue's status if provided
+  let updatedIssue = issue;
+  if (status && status !== issue.status) {
+    updatedIssue = await AssemblyIssue.findByIdAndUpdate(
+      issue._id,
+      { status },
+      { new: true }
+    );
+  }
+
+  // Handle stage/issueType promotion if requested (optional)
+  if (issueType && issueType !== issue.issueType) {
+    updatedIssue = await AssemblyIssue.findByIdAndUpdate(
+      issue._id,
+      { issueType },
+      { new: true }
+    );
+  }
+
+  await logActivity(
+    req,
+    "UPDATE",
+    "AssemblyIssue",
+    `Added remark to issue: ${issue.uniqueId} and changed status to ${status || issue.status}`,
+    { recordId: issue._id, commentId: newComment._id }
+  );
+
+  res.status(201).json({ success: true, data: newComment, updatedIssue });
 });
 
 // @desc    Cleanup duplicates

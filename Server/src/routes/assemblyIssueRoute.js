@@ -7,6 +7,8 @@ const {
   deleteAssemblyIssue,
   cleanupDuplicates,
   seedAssemblyIssues,
+  getAssemblyIssueComments,
+  addAssemblyIssueComment,
 } = require("../controller/assemblyIssueController");
 const protect = require("../middleware/authMiddleware");
 const { checkPermission } = require("../middleware/permissionMiddleware");
@@ -57,6 +59,23 @@ router
     checkPermission("delete_assembly_issues"),
     scopeQuery({}, false),
     deleteAssemblyIssue,
+  );
+
+router
+  .route("/:id/comments")
+  .get(
+    protect,
+    checkModuleAccess("assembly_issues"),
+    checkPermission("view_assembly_issues"),
+    scopeQuery({}, false),
+    getAssemblyIssueComments,
+  )
+  .post(
+    protect,
+    checkModuleAccess("assembly_issues"),
+    checkPermission("edit_assembly_issues"),
+    scopeQuery({}, false),
+    addAssemblyIssueComment,
   );
 
 module.exports = router;
