@@ -17,7 +17,7 @@ services:
       - key: TENANT_DB_URI_PREFIX
         sync: false 
       - key: CLIENT_URL
-        sync: false # E.g. https://your-vercel-app.vercel.app
+        value: https://janumangsaas.vercel.app
     disk:
       name: uploads-disk
       mountPath: /opt/render/project/src/Server/uploads
