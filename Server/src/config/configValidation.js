@@ -9,11 +9,6 @@ const validateEnv = () => {
   const required = [
     "MONGO_URI",
     "JWT_SECRET",
-    "JWT_REFRESH_SECRET",
-    "GOOGLE_CLIENT_ID",
-    "GOOGLE_CLIENT_SECRET",
-    "RAZORPAY_KEY_ID",
-    "RAZORPAY_KEY_SECRET",
   ];
 
   const missing = required.filter((key) => !process.env[key]);
@@ -30,15 +25,17 @@ const validateEnv = () => {
   }
 
   // ── Optional: warn but don't crash — email features will fail gracefully ──
-  const optional = ["EMAIL_HOST", "EMAIL_USER", "EMAIL_PASS", "EMAIL_FROM"];
+  const optional = [
+    "EMAIL_HOST", "EMAIL_USER", "EMAIL_PASS", "EMAIL_FROM",
+    "JWT_REFRESH_SECRET",
+    "GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET",
+    "RAZORPAY_KEY_ID", "RAZORPAY_KEY_SECRET"
+  ];
   const missingOptional = optional.filter((key) => !process.env[key]);
 
   if (missingOptional.length > 0) {
     console.warn(
-      "⚠️  EMAIL NOT CONFIGURED — forgot-password & verification emails will not work.",
-    );
-    console.warn(
-      "   Add EMAIL_HOST, EMAIL_USER, EMAIL_PASS, EMAIL_FROM to your .env to enable email.",
+      "⚠️  SOME OPTIONAL CONFIG IS MISSING — Certain features like Emails, Google Login, or Payments may not work.",
     );
   }
 

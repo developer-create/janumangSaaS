@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: janumang-backend
+    env: node
+    rootDir: Server
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: MONGO_URI
+        sync: false # User will set this in the Render dashboard
+      - key: JWT_SECRET
+        sync: false # User will set this in the Render dashboard
+      - key: TENANT_DB_URI_PREFIX
+        sync: false 
+      - key: CLIENT_URL
+        sync: false # E.g. https://your-vercel-app.vercel.app
+    disk:
+      name: uploads-disk
+      mountPath: /opt/render/project/src/Server/uploads
+      sizeGB: 1

@@ -53,11 +53,16 @@ function startMongoDB() {
 
 // Initialize
 (async () => {
-  const isRunning = await checkMongoDB();
-  if (!isRunning) {
-    await startMongoDB();
+  // Only try to start local MongoDB in development
+  if (process.env.NODE_ENV !== 'production') {
+    const isRunning = await checkMongoDB();
+    if (!isRunning) {
+      await startMongoDB();
+    } else {
+      console.log('✅ MongoDB is already running locally');
+    }
   } else {
-    console.log('✅ MongoDB is already running');
+    console.log('✅ Production Mode: Skipping local MongoDB check');
   }
   
   // Connect Database
