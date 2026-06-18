@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"},{"v":{"$numberInt":"2"},"key":{"name":{"$numberInt":"1"},"state":{"$numberInt":"1"}},"name":"name_1_state_1","unique":true},{"v":{"$numberInt":"2"},"key":{"state":{"$numberInt":"1"}},"name":"state_1"}],"uuid":"5831355e50df498e85e117de56cd5e1b","collectionName":"divisions","type":"collection"}

@@ -47,11 +47,11 @@ Tenant:   JanUmang Default
 
 ## 🌐 URLS
 
-| Service | URL | Status |
-|---------|-----|--------|
-| Frontend | http://localhost:3001 | ✅ Running |
-| Backend API | http://localhost:5000/api | ✅ Running |
-| MongoDB | mongodb://localhost:27017/janumang_dev | ✅ Running |
+| Service     | URL                                    | Status     |
+|-------------|----------------------------------------|------------|
+| Frontend    | http://localhost:3001                  | ✅ Running |
+| Backend API | http://localhost:5000/api              | ✅ Running |
+| MongoDB     | mongodb://localhost:27017/janumang_dev | ✅ Running |
 
 ---
 

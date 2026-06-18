@@ -361,7 +361,7 @@ const GenericSamitiForm = ({
                   </Label>
                   <Select
                     value={
-                      booths.find((b) => b.name === formData.boothName)?._id ||
+                      booths.find((b) => b.name === formData.boothName || b._id === formData.boothName)?._id ||
                       ""
                     }
                     onValueChange={handleBoothChange}

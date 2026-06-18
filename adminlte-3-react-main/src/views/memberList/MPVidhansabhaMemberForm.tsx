@@ -91,7 +91,7 @@ const MPVidhansabhaMemberForm = () => {
 
   const fetchBlocks = async (districtId: string) => {
     try {
-      const res = await axios.get(`/blocks?limit=-1&district=${districtId}`);
+      const res = await axios.get(`/blocks?limit=-1&   district=${districtId}`);
       setBlocksList(res.data?.data || []);
     } catch (err) {
       console.error("Error fetching blocks:", err);

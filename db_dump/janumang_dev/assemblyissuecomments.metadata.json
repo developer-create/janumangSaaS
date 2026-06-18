@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"},{"v":{"$numberInt":"2"},"key":{"issueId":{"$numberInt":"1"}},"name":"issueId_1"}],"uuid":"be5128cb3d1c481cac2b0ef8e8539177","collectionName":"assemblyissuecomments","type":"collection"}

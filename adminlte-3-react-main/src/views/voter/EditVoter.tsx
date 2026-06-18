@@ -209,9 +209,10 @@ const EditVoterContent = () => {
         const allBlocks: Block[] = blocksRes.data.data || [];
         setBlocks(allBlocks);
 
-        const matchedBlock = allBlocks.find((b) => b.name === v.blockname);
+        const matchedBlock = allBlocks.find((b) => b.name === v.blockname || b._id === v.block);
         if (matchedBlock) {
           setSelectedBlockId(matchedBlock._id);
+          formik.setFieldValue("blockname", matchedBlock.name);
           const [panchayatsList, boothsList] = await Promise.all([
             fetchPanchayats(matchedBlock._id),
             fetchBooths(matchedBlock._id),
@@ -219,26 +220,24 @@ const EditVoterContent = () => {
           setPanchayats(panchayatsList);
           setBooths(boothsList);
 
-          const matchedPanchayat = (panchayatsList as Panchayat[]).find(
-            (p) => p.name === v.panchayat,
-          );
+          const matchedPanchayat = (panchayatsList as Panchayat[]).find((p) => p.name === v.panchayat || p._id === v.panchayat);
           if (matchedPanchayat) {
             setSelectedPanchayatId(matchedPanchayat._id);
+            formik.setFieldValue("panchayat", matchedPanchayat.name);
             const villagesList = await fetchVillages(matchedPanchayat._id);
             setVillages(villagesList);
-            const matchedVillage = (villagesList as Village[]).find(
-              (vil) => vil.name === v.village,
-            );
+            const matchedVillage = (villagesList as Village[]).find((vil) => vil.name === v.village || vil._id === v.village);
             if (matchedVillage) {
               setSelectedVillageId(matchedVillage._id);
+              formik.setFieldValue("village", matchedVillage.name);
             }
           }
 
-          const matchedBooth = (boothsList as Booth[]).find(
-            (b) => b.name === v.boothname,
-          );
+          const matchedBooth = (boothsList as Booth[]).find((b) => b.name === v.boothname || b._id === v.booth);
           if (matchedBooth) {
             setSelectedBoothId(matchedBooth._id);
+            formik.setFieldValue("boothname", matchedBooth.name);
+            formik.setFieldValue("boothno", matchedBooth.code);
           }
         }
       } catch (error) {

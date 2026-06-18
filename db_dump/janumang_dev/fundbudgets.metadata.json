@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"},{"v":{"$numberInt":"2"},"key":{"tenant":{"$numberInt":"1"},"financialYear":{"$numberInt":"1"},"fundKey":{"$numberInt":"1"}},"name":"tenant_1_financialYear_1_fundKey_1","unique":true}],"uuid":"3cd34abc3e8a4df4b314afe0676de620","collectionName":"fundbudgets","type":"collection"}

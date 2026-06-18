@@ -116,7 +116,7 @@ const Voter = () => {
     queryFn: async () => {
       if (filterBlock === "all") return [];
       const selectedBlockObj = blocks.find(
-        (b: IBlock) => b.name === filterBlock,
+        (b: IBlock) => b.name === filterBlock || b._id === filterBlock,
       );
       if (!selectedBlockObj) return [];
       const res = await axios.get(

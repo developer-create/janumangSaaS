@@ -10,7 +10,7 @@ adminlte-3-react-main/src/app/(protected)/mp-vidhan-sabha-member/create/page.tsx
 ### Modified Files (7)
 ```
 Server/scripts/seedRolesAndAdmin.js
-Server/src/models/activityLogModel.js
+Server/src/models/activityLogModel.js 
 adminlte-3-react-main/src/app/(protected)/member-list/page.tsx
 adminlte-3-react-main/src/modules/main/header/tenant-switcher/TenantSwitcher.tsx
 adminlte-3-react-main/src/utils/axios.ts

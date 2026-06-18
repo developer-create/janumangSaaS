@@ -296,7 +296,7 @@ const EditMember = () => {
                   <Label className="font-bold text-gray-700 dark:text-gray-300">District</Label>
                   <Select
                     onValueChange={(val) => {
-                      const dist = districtsList.find((d) => d.name === val);
+                      const dist = districtsList.find((d) => d.name === val || d._id === val);
                       formik.setFieldValue("district", val);
                       formik.setFieldValue("block", "");
                       formik.setFieldValue("grampanchayat", "");
@@ -341,7 +341,7 @@ const EditMember = () => {
                   <Label className="font-bold text-gray-700 dark:text-gray-300">Block</Label>
                   <Select
                     onValueChange={(val) => {
-                      const block = blocksList.find((b) => b.name === val);
+                      const block = blocksList.find((b) => b.name === val || b._id === val);
                       formik.setFieldValue("block", val);
                       formik.setFieldValue("grampanchayat", "");
                       formik.setFieldValue("village", "");
@@ -366,7 +366,7 @@ const EditMember = () => {
                   <Label className="font-bold text-gray-700 dark:text-gray-300">Gram Panchayat</Label>
                   <Select
                     onValueChange={(val) => {
-                      const gp = panchayatsList.find((p) => p.name === val);
+                      const gp = panchayatsList.find((p) => p.name === val || p._id === val);
                       formik.setFieldValue("grampanchayat", val);
                       formik.setFieldValue("village", "");
                       if (gp?._id) fetchVillages(gp._id);

@@ -98,7 +98,7 @@ const CreateEntryContent = () => {
       return;
     }
     const dist = districtsList.find(
-      (d: any) => d.name === formik.values.district,
+      (d: any) => d.name === formik.values.district || d._id === formik.values.district,
     );
     if (dist) setSelectedDistrictId((dist as any)._id);
     else {
@@ -120,7 +120,7 @@ const CreateEntryContent = () => {
       return;
     }
     const asm = assembliesList.find(
-      (a: any) => a.name === formik.values.assembly,
+      (a: any) => a.name === formik.values.assembly || a._id === formik.values.assembly,
     );
     if (asm) setSelectedAssemblyId((asm as any)._id);
     else {
@@ -144,7 +144,7 @@ const CreateEntryContent = () => {
       formik.setFieldValue("boothNo", "");
       return;
     }
-    const blk = blocksList.find((b: any) => b.name === formik.values.block);
+    const blk = blocksList.find((b: any) => b.name === formik.values.block || b._id === formik.values.block);
     if (blk) setSelectedBlockId((blk as any)._id);
     else {
       setSelectedBlockId("");
@@ -171,7 +171,7 @@ const CreateEntryContent = () => {
       return;
     }
     const panch = panchayatsList.find(
-      (p: any) => p.name === formik.values.panchayatName,
+      (p: any) => p.name === formik.values.panchayatName || p._id === formik.values.panchayatName,
     );
     if (panch) setSelectedPanchayatId((panch as any)._id);
     else {
@@ -523,7 +523,7 @@ const CreateEntryContent = () => {
   const handleFieldChange = (field: FormFieldConfig, value: any) => {
     formik.setFieldValue(field.name, value);
     if (field.name === "boothName") {
-      const selectedBooth: any = boothsList.find((b: any) => b.name === value);
+      const selectedBooth: any = boothsList.find((b: any) => b.name === value || b._id === value);
       if (selectedBooth) {
         formik.setFieldValue("boothNo", selectedBooth.code || "");
       }

@@ -148,7 +148,7 @@ const GenericSamitiForm = ({
   useEffect(() => {
     if (formik.values.gramPanchayat && panchayats.length > 0) {
       const p = panchayats.find(
-        (x: IPanchayat) => x.name === formik.values.gramPanchayat,
+        (x: IPanchayat) => x.name === formik.values.gramPanchayat || x._id === formik.values.gramPanchayat,
       );
       if (p) setSelectedPanchayatId(p._id);
     } else {
@@ -411,7 +411,7 @@ const GenericSamitiForm = ({
                   <Select
                     value={
                       booths.find(
-                        (b: IBooth) => b.name === formik.values.boothName,
+                        (b: IBooth) => b.name === formik.values.boothName || b._id === formik.values.boothName,
                       )?._id || ""
                     }
                     onValueChange={handleBoothChange}

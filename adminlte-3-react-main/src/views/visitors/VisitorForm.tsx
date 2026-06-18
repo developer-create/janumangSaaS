@@ -239,7 +239,7 @@ const VisitorForm = ({
         // Handle Edit Mode / Validation Errors (retain selected values)
         if (initialValues.district) {
           const d = allDistricts.find(
-            (d: IDistrict) => d.name === initialValues.district,
+            (d: IDistrict) => d.name === initialValues.district || d._id === initialValues.district,
           );
           if (d) {
             setSelectedDistrictId(d._id);
@@ -253,7 +253,7 @@ const VisitorForm = ({
 
             if (initialValues.vidhansabha) {
               const a = fetchedAss.find(
-                (a: IAssembly) => a.name === initialValues.vidhansabha,
+                (a: IAssembly) => a.name === initialValues.vidhansabha || a._id === initialValues.vidhansabha,
               );
               if (a) {
                 setSelectedAssemblyId(a._id);
@@ -266,7 +266,7 @@ const VisitorForm = ({
 
                 if (initialValues.block) {
                   const b = fetchedBlocks.find(
-                    (b: IBlock) => b.name === initialValues.block,
+                    (b: IBlock) => b.name === initialValues.block || b._id === initialValues.block,
                   );
                   if (b) {
                     setSelectedBlockId(b._id);

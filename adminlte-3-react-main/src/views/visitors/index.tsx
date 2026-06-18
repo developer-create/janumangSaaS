@@ -163,12 +163,12 @@ const Visitors = () => {
     ],
     queryFn: async () => {
       const selectedDistrictObj = districts.find(
-        (d: any) => d.name === appliedDistrict,
+        (d: any) => d.name === appliedDistrict || d._id === appliedDistrict,
       );
       const selectedAssemblyObj = assemblies.find(
-        (a: any) => a.name === appliedVidhansabha,
+        (a: any) => a.name === appliedVidhansabha || a._id === appliedVidhansabha,
       );
-      const selectedBlockObj = blocks.find((b: any) => b.name === appliedBlock);
+      const selectedBlockObj = blocks.find((b: any) => b.name === appliedBlock || b._id === appliedBlock);
 
       const params: any = {
         page: pagination.page,

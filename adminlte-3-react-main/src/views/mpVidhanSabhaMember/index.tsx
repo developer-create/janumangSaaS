@@ -226,7 +226,7 @@ const MemberListContent = () => {
         const res = await axios.get("/blocks?limit=-1");
         return res.data?.data || [];
       }
-      const distId = districts.find((d: any) => d.name === filterDistrict)?._id;
+      const distId = districts.find((d: any) => d.name === filterDistrict || d._id === filterDistrict)?._id;
       if (!distId) return [];
       const res = await axios.get(`/blocks?limit=-1&district=${distId}`);
       return res.data?.data || [];
@@ -247,7 +247,7 @@ const MemberListContent = () => {
     queryFn: async () => {
       let url = "/vidhan-sabha?limit=-1";
       if (filterDistrict !== "all") {
-        const distId = districts.find((d: any) => d.name === filterDistrict)?._id;
+        const distId = districts.find((d: any) => d.name === filterDistrict || d._id === filterDistrict)?._id;
         if (distId) url += `&district=${distId}`;
       }
       const res = await axios.get(url);

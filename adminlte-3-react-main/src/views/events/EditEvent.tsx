@@ -41,7 +41,7 @@ const EditEvent = () => {
         // Fetch districts list to check if current district is 'other'
         const districtsRes = await axios.get("/districts?limit=1000");
         const districts = districtsRes.data.data || [];
-        const isStandardDistrict = districts.some((d: any) => d.name === eventData.district);
+        const isStandardDistrict = districts.some((d: any) => d.name === eventData.district || d._id === eventData.district);
         
         if (eventData.district && !isStandardDistrict) {
           eventData.otherDistrictName = eventData.district;

@@ -212,12 +212,12 @@ const EditMPVidhansabhaMember = () => {
 
       // If we don't have IDs but have names, find them
       if (!districtId && memberData.district) {
-        const dist = districts.find((d: any) => d.name === memberData.district);
+        const dist = districts.find((d: any) => d.name === memberData.district || d._id === memberData.district);
         districtId = dist?._id;
       }
       
       if (!vidhansabhaId && memberData.vidhansabha) {
-        const vs = vidhansabhas.find((v: any) => v.name === memberData.vidhansabha);
+        const vs = vidhansabhas.find((v: any) => v.name === memberData.vidhansabha || v._id === memberData.vidhansabha);
         vidhansabhaId = vs?._id;
       }
 
@@ -235,7 +235,7 @@ const EditMPVidhansabhaMember = () => {
 
       // If we still don't have blockId but have block name, find it
       if (!blockId && memberData.block && blocksForDistrict.length > 0) {
-        const block = blocksForDistrict.find((b: any) => b.name === memberData.block);
+        const block = blocksForDistrict.find((b: any) => b.name === memberData.block || b._id === memberData.block);
         blockId = block?._id;
         console.log("Found blockId from name:", blockId, "Available blocks:", blocksForDistrict.map((b: any) => b.name));
       }
@@ -255,7 +255,7 @@ const EditMPVidhansabhaMember = () => {
         
         // If we still don't have panchayatId but have panchayat name, find it
         if (!panchayatId && memberData.panchayat && panchayatsForBlock.length > 0) {
-          const panchayat = panchayatsForBlock.find((p: any) => p.name === memberData.panchayat);
+          const panchayat = panchayatsForBlock.find((p: any) => p.name === memberData.panchayat || p._id === memberData.panchayat);
           panchayatId = panchayat?._id;
           console.log("Found panchayatId from name:", panchayatId, "Available panchayats:", panchayatsForBlock.map((p: any) => p.name));
         }

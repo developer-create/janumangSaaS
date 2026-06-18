@@ -147,7 +147,7 @@ const EditEntryContent = () => {
       !selectedDistrictId
     ) {
       const d: any = districtsList.find(
-        (x: any) => x.name === formik.values.district,
+        (x: any) => x.name === formik.values.district || x._id === formik.values.district,
       );
       if (d) setSelectedDistrictId(d._id);
     }
@@ -160,7 +160,7 @@ const EditEntryContent = () => {
       !selectedAssemblyId
     ) {
       const a: any = assembliesList.find(
-        (x: any) => x.name === formik.values.assembly,
+        (x: any) => x.name === formik.values.assembly || x._id === formik.values.assembly,
       );
       if (a) setSelectedAssemblyId(a._id);
     }
@@ -169,7 +169,7 @@ const EditEntryContent = () => {
   useEffect(() => {
     if (formik.values.block && blocksList.length > 0 && !selectedBlockId) {
       const b: any = blocksList.find(
-        (x: any) => x.name === formik.values.block,
+        (x: any) => x.name === formik.values.block || x._id === formik.values.block,
       );
       if (b) setSelectedBlockId(b._id);
     }
@@ -182,7 +182,7 @@ const EditEntryContent = () => {
       !selectedPanchayatId
     ) {
       const p: any = panchayatsList.find(
-        (x: any) => x.name === formik.values.panchayatName,
+        (x: any) => x.name === formik.values.panchayatName || x._id === formik.values.panchayatName,
       );
       if (p) setSelectedPanchayatId(p._id);
     }

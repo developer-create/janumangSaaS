@@ -199,7 +199,7 @@ const AssemblyIssueForm = ({
   // Sync selectedDistrictId
   useEffect(() => {
     if (formik.values.district && districts.length > 0) {
-      const d = districts.find((x) => x.name === formik.values.district);
+      const d = districts.find((x) => x.name === formik.values.district || x._id === formik.values.district);
       if (d) setSelectedDistrictId(d._id);
     } else {
       setSelectedDistrictId("");
@@ -224,7 +224,7 @@ const AssemblyIssueForm = ({
   // Sync selectedAssemblyId
   useEffect(() => {
     if (formik.values.assembly && assemblies.length > 0) {
-      const a = assemblies.find((x) => x.name === formik.values.assembly);
+      const a = assemblies.find((x) => x.name === formik.values.assembly || x._id === formik.values.assembly);
       if (a) setSelectedAssemblyId(a._id);
     } else {
       setSelectedAssemblyId("");
@@ -267,7 +267,7 @@ const AssemblyIssueForm = ({
   // Sync selectedPanchayatId
   useEffect(() => {
     if (formik.values.panchayatName && panchayats.length > 0) {
-      const p = panchayats.find((x) => x.name === formik.values.panchayatName);
+      const p = panchayats.find((x) => x.name === formik.values.panchayatName || x._id === formik.values.panchayatName);
       if (p) setSelectedPanchayatId(p._id);
     } else {
       setSelectedPanchayatId("");
@@ -510,7 +510,7 @@ const AssemblyIssueForm = ({
                       value={
                         field.name === "boothName"
                           ? booths.find(
-                              (b) => b.name === formik.values.boothName,
+                              (b) => b.name === formik.values.boothName || b._id === formik.values.boothName,
                             )?._id || ""
                           : field.useIdAsValue &&
                               typeof formik.values[field.name!] !== "string"
