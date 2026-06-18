@@ -118,7 +118,7 @@ const PlanForm = ({ plan, onClose }: PlanFormProps) => {
   const categories = Array.from(new Set(ALL_MODULES.map(m => m.category)));
 
   // Icon preview component
-  const selectedIconEntry = PLAN_ICONS.find(i => i.name === formData.icon || i._id === formData.icon) ?? PLAN_ICONS[0];
+  const selectedIconEntry = PLAN_ICONS.find(i => i.name === formData.icon) ?? PLAN_ICONS[0];
   const SelectedIconComponent = selectedIconEntry.component;
 
   return (

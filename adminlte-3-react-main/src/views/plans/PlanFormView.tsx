@@ -284,7 +284,7 @@ const PlanFormView = ({ id }: PlanFormViewProps) => {
                           style={{ backgroundColor: `${formData.color || "#368F8B"}20`, border: `2px solid ${formData.color || "#368F8B"}40` }}
                         >
                           {(() => {
-                            const iconEntry = PLAN_ICONS.find(i => i.name === formData.icon || i._id === formData.icon) ?? PLAN_ICONS[0];
+                            const iconEntry = PLAN_ICONS.find(i => i.name === formData.icon) ?? PLAN_ICONS[0];
                             const Icon = iconEntry.component;
                             return <Icon size={22} style={{ color: formData.color || "#368F8B" }} />;
                           })()}
