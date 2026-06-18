@@ -150,8 +150,15 @@ const BhagoriaSamitiForm = ({
                     Block (ब्लॉक) <span className="text-red-500">*</span>
                   </Label>
                   <Select
-                    value={formik.values.block}
-                    onValueChange={(val) => formik.setFieldValue("block", val)}
+                    value={
+                      blocks?.find(
+                        (b: any) => b.name === formik.values.block || b._id === formik.values.block,
+                      )?._id || ""
+                    }
+                    onValueChange={(val) => {
+                       const selectedBlock = blocks?.find((b: any) => b._id === val);
+                       formik.setFieldValue("block", selectedBlock ? selectedBlock.name : val);
+                    }}
                   >
                     <SelectTrigger
                       className={`dark:bg-gray-800/50 dark:border-gray-700 dark:text-gray-200 ${

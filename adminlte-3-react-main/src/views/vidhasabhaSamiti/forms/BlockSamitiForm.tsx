@@ -84,6 +84,12 @@ const GenericSamitiForm = ({
           const boothRes = await axios.get(`/booths?limit=-1&block=${formData.block}`);
           if (boothRes.data.success) {
             setBooths(boothRes.data.data);
+            if (initialData?.boothName) {
+              const bo = boothRes.data.data.find((x: any) => x.name === initialData.boothName || x._id === initialData.boothName);
+              if (bo) {
+                setFormData(prev => ({ ...prev, boothName: bo._id }));
+              }
+            }
           }
 
           const panRes = await axios.get(`/panchayat?limit=-1&block=${formData.block}`);
