@@ -191,7 +191,7 @@ const PlanCard = ({
           style={{ backgroundColor: `${plan.color}20` }}
         >
           {(() => {
-            const iconEntry = PLAN_ICONS.find((i) => i.name === plan.icon || i._id === plan.icon) || PLAN_ICONS.find((i) => i.name === "Layers");
+            const iconEntry = PLAN_ICONS.find((i) => i.name === plan.icon) || PLAN_ICONS.find((i) => i.name === "Layers");
             const Icon = iconEntry?.component || Layers;
             return <Icon className="w-5 h-5" style={{ color: plan.color }} />;
           })()}
