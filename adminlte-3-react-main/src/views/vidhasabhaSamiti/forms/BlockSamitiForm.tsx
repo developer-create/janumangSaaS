@@ -52,6 +52,8 @@ const GenericSamitiForm = ({
 
   const [blocks, setBlocks] = useState<any[]>([]);
   const [booths, setBooths] = useState<any[]>([]);
+  const [panchayats, setPanchayats] = useState<any[]>([]);
+  const [villages, setVillages] = useState<any[]>([]);
 
   // Fetch Blocks on mount
   useEffect(() => {
@@ -61,10 +63,10 @@ const GenericSamitiForm = ({
         if (data.success) {
           setBlocks(data.data);
           if (initialData?.block) {
-             const b = data.data.find((x: any) => x.name === initialData.block || x._id === initialData.block);
-             if (b) {
-               setFormData(prev => ({...prev, block: b._id}));
-             }
+            const b = data.data.find((x: any) => x.name === initialData.block || x._id === initialData.block);
+            if (b) {
+              setFormData(prev => ({ ...prev, block: b._id }));
+            }
           }
         }
       } catch (error) {
@@ -72,38 +74,63 @@ const GenericSamitiForm = ({
       }
     };
     fetchBlocks();
-  }, []);
+  }, [initialData]);
 
-  // Fetch Booths when Block changes
+  // Fetch Booths and Panchayats when Block changes
   useEffect(() => {
     if (formData.block) {
-      const fetchBooths = async () => {
+      const fetchBoothsAndPanchayats = async () => {
         try {
-          // Assuming formData.block stores the ID
-          const { data } = await axios.get(
-            `/booths?limit=-1&block=${formData.block}`,
-          );
-          if (data.success) {
-            setBooths(data.data);
-            if (initialData?.boothName) {
-              const bo = data.data.find((x: any) => x.name === initialData.boothName || x._id === initialData.boothName);
-              if (bo) {
-                // boothName in formData is expected to be the name or ID depending on how the UI handles it. 
-                // But wait, handleBoothChange expects ID! Actually handleBoothChange sets boothName = name.
-                // But the Select value uses the inline find logic. Let's not touch booth unless necessary.
-                // The issue is block, mostly.
+          const boothRes = await axios.get(`/booths?limit=-1&block=${formData.block}`);
+          if (boothRes.data.success) {
+            setBooths(boothRes.data.data);
+          }
+
+          const panRes = await axios.get(`/panchayat?limit=-1&block=${formData.block}`);
+          if (panRes.data.success) {
+            setPanchayats(panRes.data.data);
+            if (initialData?.gramPanchayat) {
+              const p = panRes.data.data.find((x: any) => x.name === initialData.gramPanchayat || x._id === initialData.gramPanchayat);
+              if (p) {
+                setFormData(prev => ({ ...prev, gramPanchayat: p._id }));
               }
             }
           }
         } catch (error) {
-          console.error("Failed to fetch booths", error);
+          console.error("Failed to fetch booths/panchayats", error);
         }
       };
-      fetchBooths();
+      fetchBoothsAndPanchayats();
     } else {
       setBooths([]);
+      setPanchayats([]);
     }
-  }, [formData.block]);
+  }, [formData.block, initialData]);
+
+  // Fetch Villages when Panchayat changes
+  useEffect(() => {
+    if (formData.gramPanchayat) {
+      const fetchVillages = async () => {
+        try {
+          const { data } = await axios.get(`/villages?limit=-1&panchayat=${formData.gramPanchayat}`);
+          if (data.success) {
+            setVillages(data.data);
+            if (initialData?.village) {
+              const v = data.data.find((x: any) => x.name === initialData.village || x._id === initialData.village);
+              if (v) {
+                setFormData(prev => ({ ...prev, village: v._id }));
+              }
+            }
+          }
+        } catch (error) {
+          console.error("Failed to fetch villages", error);
+        }
+      };
+      fetchVillages();
+    } else {
+      setVillages([]);
+    }
+  }, [formData.gramPanchayat, initialData]);
 
   const handleBoothChange = (boothId: string) => {
     const selectedBooth = booths.find((b) => b._id === boothId);
@@ -427,14 +454,21 @@ const GenericSamitiForm = ({
                   >
                     Gram Panchayat
                   </Label>
-                  <Input
-                    id="gramPanchayat"
-                    name="gramPanchayat"
+                  <Select
                     value={formData.gramPanchayat}
-                    onChange={handleChange}
-                    placeholder="Enter Gram Panchayat"
-                    className="dark:bg-gray-800/50 dark:border-gray-700 dark:text-gray-200"
-                  />
+                    onValueChange={(val) => handleSelectChange("gramPanchayat", val)}
+                  >
+                    <SelectTrigger className="dark:bg-gray-800/50 dark:border-gray-700 dark:text-gray-200">
+                      <SelectValue placeholder="Select Gram Panchayat" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {panchayats.map((p) => (
+                        <SelectItem key={p._id} value={p._id}>
+                          {p.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div className="space-y-2">
                   <Label
@@ -451,8 +485,11 @@ const GenericSamitiForm = ({
                       <SelectValue placeholder="Select Village" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Village A">Village A</SelectItem>
-                      <SelectItem value="Village B">Village B</SelectItem>
+                      {villages.map((v) => (
+                        <SelectItem key={v._id} value={v._id}>
+                          {v.name}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>

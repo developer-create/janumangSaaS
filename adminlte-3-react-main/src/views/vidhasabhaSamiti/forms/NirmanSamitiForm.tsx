@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter } from "@app/hooks/useCustomRouter";
 
 import axios from "@app/utils/axios";
@@ -46,8 +46,126 @@ const GenericSamitiForm = ({
     gramPanchayat: "",
     village: "",
     faliya: "",
-    file: "",
+    file: "" as string, // Base64 string
+    fileName: "", // To show the name
   });
+
+  const [blocks, setBlocks] = useState<any[]>([]);
+  const [booths, setBooths] = useState<any[]>([]);
+  const [panchayats, setPanchayats] = useState<any[]>([]);
+  const [villages, setVillages] = useState<any[]>([]);
+
+  // Fetch Blocks on mount
+  useEffect(() => {
+    const fetchBlocks = async () => {
+      try {
+        const { data } = await axios.get("/blocks?limit=-1");
+        if (data.success) {
+          setBlocks(data.data);
+          if (initialData?.block) {
+            const b = data.data.find((x: any) => x.name === initialData.block || x._id === initialData.block);
+            if (b) {
+              setFormData(prev => ({ ...prev, block: b._id }));
+            }
+          }
+        }
+      } catch (error) {
+        console.error("Failed to fetch blocks", error);
+      }
+    };
+    fetchBlocks();
+  }, [initialData]);
+
+  // Fetch Booths and Panchayats when Block changes
+  useEffect(() => {
+    if (formData.block) {
+      const fetchBoothsAndPanchayats = async () => {
+        try {
+          const boothRes = await axios.get(`/booths?limit=-1&block=${formData.block}`);
+          if (boothRes.data.success) {
+            setBooths(boothRes.data.data);
+          }
+
+          const panRes = await axios.get(`/panchayat?limit=-1&block=${formData.block}`);
+          if (panRes.data.success) {
+            setPanchayats(panRes.data.data);
+            if (initialData?.gramPanchayat) {
+              const p = panRes.data.data.find((x: any) => x.name === initialData.gramPanchayat || x._id === initialData.gramPanchayat);
+              if (p) {
+                setFormData(prev => ({ ...prev, gramPanchayat: p._id }));
+              }
+            }
+          }
+        } catch (error) {
+          console.error("Failed to fetch booths/panchayats", error);
+        }
+      };
+      fetchBoothsAndPanchayats();
+    } else {
+      setBooths([]);
+      setPanchayats([]);
+    }
+  }, [formData.block, initialData]);
+
+  // Fetch Villages when Panchayat changes
+  useEffect(() => {
+    if (formData.gramPanchayat) {
+      const fetchVillages = async () => {
+        try {
+          const { data } = await axios.get(`/villages?limit=-1&panchayat=${formData.gramPanchayat}`);
+          if (data.success) {
+            setVillages(data.data);
+            if (initialData?.village) {
+              const v = data.data.find((x: any) => x.name === initialData.village || x._id === initialData.village);
+              if (v) {
+                setFormData(prev => ({ ...prev, village: v._id }));
+              }
+            }
+          }
+        } catch (error) {
+          console.error("Failed to fetch villages", error);
+        }
+      };
+      fetchVillages();
+    } else {
+      setVillages([]);
+    }
+  }, [formData.gramPanchayat, initialData]);
+
+  const handleBoothChange = (boothId: string) => {
+    const selectedBooth = booths.find((b) => b._id === boothId);
+    if (selectedBooth) {
+      setFormData((prev) => ({
+        ...prev,
+        boothName: selectedBooth.name, // Store Name as per schema requirement likely
+        boothNo: selectedBooth.code || selectedBooth.name, // Auto-fill no/code
+      }));
+    }
+  };
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 10 * 1024 * 1024) {
+        toast.error("File size must be less than 10MB");
+        // Reset the input value so the same file can be selected again if needed (though invalid)
+        if (fileInputRef.current) fileInputRef.current.value = "";
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData((prev) => ({
+          ...prev,
+          file: reader.result as string,
+          fileName: file.name,
+        }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   useEffect(() => {
     if (initialData) {
@@ -64,7 +182,8 @@ const GenericSamitiForm = ({
         gramPanchayat: initialData.gramPanchayat || "",
         village: initialData.village || "",
         faliya: initialData.faliya || "",
-        file: initialData.file || "",
+        file: initialData.image || "",
+        fileName: initialData.image ? "Keep existing or upload new" : "",
       });
     } else {
       // Generate a random Unique ID if creating new (Simulation)
@@ -91,7 +210,16 @@ const GenericSamitiForm = ({
       }`;
       const method = isEdit ? "put" : "post";
 
-      await axios[method](url, { ...formData });
+      const payload = {
+        ...formData,
+        image: formData.file, // Map file (base64) to image field
+      };
+
+      await axios[method](url, payload, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
       toast.success(`${title} ${isEdit ? "updated" : "created"} successfully`);
       router.push(`/vidhasabha-samiti/${apiEndpoint}`);
@@ -116,7 +244,12 @@ const GenericSamitiForm = ({
               {/* Row 1: Unique ID (Auto/Readonly) */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <Label htmlFor="uniqueId">Unique ID</Label>
+                  <Label
+                    htmlFor="uniqueId"
+                    className="text-gray-700 dark:text-gray-300"
+                  >
+                    Unique ID
+                  </Label>
                   <Input
                     id="uniqueId"
                     name="uniqueId"
@@ -124,24 +257,39 @@ const GenericSamitiForm = ({
                     onChange={handleChange}
                     placeholder="Auto Generated or Enter ID"
                     required
+                    className="dark:bg-gray-800/50 dark:border-gray-700 dark:text-gray-200"
                   />
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
                     Will be auto-generated on save if left empty (Backend logic
                     required) or enter manually.
                   </p>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="year">Year</Label>
+                  <Label
+                    htmlFor="year"
+                    className="text-gray-700 dark:text-gray-300"
+                  >
+                    Year
+                  </Label>
                   <Select
                     value={formData.year}
                     onValueChange={(val) => handleSelectChange("year", val)}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="dark:bg-gray-800/50 dark:border-gray-700 dark:text-gray-200">
                       <SelectValue placeholder="Select Year" />
                     </SelectTrigger>
                     <SelectContent>
+                      <SelectItem value="2020">2020</SelectItem>
+                      <SelectItem value="2021">2021</SelectItem>
+                      <SelectItem value="2022">2022</SelectItem>
+                      <SelectItem value="2023">2023</SelectItem>
                       <SelectItem value="2024">2024</SelectItem>
                       <SelectItem value="2025">2025</SelectItem>
+                      <SelectItem value="2026">2026</SelectItem>
+                      <SelectItem value="2027">2027</SelectItem>
+                      <SelectItem value="2028">2028</SelectItem>
+                      <SelectItem value="2029">2029</SelectItem>
+                      <SelectItem value="2030">2030</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -150,65 +298,96 @@ const GenericSamitiForm = ({
               {/* Row: AC/MP No. & Block */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <Label htmlFor="acMpNo">AC/MP No.</Label>
+                  <Label
+                    htmlFor="acMpNo"
+                    className="text-gray-700 dark:text-gray-300"
+                  >
+                    AC/MP No.
+                  </Label>
                   <Input
                     id="acMpNo"
                     name="acMpNo"
                     value={formData.acMpNo}
                     onChange={handleChange}
                     placeholder="Enter AC/MP No."
+                    className="dark:bg-gray-800/50 dark:border-gray-700 dark:text-gray-200"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="block">
+                  <Label
+                    htmlFor="block"
+                    className="text-gray-700 dark:text-gray-300"
+                  >
                     Block <span className="text-red-500">*</span>
                   </Label>
                   <Select
                     value={formData.block}
                     onValueChange={(val) => handleSelectChange("block", val)}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="dark:bg-gray-800/50 dark:border-gray-700 dark:text-gray-200">
                       <SelectValue placeholder="Select Block" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Barwani">Barwani</SelectItem>
-                      <SelectItem value="Pati">Pati</SelectItem>
-                      {/* Add more blocks */}
+                      {blocks.map((block) => (
+                        <SelectItem key={block._id} value={block._id}>
+                          {block.name}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
               </div>
 
+              {/* ... (Sector Row unchanged) ... */}
+
               {/* Row: Sector & Micro Sector */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="space-y-2">
-                  <Label htmlFor="sector">Sector</Label>
+                  <Label
+                    htmlFor="sector"
+                    className="text-gray-700 dark:text-gray-300"
+                  >
+                    Sector
+                  </Label>
                   <Input
                     id="sector"
                     name="sector"
                     value={formData.sector}
                     onChange={handleChange}
                     placeholder="Enter Sector"
+                    className="dark:bg-gray-800/50 dark:border-gray-700 dark:text-gray-200"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="microSectorNo">Micro Sector No</Label>
+                  <Label
+                    htmlFor="microSectorNo"
+                    className="text-gray-700 dark:text-gray-300"
+                  >
+                    Micro Sector No
+                  </Label>
                   <Input
                     id="microSectorNo"
                     name="microSectorNo"
                     value={formData.microSectorNo}
                     onChange={handleChange}
                     placeholder="Enter Micro Sector No"
+                    className="dark:bg-gray-800/50 dark:border-gray-700 dark:text-gray-200"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="microSectorName">Micro Sector Name</Label>
+                  <Label
+                    htmlFor="microSectorName"
+                    className="text-gray-700 dark:text-gray-300"
+                  >
+                    Micro Sector Name
+                  </Label>
                   <Input
                     id="microSectorName"
                     name="microSectorName"
                     value={formData.microSectorName}
                     onChange={handleChange}
                     placeholder="Enter Micro Sector Name"
+                    className="dark:bg-gray-800/50 dark:border-gray-700 dark:text-gray-200"
                   />
                 </div>
               </div>
@@ -216,33 +395,52 @@ const GenericSamitiForm = ({
               {/* Row: Booth */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <Label htmlFor="boothName">
+                  <Label
+                    htmlFor="boothName"
+                    className="text-gray-700 dark:text-gray-300"
+                  >
                     Booth Name <span className="text-red-500">*</span>
                   </Label>
                   <Select
-                    value={formData.boothName}
-                    onValueChange={(val) =>
-                      handleSelectChange("boothName", val)
+                    value={
+                      booths.find((b) => b.name === formData.boothName || b._id === formData.boothName)?._id ||
+                      ""
                     }
+                    onValueChange={handleBoothChange}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="dark:bg-gray-800/50 dark:border-gray-700 dark:text-gray-200">
                       <SelectValue placeholder="Select Booth" />
                     </SelectTrigger>
                     <SelectContent>
-                      {/* Ideally fetched from API */}
-                      <SelectItem value="Booth 1">Booth 1</SelectItem>
-                      <SelectItem value="Booth 2">Booth 2</SelectItem>
+                      {booths.length > 0 ? (
+                        booths.map((booth) => (
+                          <SelectItem key={booth._id} value={booth._id}>
+                            {booth.name} {booth.code ? `(${booth.code})` : ""}
+                          </SelectItem>
+                        ))
+                      ) : (
+                        <SelectItem value="none" disabled>
+                          No Booths Found (Select Block First)
+                        </SelectItem>
+                      )}
                     </SelectContent>
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="boothNo">Booth No</Label>
+                  <Label
+                    htmlFor="boothNo"
+                    className="text-gray-700 dark:text-gray-300"
+                  >
+                    Booth No
+                  </Label>
                   <Input
                     id="boothNo"
                     name="boothNo"
                     value={formData.boothNo}
                     onChange={handleChange}
                     placeholder="Enter Booth No"
+                    readOnly
+                    className="bg-gray-50 dark:bg-gray-800/30 dark:border-gray-700 dark:text-gray-300"
                   />
                 </div>
               </div>
@@ -250,60 +448,104 @@ const GenericSamitiForm = ({
               {/* Row: Village Location */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="space-y-2">
-                  <Label htmlFor="gramPanchayat">Gram Panchayat</Label>
-                  <Input
-                    id="gramPanchayat"
-                    name="gramPanchayat"
-                    value={formData.gramPanchayat}
-                    onChange={handleChange}
-                    placeholder="Enter Gram Panchayat"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="village">Village</Label>
-                  <Select
-                    value={formData.village}
-                    onValueChange={(val) => handleSelectChange("village", val)}
+                  <Label
+                    htmlFor="gramPanchayat"
+                    className="text-gray-700 dark:text-gray-300"
                   >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select Village" />
+                    Gram Panchayat
+                  </Label>
+                  <Select
+                    value={formData.gramPanchayat}
+                    onValueChange={(val) => handleSelectChange("gramPanchayat", val)}
+                  >
+                    <SelectTrigger className="dark:bg-gray-800/50 dark:border-gray-700 dark:text-gray-200">
+                      <SelectValue placeholder="Select Gram Panchayat" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Village A">Village A</SelectItem>
-                      <SelectItem value="Village B">Village B</SelectItem>
+                      {panchayats.map((p) => (
+                        <SelectItem key={p._id} value={p._id}>
+                          {p.name}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="faliya">Faliya</Label>
+                  <Label
+                    htmlFor="village"
+                    className="text-gray-700 dark:text-gray-300"
+                  >
+                    Village
+                  </Label>
+                  <Select
+                    value={formData.village}
+                    onValueChange={(val) => handleSelectChange("village", val)}
+                  >
+                    <SelectTrigger className="dark:bg-gray-800/50 dark:border-gray-700 dark:text-gray-200">
+                      <SelectValue placeholder="Select Village" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {villages.map((v) => (
+                        <SelectItem key={v._id} value={v._id}>
+                          {v.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="faliya"
+                    className="text-gray-700 dark:text-gray-300"
+                  >
+                    Faliya
+                  </Label>
                   <Input
                     id="faliya"
                     name="faliya"
                     value={formData.faliya}
                     onChange={handleChange}
                     placeholder="Enter Faliya"
+                    className="dark:bg-gray-800/50 dark:border-gray-700 dark:text-gray-200"
                   />
                 </div>
               </div>
 
               {/* File Upload Placeholder */}
               <div className="space-y-2">
-                <Label htmlFor="file">File Upload</Label>
-                <Input
-                  id="file"
-                  type="text"
-                  name="file" // Just text for now, real upload needs state handling
-                  placeholder="No file chosen"
-                  disabled
-                />
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  className="mt-2"
+                <Label
+                  htmlFor="file"
+                  className="text-gray-700 dark:text-gray-300"
                 >
-                  Choose File
-                </Button>
+                  File Upload
+                </Label>
+                <div className="flex flex-col gap-2">
+                  <Input
+                    id="file"
+                    type="text"
+                    value={formData.fileName}
+                    name="file"
+                    placeholder="No file chosen"
+                    readOnly
+                    className="dark:bg-gray-800/50 dark:border-gray-700 dark:text-gray-300"
+                  />
+                  <input
+                    type="file"
+                    className="hidden"
+                    accept="image/*"
+                    ref={fileInputRef}
+                    onChange={handleFileChange}
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="w-fit"
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    Choose File
+                  </Button>
+                </div>
               </div>
 
               <div className="flex items-center gap-4 pt-4 border-t border-gray-100 dark:border-gray-800">

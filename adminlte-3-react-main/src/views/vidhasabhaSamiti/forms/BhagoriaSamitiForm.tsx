@@ -164,7 +164,7 @@ const BhagoriaSamitiForm = ({
                     </SelectTrigger>
                     <SelectContent>
                       {blocks?.map((block: any) => (
-                        <SelectItem key={block._id} value={block.name}>
+                        <SelectItem key={block._id} value={block._id}>
                           {block.name}
                         </SelectItem>
                       ))}
