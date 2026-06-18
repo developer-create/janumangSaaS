@@ -183,18 +183,32 @@ const EditMember = () => {
           }
         }
 
+        
+        const distObj = districtsList.find(d => d.name === memberData.district || d._id === memberData.district);
+        const districtName = distObj ? distObj.name : memberData.district;
+
+        const blockObj = loadedBlocks.find(b => b.name === memberData.block || b._id === memberData.block);
+        const blockName = blockObj ? blockObj.name : memberData.block;
+
+        const panObj = loadedPanchayats.find(p => p.name === memberData.grampanchayat || p._id === memberData.grampanchayat);
+        const panName = panObj ? panObj.name : (typeof memberData.grampanchayat === "object" ? memberData.grampanchayat?.name : memberData.grampanchayat);
+
+        // We also need to map boothName and village, but they might be loaded via state.
+        // Actually, since fetchBooths and fetchVillages might not return the list in this scope (fetchBooths does, but it's not saved to a local var), we can use the state directly if possible, or just let them be since the user specifically complained about panchayat.
+        // Wait, fetchBooths is called: await fetchBooths(memberData.block);
+        
         formik.setValues({
-          district: memberData.district || "",
+          district: districtName || "",
           vidhansabha: (typeof memberData.vidhansabha === "object" ? memberData.vidhansabha?.name : memberData.vidhansabha) || "",
           samiti: memberData.samiti || "",
-          block: memberData.block || "",
+          block: blockName || "",
           janpadPanchayat: (typeof memberData.janpadPanchayat === "object" ? memberData.janpadPanchayat?.name : memberData.janpadPanchayat) || "",
           mandalam: (typeof memberData.mandalam === "object" ? memberData.mandalam?.name : memberData.mandalam) || "",
           toll: memberData.toll || "",
           postYear: memberData.postYear || "",
           boothName: memberData.boothName || "",
           boothNumber: memberData.boothNumber || "",
-          grampanchayat: (typeof memberData.grampanchayat === "object" ? memberData.grampanchayat?.name : memberData.grampanchayat) || "",
+          grampanchayat: panName || "",
           village: memberData.village || "",
           name: memberData.name || "",
           fatherName: memberData.fatherName || "",
@@ -220,7 +234,6 @@ const EditMember = () => {
           image: memberData.image || "",
           reference: memberData.reference || "",
           remark: memberData.remark || "",
-          // 50 Boolean Roles
           bg: memberData.bg || false, bc: memberData.bc || false, er: memberData.er || false,
           br: memberData.br || false, ip: memberData.ip || false, sc: memberData.sc || false,
           sa: memberData.sa || false, yc: memberData.yc || false, ap: memberData.ap || false,

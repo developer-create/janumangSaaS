@@ -146,10 +146,13 @@ const EditEntryContent = () => {
       districtsList.length > 0 &&
       !selectedDistrictId
     ) {
-      const d: any = districtsList.find(
-        (x: any) => x.name === formik.values.district || x._id === formik.values.district,
-      );
-      if (d) setSelectedDistrictId(d._id);
+      const d: any = districtsList.find((x: any) => x.name === formik.values.district || x._id === formik.values.district);
+      if (d) {
+        setSelectedDistrictId(d._id);
+        if (formik.values.district !== d.name) {
+          formik.setFieldValue("district", d.name);
+        }
+      }
     }
   }, [formik.values.district, districtsList, selectedDistrictId]);
 
@@ -159,19 +162,25 @@ const EditEntryContent = () => {
       assembliesList.length > 0 &&
       !selectedAssemblyId
     ) {
-      const a: any = assembliesList.find(
-        (x: any) => x.name === formik.values.assembly || x._id === formik.values.assembly,
-      );
-      if (a) setSelectedAssemblyId(a._id);
+      const a: any = assembliesList.find((x: any) => x.name === formik.values.assembly || x._id === formik.values.assembly);
+      if (a) {
+        setSelectedAssemblyId(a._id);
+        if (formik.values.assembly !== a.name) {
+          formik.setFieldValue("assembly", a.name);
+        }
+      }
     }
   }, [formik.values.assembly, assembliesList, selectedAssemblyId]);
 
   useEffect(() => {
     if (formik.values.block && blocksList.length > 0 && !selectedBlockId) {
-      const b: any = blocksList.find(
-        (x: any) => x.name === formik.values.block || x._id === formik.values.block,
-      );
-      if (b) setSelectedBlockId(b._id);
+      const b: any = blocksList.find((x: any) => x.name === formik.values.block || x._id === formik.values.block);
+      if (b) {
+        setSelectedBlockId(b._id);
+        if (formik.values.block !== b.name) {
+          formik.setFieldValue("block", b.name);
+        }
+      }
     }
   }, [formik.values.block, blocksList, selectedBlockId]);
 
@@ -181,10 +190,13 @@ const EditEntryContent = () => {
       panchayatsList.length > 0 &&
       !selectedPanchayatId
     ) {
-      const p: any = panchayatsList.find(
-        (x: any) => x.name === formik.values.panchayatName || x._id === formik.values.panchayatName,
-      );
-      if (p) setSelectedPanchayatId(p._id);
+      const p: any = panchayatsList.find((x: any) => x.name === formik.values.panchayatName || x._id === formik.values.panchayatName);
+      if (p) {
+        setSelectedPanchayatId(p._id);
+        if (formik.values.panchayatName !== p.name) {
+          formik.setFieldValue("panchayatName", p.name);
+        }
+      }
     }
   }, [formik.values.panchayatName, panchayatsList, selectedPanchayatId]);
 

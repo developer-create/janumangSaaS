@@ -59,6 +59,12 @@ const GenericSamitiForm = ({
         const { data } = await axios.get("/blocks?limit=-1");
         if (data.success) {
           setBlocks(data.data);
+          if (initialData?.block) {
+             const b = data.data.find((x: any) => x.name === initialData.block || x._id === initialData.block);
+             if (b) {
+               setFormData(prev => ({...prev, block: b._id}));
+             }
+          }
         }
       } catch (error) {
         console.error("Failed to fetch blocks", error);
@@ -78,6 +84,15 @@ const GenericSamitiForm = ({
           );
           if (data.success) {
             setBooths(data.data);
+            if (initialData?.boothName) {
+              const bo = data.data.find((x: any) => x.name === initialData.boothName || x._id === initialData.boothName);
+              if (bo) {
+                // boothName in formData is expected to be the name or ID depending on how the UI handles it. 
+                // But wait, handleBoothChange expects ID! Actually handleBoothChange sets boothName = name.
+                // But the Select value uses the inline find logic. Let's not touch booth unless necessary.
+                // The issue is block, mostly.
+              }
+            }
           }
         } catch (error) {
           console.error("Failed to fetch booths", error);

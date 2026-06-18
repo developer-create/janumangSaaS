@@ -199,8 +199,13 @@ const AssemblyIssueForm = ({
   // Sync selectedDistrictId
   useEffect(() => {
     if (formik.values.district && districts.length > 0) {
-      const d = districts.find((x) => x.name === formik.values.district || x._id === formik.values.district);
-      if (d) setSelectedDistrictId(d._id);
+      const d: any = districts.find((x: any) => x.name === formik.values.district || x._id === formik.values.district);
+      if (d) {
+        setSelectedDistrictId(d._id);
+        if (formik.values.district !== d.name) {
+          formik.setFieldValue("district", d.name);
+        }
+      }
     } else {
       setSelectedDistrictId("");
       setAssemblies([]);
@@ -224,8 +229,13 @@ const AssemblyIssueForm = ({
   // Sync selectedAssemblyId
   useEffect(() => {
     if (formik.values.assembly && assemblies.length > 0) {
-      const a = assemblies.find((x) => x.name === formik.values.assembly || x._id === formik.values.assembly);
-      if (a) setSelectedAssemblyId(a._id);
+      const a: any = assemblies.find((x: any) => x.name === formik.values.assembly || x._id === formik.values.assembly);
+      if (a) {
+        setSelectedAssemblyId(a._id);
+        if (formik.values.assembly !== a.name) {
+          formik.setFieldValue("assembly", a.name);
+        }
+      }
     } else {
       setSelectedAssemblyId("");
       setBlocks([]);
@@ -267,8 +277,13 @@ const AssemblyIssueForm = ({
   // Sync selectedPanchayatId
   useEffect(() => {
     if (formik.values.panchayatName && panchayats.length > 0) {
-      const p = panchayats.find((x) => x.name === formik.values.panchayatName || x._id === formik.values.panchayatName);
-      if (p) setSelectedPanchayatId(p._id);
+      const p: any = panchayats.find((x: any) => x.name === formik.values.panchayatName || x._id === formik.values.panchayatName);
+      if (p) {
+        setSelectedPanchayatId(p._id);
+        if (formik.values.panchayatName !== p.name) {
+          formik.setFieldValue("panchayatName", p.name);
+        }
+      }
     } else {
       setSelectedPanchayatId("");
     }
@@ -452,7 +467,7 @@ const AssemblyIssueForm = ({
     { name: "po", label: "Beneficial PO", type: "text" },
     { name: "beneficiaryContact", label: "Beneficial Cont No.", type: "text", placeholder: "10 digits only" },
     
-    { name: "status", label: "Work Status", type: "select", optionsSource: "statuses" },
+    { name: "status", label: "Work Status", type: "select", optionsSource: "statusOptions" },
 
     { isSectionHeader: true, sectionTitle: "6. Section Details" },
     { name: "accountDetails", label: "Account Details", type: "textarea", fullWidth: true },
